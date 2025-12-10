@@ -3,7 +3,8 @@ commend:
 docker run --name medapp_container -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=medapp_db -p 5432:5432 -d postgres
 - stop/remove container
 docker rm -f medapp_container
-
+- enter db (from root)
+docker exec -it medapp_container psql -U postgres -d medapp_db
 
 
 unused dependencies:

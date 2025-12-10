@@ -1,5 +1,7 @@
 package com.maja.med_app.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +32,7 @@ public class Patient {
     
     @ManyToOne
     @JoinColumn(name= "main_doctor_id")
+    @JsonProperty("mainDoctor")
     private Doctor doctor;
 
 }

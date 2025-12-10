@@ -2,6 +2,8 @@ package com.maja.med_app.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(example = "{\"visitTime\": \"2025-12-10T14:30:00\", \"patient\": {\"id\": 0}, \"doctor\": {\"id\": 0}}")
+@Schema(example = "{\"visitTime\": null, \"patient\": {\"id\": 0}, \"doctor\": {\"id\": 0}}")
 public class Appointment {
 
     @Id
@@ -25,6 +27,7 @@ public class Appointment {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime visitTime;
 
     @ManyToOne
