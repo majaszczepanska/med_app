@@ -5,7 +5,12 @@ docker run --name medapp_container -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=med
 docker rm -f medapp_container
 - enter db (from root)
 docker exec -it medapp_container psql -U postgres -d medapp_db
+- logs
+docker logs medapp_container
 
+postgres in system:
+sudo systemctl stop postgresql
+sudo systemctl disable postgresql
 
 unused dependencies:
 		<dependency>
@@ -22,3 +27,7 @@ used:
     		<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
     		<version>2.2.0</version>
 		</dependency>
+
+
+repair:
+mvn clean spring-boot:run -DskipTests

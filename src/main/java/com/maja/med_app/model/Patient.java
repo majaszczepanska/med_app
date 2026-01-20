@@ -1,7 +1,5 @@
 package com.maja.med_app.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,8 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(example = "{\"firstName\": \"string\", \"lastName\":\"string\", \"disease\":\"string\", \"doctor\": {\"id\": 0}}")
-
+//@Schema(example = "{\"firstName\": \"string\", \"lastName\":\"string\", \"disease\":\"string\", \"mainDoctor\": {\"id\": 0}}")
 public class Patient {
 
     @Id
@@ -32,7 +29,7 @@ public class Patient {
     
     @ManyToOne
     @JoinColumn(name= "main_doctor_id")
-    @JsonProperty("mainDoctor")
-    private Doctor doctor;
+    @Schema(example = "{\"id\": 0}")
+    private Doctor mainDoctor;
 
 }

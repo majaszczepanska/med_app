@@ -58,12 +58,16 @@ public class AppointmentController {
 
         LocalDateTime visitTime = appointment.getVisitTime();
         if (visitTime == null){
-            appointment.setVisitTime(LocalDateTime.now());
+            //appointment.setVisitTime(LocalDateTime.now());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You need to set visit time");
+        }else if(visitTime.getHour() < 8 || visitTime.getHour() >= 16){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointments only between 8:00 and 16:00");
+        }else if(visitTime.getMinute()% 15 != 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointments only 15 minutes after previous (for example at 8:00, 8:15, 8:30 etc.)");
         }
         //(visitTime.getMinute() != 0 && visitTime.getMinute() != 15 && visitTime.getMinute() != 30 && visitTime.getMinute() != 45)
-        if(visitTime.getMinute()% 15 != 0){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointments only 15 minutes after previous");
-        }
+       
+
 
         return appointmentRepository.save(appointment);
     }

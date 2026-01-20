@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maja.med_app.model.Doctor;
 import com.maja.med_app.model.Patient;
+import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,9 +23,16 @@ import lombok.RequiredArgsConstructor;
 public class PatientController {
 
     private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
 
     @PostMapping
     public Patient addPatient(@RequestBody Patient patient){
+        if (patient.getMainDoctor() != null && patient.getMainDoctor().getId() != null && patient.getMainDoctor().getId() != 0){
+            Long doctorId = patient.getMainDoctor().getId();
+            Doctor fullDoctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("No doctor with this id"));
+            patient.setMainDoctor(fullDoctor);
+        }
         return patientRepository.save(patient);
     }
 
