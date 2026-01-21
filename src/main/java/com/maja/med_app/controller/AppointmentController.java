@@ -36,37 +36,51 @@ public class AppointmentController {
 
     @PostMapping
     public Appointment addAppointment(@RequestBody Appointment appointment){
-        if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null || appointment.getDoctor().getId() == 0 ){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Needed doctors id");
-        }
-        Long doctorId = appointment.getDoctor().getId();
-        Doctor doctorFromDb = doctorRepository.findById(doctorId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No doctor with this id"));
-        if(appointmentRepository.existsByDoctorIdAndVisitTime(doctorId, appointment.getVisitTime())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Doctor is occupied");
-        }
 
-        if (appointment.getPatient() == null || appointment.getPatient().getId() == null || appointment.getPatient().getId() == 0){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Needed patient's id");
-        }
-        Long patientId = appointment.getPatient().getId();
-        Patient patientFromDb = patientRepository.findById(patientId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No patient with this id"));
-
-        appointment.setDoctor(doctorFromDb);
-        appointment.setPatient(patientFromDb);
-
+        //First validate visit time
         LocalDateTime visitTime = appointment.getVisitTime();
         if (visitTime == null){
             //appointment.setVisitTime(LocalDateTime.now());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You need to set visit time");
-        }else if(visitTime.getHour() < 8 || visitTime.getHour() >= 16){
+        }
+        if(visitTime.getHour() < 8 || visitTime.getHour() >= 16){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointments only between 8:00 and 16:00");
-        }else if(visitTime.getMinute()% 15 != 0){
+        }
+        if(visitTime.getMinute()% 15 != 0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointments only 15 minutes after previous (for example at 8:00, 8:15, 8:30 etc.)");
         }
         //(visitTime.getMinute() != 0 && visitTime.getMinute() != 15 && visitTime.getMinute() != 30 && visitTime.getMinute() != 45)
        
+        //Validate if ids are present
+        if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null || appointment.getDoctor().getId() == 0 ){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Needed doctors id");
+        }
+         if (appointment.getPatient() == null || appointment.getPatient().getId() == null || appointment.getPatient().getId() == 0){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Needed patient's id");
+        }
+
+        //Data from db
+        Long doctorId = appointment.getDoctor().getId();
+        Long patientId = appointment.getPatient().getId();
+
+        //Fetch full entities from db
+        Doctor doctorFromDb = doctorRepository.findById(doctorId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No doctor with this id"));
+        Patient patientFromDb = patientRepository.findById(patientId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No patient with this id"));
+
+
+
+        //Check if doctor is avaliable at that time
+        if(appointmentRepository.existsByDoctorIdAndVisitTime(doctorId, appointment.getVisitTime())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Doctor is occupied");
+        }
+
+       
+        //Set full entities to appointment
+        appointment.setDoctor(doctorFromDb);
+        appointment.setPatient(patientFromDb);
+        
 
 
         return appointmentRepository.save(appointment);

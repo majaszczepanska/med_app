@@ -30,4 +30,7 @@ used:
 
 
 repair:
+rm -rf target
+pkill -f java
+mvn clean spring-boot:run
 mvn clean spring-boot:run -DskipTests

@@ -15,6 +15,7 @@ import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +27,7 @@ public class PatientController {
     private final DoctorRepository doctorRepository;
 
     @PostMapping
-    public Patient addPatient(@RequestBody Patient patient){
+    public Patient addPatient(@Valid @RequestBody Patient patient){
         if (patient.getMainDoctor() != null && patient.getMainDoctor().getId() != null && patient.getMainDoctor().getId() != 0){
             Long doctorId = patient.getMainDoctor().getId();
             Doctor fullDoctor = doctorRepository.findById(doctorId)
