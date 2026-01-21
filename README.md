@@ -7,6 +7,10 @@ docker rm -f medapp_container
 docker exec -it medapp_container psql -U postgres -d medapp_db
 - logs
 docker logs medapp_container
+- stop
+docker stop medapp_container
+-start 
+docker start medapp_container
 
 postgres in system:
 sudo systemctl stop postgresql

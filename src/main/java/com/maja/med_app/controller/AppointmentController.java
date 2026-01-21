@@ -23,6 +23,7 @@ import com.maja.med_app.repository.AppointmentRepository;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -35,14 +36,10 @@ public class AppointmentController {
     private final PatientRepository patientRepository;
 
     @PostMapping
-    public Appointment addAppointment(@RequestBody Appointment appointment){
+    public Appointment addAppointment(@Valid @RequestBody Appointment appointment){
 
         //First validate visit time
         LocalDateTime visitTime = appointment.getVisitTime();
-        if (visitTime == null){
-            //appointment.setVisitTime(LocalDateTime.now());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You need to set visit time");
-        }
         if(visitTime.getHour() < 8 || visitTime.getHour() >= 16){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointments only between 8:00 and 16:00");
         }
@@ -92,8 +89,8 @@ public class AppointmentController {
     }
 
 
-    @GetMapping("/doctor/{doctorId}/avaliable")
-    public List<String> getAvaliableSlots( 
+    @GetMapping("/doctor/{doctorId}/available")
+    public List<String> getAvailableSlots( 
         @PathVariable Long doctorId,
         @RequestParam String date) {
         

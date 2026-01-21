@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maja.med_app.model.Doctor;
 import com.maja.med_app.repository.DoctorRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController //class in internet
@@ -29,7 +30,7 @@ public class DoctorController {
 
     //save doctor
     @PostMapping
-    public Doctor addDoctor(@RequestBody Doctor doctor) {
+    public Doctor addDoctor(@Valid @RequestBody Doctor doctor) {
         return doctorRepository.save(doctor);
     }
 
