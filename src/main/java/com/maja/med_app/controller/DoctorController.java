@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maja.med_app.model.Doctor;
 import com.maja.med_app.repository.DoctorRepository;
 
+import com.maja.med_app.exception.AppValidationException;
+import com.maja.med_app.util.ValidationErrorUtils;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +37,7 @@ public class DoctorController {
     //save doctor
     @PostMapping
     public Doctor addDoctor(@Valid @RequestBody Doctor doctor, BindingResult result) {  
-        
+
         Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
 
         if(!errors.isEmpty()){

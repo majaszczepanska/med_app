@@ -1,4 +1,4 @@
-package com.maja.med_app.controller;
+package com.maja.med_app.exception;
 
 import java.util.Map;
 import lombok.Getter;

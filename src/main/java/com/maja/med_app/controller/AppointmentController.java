@@ -24,6 +24,7 @@ import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.AppointmentRepository;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
+import com.maja.med_app.exception.AppValidationException;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
