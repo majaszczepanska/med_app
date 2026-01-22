@@ -1,7 +1,10 @@
 package com.maja.med_app.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +33,13 @@ public class DoctorController {
 
     //save doctor
     @PostMapping
-    public Doctor addDoctor(@Valid @RequestBody Doctor doctor) {
+    public Doctor addDoctor(@Valid @RequestBody Doctor doctor, BindingResult result) {  
+        
+        Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
+
+        if(!errors.isEmpty()){
+            throw new AppValidationException(errors);
+        }
         return doctorRepository.save(doctor);
     }
 

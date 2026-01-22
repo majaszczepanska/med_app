@@ -3,7 +3,9 @@ package com.maja.med_app.controller;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,23 +39,41 @@ public class AppointmentController {
 
     @PostMapping
     public Appointment addAppointment(@Valid @RequestBody Appointment appointment){
+    
+        Map<String, String> errors = new HashMap<>();
 
         //First validate visit time
         LocalDateTime visitTime = appointment.getVisitTime();
-        if(visitTime.getHour() < 8 || visitTime.getHour() >= 16){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointments only between 8:00 and 16:00");
+
+        if(visitTime != null){
+            if(visitTime.isBefore(LocalDateTime.now())){
+                errors.put("visitTime", "Visit time must be in the future");
+            }
+            if(visitTime.getHour() < 8 || visitTime.getHour() >= 16){
+                String currentMessage = errors.getOrDefault("visitTime", "");
+                String separator = currentMessage.isEmpty() ? "" : ", \n";
+                errors.put("visitTime", currentMessage + separator + "Appointments only between 8:00 and 16:00");
+            }   
+            if(visitTime.getMinute()% 15 != 0){
+                String currentMessage = errors.getOrDefault("visitTime", "");
+                String separator = currentMessage.isEmpty() ? "" : ", \n";
+                errors.put("visitTime",  currentMessage + separator + "Appointments only 15 minutes after previous (for example at 8:00, 8:15, 8:30 etc.)");
+            }
+        } else {
+            errors.put("visitTime", "Visit time is mandatory");
         }
-        if(visitTime.getMinute()% 15 != 0){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointments only 15 minutes after previous (for example at 8:00, 8:15, 8:30 etc.)");
-        }
-        //(visitTime.getMinute() != 0 && visitTime.getMinute() != 15 && visitTime.getMinute() != 30 && visitTime.getMinute() != 45)
-       
+        
         //Validate if ids are present
         if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null || appointment.getDoctor().getId() == 0 ){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Needed doctors id");
+            errors.put("doctor", "Needed doctor id, id cannot be null or 0");
         }
          if (appointment.getPatient() == null || appointment.getPatient().getId() == null || appointment.getPatient().getId() == 0){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Needed patient's id");
+            errors.put("patient", "Needed patient id, id cannot be null or 0");
+        }
+
+        //all errors collected, throw exception
+        if (!errors.isEmpty()){
+            throw new AppValidationException(errors);
         }
 
         //Data from db

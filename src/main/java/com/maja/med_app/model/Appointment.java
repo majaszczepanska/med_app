@@ -11,8 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +19,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//@Schema(example = "{\"visitTime\": null, \"patient\": {\"id\": 0}, \"doctor\": {\"id\": 0}}")
 public class Appointment {
 
     @Id
@@ -29,8 +26,7 @@ public class Appointment {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
-    @Future(message = "Visit time must be in the future")
-    @NotNull(message = "Visit time is mandatory")
+    
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Schema(type = "string", example = "2026-01-01 24:00")
     private LocalDateTime visitTime;

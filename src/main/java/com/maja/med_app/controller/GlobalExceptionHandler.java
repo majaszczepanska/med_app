@@ -1,5 +1,6 @@
 package com.maja.med_app.controller;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import jakarta.validation.ConstraintViolationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+   /*  @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
@@ -38,10 +39,10 @@ public class GlobalExceptionHandler {
         });
         
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-    }
+    }*/
 
-    @ExceptionHandler(AppointmentValidationException.class)
-    public ResponseEntity<Map<String, String>> handleAppointmentValidation(AppointmentValidationException ex) {
+    @ExceptionHandler(AppValidationException.class)
+    public ResponseEntity<Map<String, String>> handleAppValidation(AppValidationException ex) {
         return new ResponseEntity<>(ex.getErrors(), HttpStatus.BAD_REQUEST);
     }
 
