@@ -24,9 +24,11 @@ import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.AppointmentRepository;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
+
 import com.maja.med_app.exception.AppValidationException;
 
 import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -78,6 +80,7 @@ public class AppointmentController {
         }
 
         //Data from db
+
         Long doctorId = appointment.getDoctor().getId();
         Long patientId = appointment.getPatient().getId();
 
@@ -138,7 +141,7 @@ public class AppointmentController {
 
 
     @DeleteMapping("/{id}")
-    public void deleteAppointment(@PathVariable Long id) {
+    public void deleteAppointment(@NonNull@PathVariable Long id) {
         appointmentRepository.deleteById(id);
     }
 }

@@ -7,6 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class AppValidationException extends RuntimeException {
-    
+
     private final Map<String, String> errors; 
 }

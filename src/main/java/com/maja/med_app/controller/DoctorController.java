@@ -1,6 +1,5 @@
 package com.maja.med_app.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maja.med_app.model.Doctor;
 import com.maja.med_app.repository.DoctorRepository;
-
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.util.ValidationErrorUtils;
 
 import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RestController //class in internet
@@ -36,7 +35,7 @@ public class DoctorController {
 
     //save doctor
     @PostMapping
-    public Doctor addDoctor(@Valid @RequestBody Doctor doctor, BindingResult result) {  
+    public Doctor addDoctor(@NonNull @Valid @RequestBody Doctor doctor, BindingResult result) {  
 
         Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
 
@@ -53,7 +52,7 @@ public class DoctorController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id) {
+    public void deleteDoctor(@NonNull@PathVariable Long id) {
         doctorRepository.deleteById(id);
     }
     

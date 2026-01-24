@@ -1,4 +1,4 @@
-package com.maja.med_app.controller;
+package com.maja.med_app.util;  
 
 import java.util.HashMap;
 import java.util.Map;
