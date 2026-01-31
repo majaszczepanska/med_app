@@ -61,7 +61,7 @@ public class PatientService {
     private void validateDoctor(Patient patient) {
         if (patient.getMainDoctor() != null){
             Long doctorId = patient.getMainDoctor().getId();
-            if (patient.getMainDoctor().getId() != null && patient.getMainDoctor().getId() != 0){ 
+            if (patient.getMainDoctor().getId() == null || patient.getMainDoctor().getId() == 0){ 
                 Map<String, String> errors = new HashMap<>();
                 errors.put("doctor", "Needed doctor id, id cannot be null or 0"); 
                 throw new AppValidationException(errors);

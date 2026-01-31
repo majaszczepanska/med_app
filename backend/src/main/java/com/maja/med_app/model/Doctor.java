@@ -39,5 +39,4 @@ public class Doctor {
     private String lastName;
 
     private String specialization;
-
 }

@@ -1,4 +1,4 @@
-command:
+commend:
 - run
 docker run --name medapp_container -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=medapp_db -p 5432:5432 -d postgres
 - stop/remove container
