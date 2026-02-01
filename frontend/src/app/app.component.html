@@ -1,0 +1,71 @@
+<div class="container">
+  <h1>Medical Management System</h1>
+
+  <div class="layout">
+    
+    <div class="form-panel">
+      <h3>Add New Patient</h3>
+
+      <label>First Name:</label>
+      <input type="text" [(ngModel)]="newPatient.firstName" placeholder="Enter first name">
+
+      <label>Last Name:</label>
+      <input type="text" [(ngModel)]="newPatient.lastName" placeholder="Enter last name">
+
+      <label>ID Number (PESEL):</label>
+      <input type="text" [(ngModel)]="newPatient.pesel" placeholder="11 digits">
+
+      <label>Diagnosis / Disease:</label>
+      <input type="text" [(ngModel)]="newPatient.disease" placeholder="Diagnosis">
+      
+      <label>Attending Physician (ID):</label>
+      <input type="number" [(ngModel)]="newPatient.mainDoctor" placeholder="Doctor ID (e.g. 1)">
+
+      <button (click)="addPatient()" class="save-btn">
+        SAVE PATIENT
+      </button>
+    </div>
+
+    <div class="table-panel">
+      <h3>Patient Registry</h3>
+      
+      <table class="patient-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>ID Number</th>
+            <th>Condition</th>
+            <th>Doctor ID</th> <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of patients">
+            <td>{{ p.id }}</td>
+            <td>{{ p.firstName }} {{ p.lastName }}</td>
+            <td>{{ p.pesel }}</td>
+            <td>{{ p.disease }}</td>
+            
+            <td>
+              <span *ngIf="p.mainDoctor">Dr ID: {{ p.mainDoctor.id }}</span>
+              <span *ngIf="!p.mainDoctor">-</span>
+            </td>
+
+            <td>
+              <button (click)="removePatient(p.id)" class="delete-btn">
+                DELETE
+              </button>
+            </td>
+          </tr>
+          
+          <tr *ngIf="patients.length === 0">
+            <td colspan="6" class="empty-state">
+              No patients found in the database.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
