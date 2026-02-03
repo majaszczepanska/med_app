@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/internal/Observable';
   providedIn: 'root',
 })
 export class PatientService {
-  private apiUrl = 'http://localhost:8080/patients';
+  private apiUrl = 'http://192.168.131.213:8080/patients';
   constructor(private http: HttpClient) { }
   
   getPatients(): Observable<any> {
@@ -15,6 +15,10 @@ export class PatientService {
 
   createPatient(patient: any): Observable<any> {
     return this.http.post(this.apiUrl, patient);
+  }
+
+  updatePatient(id: number, patient: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, patient);
   }
 
   deletePatient(id: number): Observable<any> {
