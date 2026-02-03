@@ -63,20 +63,20 @@ public class PatientService {
             Long doctorId = patient.getMainDoctor().getId();
             if (patient.getMainDoctor().getId() == null || patient.getMainDoctor().getId() == 0){ 
                 Map<String, String> errors = new HashMap<>();
-                errors.put("doctor", "Needed doctor id, id cannot be null or 0"); 
+                errors.put("mainDoctor", "ID required (minimum 1)"); 
                 throw new AppValidationException(errors);
             }
             Optional<Doctor> fullDoctor = doctorRepository.findById(doctorId);
             if (fullDoctor.isEmpty()){
                 Map<String, String> errors = new HashMap<>();
-                errors.put("mainDoctor", "No doctor with this id");
+                errors.put("mainDoctor", "ID not found in database");
                 throw new AppValidationException(errors);
             } else {
                 patient.setMainDoctor(fullDoctor.get());
             }
         }else {
             Map<String, String> errors = new HashMap<>();
-            errors.put("mainDoctor", "Main doctor is mandatory");
+            errors.put("mainDoctor", "Required");
             throw new AppValidationException(errors);
         }
     }
