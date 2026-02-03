@@ -28,21 +28,22 @@ public class Patient {
     @Schema(accessMode= Schema.AccessMode.READ_ONLY)
     private Long id;
 
-    @NotBlank(message = "First name is mandatory")
-    @Size(min = 3, message= "First name must have at least 3 characters")
-    @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "First name must start with a capital letter and contain only letters")
+    @NotBlank(message = "Required")
+    @Size(min = 3, message= "Min. 3 characters")
+    @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
     @Schema(example = "string")
     private String firstName;
 
-    @NotBlank(message = "Last name is mandatory")
-    @Size(min = 3, message= "Last name must have at least 3 characters")
-    @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Last name must start with a capital letter and contain only letters")
+    @NotBlank(message = "Required")
+    @Size(min = 3, message= "Min. 3 characters")
+    @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
     @Schema(example = "string")
     private String lastName;
 
     @Column(unique = true)
     //@Pattern(regexp = "^\\d{2}(?:0[1-9]|1[0-2]|2[1-9]|3[0-2]|4[1-9]|5[0-2]|6[1-9]|7[0-2]|8[1-9]|9[0-2])(?:0[1-9]|[12]\\d|3[01])\\d{5}$", message = "PESEL is invalid")   
-    @PESEL(message = "PESEL is invalid")
+    @NotBlank(message = "Required")
+    @PESEL(message = "Invalid PESEL format")
     @Schema(example = "12345678901")
     private String pesel;
 
@@ -50,6 +51,7 @@ public class Patient {
     
     @ManyToOne
     @JoinColumn(name= "main_doctor_id")
+    @jakarta.validation.constraints.NotNull(message = "Required")
     @Schema(implementation = Object.class, example = "{\"id\": 0}")
     private Doctor mainDoctor;
 
