@@ -1,4 +1,4 @@
-/* Ogólny kontener */
+/* MAIN CONTAINER */
 .container {
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,14 +12,14 @@ h1 {
   margin-bottom: 30px;
 }
 
-/* Układ Flexbox (Lewa i Prawa strona) */
+/* flexbox */
 .layout {
   display: flex;
   gap: 30px;
-  align-items: flex-start; /* Żeby panele nie rozciągały się na siłę */
+  align-items: flex-start; /* align items to the top */
 }
 
-/* --- LEWA STRONA: FORMULARZ --- */
+/* --- LEFT SIDE FORM --- */
 .form-panel {
   width: 300px;
   padding: 25px;
@@ -51,7 +51,8 @@ input {
   margin-bottom: 15px;
   border: 1px solid #ced4da;
   border-radius: 4px;
-  box-sizing: border-box; /* Ważne, żeby padding nie psuł szerokości */
+  box-sizing: border-box; /* padding won't increase total width */
+  transition: border-color 0.3s;
 }
 
 input:focus {
@@ -77,7 +78,46 @@ input:focus {
   background: #218838;
 }
 
-/* --- PRAWA STRONA: TABELA --- */
+.update-btn {
+  background: #28a745;
+  color: white;
+  padding: 12px;
+  margin: 5px;
+  width: 45%;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+
+.update-btn:hover {
+  background: #218838;
+}
+
+.cancel-btn {
+  background: #6c757d;
+  color: white;
+  padding: 12px;
+  margin: 5px;
+  width: 45%;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+.cancel-btn:hover {
+  background: #5a6268;
+}
+
+
+
+/* --- RIGHT SIDE TABLE --- */
 .table-panel {
   flex-grow: 1;
   background: white;
@@ -118,11 +158,28 @@ input:focus {
   background-color: #e2e6ea;
 }
 
+.edit-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.3s;
+}
+
+.edit-btn:hover {
+  background: #0069d9;
+}
+
 .delete-btn {
   background: #dc3545;
   color: white;
   border: none;
   padding: 6px 12px;
+  margin: 5px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9em;
@@ -139,7 +196,37 @@ input:focus {
   padding: 20px;
 }
 
-/* Responsywność na małe ekrany */
+/* STYLIZACJA ZAKŁADEK */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.tabs button {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+}
+
+.tabs button:hover {
+  color: #0056b3;
+  background-color: #f8f9fa;
+}
+
+/* Aktywna zakładka */
+.tabs button.active {
+  color: #333;
+  border-bottom: 3px solid #28a745; /* Zielona linia pod aktywnym */
+}
+
+/* small screen */
 @media (max-width: 768px) {
   .layout {
     flex-direction: column;

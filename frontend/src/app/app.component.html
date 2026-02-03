@@ -4,7 +4,7 @@
   <div class="layout">
     
     <div class="form-panel">
-      <h3>Add New Patient</h3>
+      <h3>@if (isEditing) {Edit Patient} @else {Add New Patient}</h3>
 
       <label>First Name:</label>
       <input type="text" [(ngModel)]="newPatient.firstName" placeholder="Enter first name">
@@ -12,18 +12,28 @@
       <label>Last Name:</label>
       <input type="text" [(ngModel)]="newPatient.lastName" placeholder="Enter last name">
 
-      <label>ID Number (PESEL):</label>
-      <input type="text" [(ngModel)]="newPatient.pesel" placeholder="11 digits">
+      <label>PESEL:</label>
+      <input type="text" [(ngModel)]="newPatient.pesel" placeholder="pesel">
 
-      <label>Diagnosis / Disease:</label>
-      <input type="text" [(ngModel)]="newPatient.disease" placeholder="Diagnosis">
+      <label>Disease:</label>
+      <input type="text" [(ngModel)]="newPatient.disease" placeholder="Disease">
       
-      <label>Attending Physician (ID):</label>
-      <input type="number" [(ngModel)]="newPatient.mainDoctor" placeholder="Doctor ID (e.g. 1)">
+      <label>Main doctor (ID):</label>
+      <input type="number" min="1" [(ngModel)]="newPatient.mainDoctor" placeholder="Doctor ID">
 
-      <button (click)="addPatient()" class="save-btn">
-        SAVE PATIENT
-      </button>
+      @if (isEditing) {
+        <button (click)="onSubmit()" class="update-btn">
+          UPDATE PATIENT
+        </button>
+        <button (click)="cancelEdit()" class="cancel-btn">
+          CANCEL
+        </button>
+      } @else {
+        <button (click)="onSubmit()" class="save-btn">
+          SAVE PATIENT
+        </button>
+      }
+      
     </div>
 
     <div class="table-panel">
@@ -34,35 +44,45 @@
           <tr>
             <th>ID</th>
             <th>Full Name</th>
-            <th>ID Number</th>
-            <th>Condition</th>
+            <th>Pesel</th>
+            <th>Disease</th>
             <th>Doctor ID</th> <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of patients">
-            <td>{{ p.id }}</td>
-            <td>{{ p.firstName }} {{ p.lastName }}</td>
-            <td>{{ p.pesel }}</td>
-            <td>{{ p.disease }}</td>
-            
-            <td>
-              <span *ngIf="p.mainDoctor">Dr ID: {{ p.mainDoctor.id }}</span>
-              <span *ngIf="!p.mainDoctor">-</span>
-            </td>
+          @for (p of patients; track p.id){
+            <tr>
+              <td>{{ p.id }}</td>
+              <td>{{ p.firstName }} {{ p.lastName }}</td>
+              <td>{{ p.pesel }}</td>
+              <td>{{ p.disease }}</td>
+              
+              <td>
+                @if (p.mainDoctor) {
+                  <span> {{ p.mainDoctor.id }}</span>
+                }@else {
+                  <span>-</span>
+                }
+              </td>
 
-            <td>
-              <button (click)="removePatient(p.id)" class="delete-btn">
-                DELETE
-              </button>
-            </td>
-          </tr>
+              <td>
+                <button (click)="editPatient(p)" class="edit-btn">
+                  EDIT
+                </button>
+                <button (click)="removePatient(p.id)" class="delete-btn">
+                  DELETE
+                </button>
+              </td>
+            </tr>
+          }
           
-          <tr *ngIf="patients.length === 0">
-            <td colspan="6" class="empty-state">
-              No patients found in the database.
-            </td>
-          </tr>
+          @if (patients.length === 0) {
+            <tr>
+              <td colspan="6" class="empty-state">
+                No patients found in the database.
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
