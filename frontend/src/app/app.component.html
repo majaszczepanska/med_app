@@ -1,90 +1,145 @@
 <div class="container">
-  <h1>Medical Management System</h1>
+  <h1>Medical Management System (Admin Panel)</h1>
 
   <div class="layout">
     
     <div class="form-panel">
-      <h3>@if (isEditing) {Edit Patient} @else {Add New Patient}</h3>
-
-      <label>First Name:</label>
-      <input type="text" [(ngModel)]="newPatient.firstName" placeholder="Enter first name">
-
-      <label>Last Name:</label>
-      <input type="text" [(ngModel)]="newPatient.lastName" placeholder="Enter last name">
-
-      <label>PESEL:</label>
-      <input type="text" [(ngModel)]="newPatient.pesel" placeholder="pesel">
-
-      <label>Disease:</label>
-      <input type="text" [(ngModel)]="newPatient.disease" placeholder="Disease">
       
-      <label>Main doctor (ID):</label>
-      <input type="number" min="1" [(ngModel)]="newPatient.mainDoctor" placeholder="Doctor ID">
+      @if (activeTab === 'patients') {
+        <h3>@if(isEditing){Edit} @else{Add} Patient</h3>
+        <label>First Name:</label>
+        <input type="text" [(ngModel)]="newPatient.firstName" placeholder="First name">
+        
+        <label>Last Name:</label>
+        <input type="text" [(ngModel)]="newPatient.lastName" placeholder="Last name">
+        
+        <label>PESEL:</label>
+        <input type="text" [(ngModel)]="newPatient.pesel" placeholder="PESEL">
+        
+        <label>Disease:</label>
+        <input type="text" [(ngModel)]="newPatient.disease" placeholder="Disease">
+        
+        <label>Main doctor (ID):</label>
+        <input type="number" min="1" [(ngModel)]="newPatient.mainDoctor" placeholder="Doctor ID">
 
-      @if (isEditing) {
-        <button (click)="onSubmit()" class="update-btn">
-          UPDATE PATIENT
-        </button>
-        <button (click)="cancelEdit()" class="cancel-btn">
-          CANCEL
-        </button>
-      } @else {
-        <button (click)="onSubmit()" class="save-btn">
-          SAVE PATIENT
-        </button>
+        @if (isEditing) {
+          <button (click)="onSubmit()" class="update-btn">UPDATE PATIENT</button>
+          <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
+        } @else {
+          <button (click)="onSubmit()" class="save-btn">SAVE PATIENT</button>
+        }
       }
-      
+
+      @if (activeTab === 'doctors') {
+        <h3>Add Doctor</h3>
+        <label>First Name:</label>
+        <input type="text" [(ngModel)]="newDoctor.firstName" placeholder="First name">
+        
+        <label>Last Name:</label>
+        <input type="text" [(ngModel)]="newDoctor.lastName" placeholder="Last name">
+        
+        <label>Specialization:</label>
+        <input type="text" [(ngModel)]="newDoctor.specialization" placeholder="e.g. Cardiologist">
+        
+        <button (click)="onSubmit()" class="save-btn" style="background-color: #007bff;">SAVE DOCTOR</button>
+      }
+
+      @if (activeTab === 'appointments') {
+        <h3>Book Appointment</h3>
+        <label>Date & Time:</label>
+        <input type="datetime-local" [(ngModel)]="newAppointment.visitTime">
+        
+        <label>Patient ID:</label>
+        <input type="number" [(ngModel)]="newAppointment.patientId" placeholder="ID">
+        
+        <label>Doctor ID:</label>
+        <input type="number" [(ngModel)]="newAppointment.doctorId" placeholder="ID">
+        
+        <button (click)="onSubmit()" class="save-btn" style="background-color: #6f42c1;">BOOK VISIT</button>
+      }
+
     </div>
 
     <div class="table-panel">
-      <h3>Patient Registry</h3>
       
-      <table class="patient-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Full Name</th>
-            <th>Pesel</th>
-            <th>Disease</th>
-            <th>Doctor ID</th> <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (p of patients; track p.id){
-            <tr>
-              <td>{{ p.id }}</td>
-              <td>{{ p.firstName }} {{ p.lastName }}</td>
-              <td>{{ p.pesel }}</td>
-              <td>{{ p.disease }}</td>
-              
-              <td>
-                @if (p.mainDoctor) {
-                  <span> {{ p.mainDoctor.id }}</span>
-                }@else {
-                  <span>-</span>
-                }
-              </td>
+      <div class="tabs">
+        <button [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Patients</button>
+        <button [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctors</button>
+        <button [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">Appointments</button>
+      </div>
 
-              <td>
-                <button (click)="editPatient(p)" class="edit-btn">
-                  EDIT
-                </button>
-                <button (click)="removePatient(p.id)" class="delete-btn">
-                  DELETE
-                </button>
-              </td>
-            </tr>
-          }
-          
-          @if (patients.length === 0) {
+      @if (activeTab === 'patients') {
+        <h3>Patient Registry</h3>
+        <table class="patient-table">
+          <thead>
             <tr>
-              <td colspan="6" class="empty-state">
-                No patients found in the database.
-              </td>
+              <th>ID</th><th>Full Name</th><th>Pesel</th><th>Main Doctor</th><th>Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (p of patients; track p.id){
+              <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.firstName }} {{ p.lastName }}</td>
+                <td>{{ p.pesel }}</td>
+                <td>{{ p.mainDoctor?.id || '-' }}</td>
+                <td>
+                  <button (click)="editPatient(p)" class="edit-btn">EDIT</button>
+                  <button (click)="removePatient(p.id)" class="delete-btn">DEL</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      @if (activeTab === 'doctors') {
+        <h3 style="color: #007bff">Doctors List</h3>
+        <table class="patient-table">
+          <thead>
+            <tr style="background-color: #007bff;">
+              <th>ID</th><th>Full Name</th><th>Specialization</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (d of doctors; track d.id){
+              <tr>
+                <td>{{ d.id }}</td>
+                <td>{{ d.firstName }} {{ d.lastName }}</td>
+                <td>{{ d.specialization }}</td>
+                <td>
+                  <button (click)="removeDoctor(d.id)" class="delete-btn">DEL</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      @if (activeTab === 'appointments') {
+        <h3 style="color: #6f42c1">Appointments List</h3>
+        <table class="patient-table">
+          <thead>
+            <tr>
+              <th style="background-color: #6f42c1;">ID</th>
+              <th style="background-color: #6f42c1;">Date</th>
+              <th style="background-color: #6f42c1;">Patient</th>
+              <th style="background-color: #6f42c1;">Doctor</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of appointments; track a.id){
+              <tr>
+                <td>{{ a.id }}</td>
+                <td>{{ a.visitTime}}</td>
+                <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
+                <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
     </div>
 
   </div>
