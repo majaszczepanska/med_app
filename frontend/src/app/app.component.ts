@@ -309,16 +309,28 @@ export class AppComponent implements OnInit {
     return appointmentData;
   }
 
-  /*
+  
   removeAppointment(id: number) {
     if(confirm("Are you sure you want to delete this appointment?")) {
       this.appointmentService.deleteAppointment(id).subscribe({
-        next: () => this.refreshAppointments(),
-        error: (err: any) => console.error(err)
-      });
+        next: () => {
+          alert("Appointment cancelled successfully ✅");
+          this.refreshAppointments(); 
+        },
+        error: (err: any) => {
+          console.error(err);
+          if (err.error && err.error.message) {
+             alert("❌ ERROR: " + err.error.message); 
+          } else if (err.error && typeof err.error === 'string') {
+             alert("❌ ERROR: " + err.error);
+          } else {
+             alert("❌ Cannot cancel this appointment (it might be too late).");
+          }
+        }
+     });
     }
   }
-    */
+  
 
 
   cancelEdit() {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -148,7 +149,18 @@ public class AppointmentController {
 
 
     @DeleteMapping("/{id}")
-    public void deleteAppointment(@NonNull@PathVariable Long id) {
+    public void deleteAppointment(@NonNull @PathVariable Long id) {
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        
+        if (appointment == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        } else {
+            LocalDateTime oneDayFromNow = LocalDateTime.now().plusDays(1);
+            if(appointment.getVisitTime().isBefore(oneDayFromNow)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete appointment less than 1 day before visit");
+            }
+        }
+
         appointmentRepository.deleteById(id);
     }
 }

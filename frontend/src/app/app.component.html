@@ -125,6 +125,7 @@
               <th style="background-color: #6f42c1;">Date</th>
               <th style="background-color: #6f42c1;">Patient</th>
               <th style="background-color: #6f42c1;">Doctor</th>
+              <th style="background-color: #6f42c1;">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -134,7 +135,11 @@
                 <td>{{ a.visitTime}}</td>
                 <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
                 <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
+                <td>
+                  <button (click)="removeAppointment(a.id)" class="delete-btn">CANCEL</button>
+                </td>
               </tr>
+              
             }
           </tbody>
         </table>
