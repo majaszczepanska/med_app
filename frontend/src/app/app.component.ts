@@ -55,6 +55,7 @@ export class AppComponent implements OnInit {
   ){}
 
   ngOnInit() {
+    this.refreshAll();
     setInterval(() => {
       if (this.activeTab === 'patients') {
         this.refreshPatients();
@@ -244,6 +245,18 @@ export class AppComponent implements OnInit {
     });
   }
 
+  /*
+  editDoctor(doctor:any) {
+    this.isEditing = true;
+    //this.currentDoctorId = doctor.id;
+    this.newDoctor = {
+      firstName: doctor.firstName,
+      lastName: doctor.lastName,
+      specialization: doctor.specialization
+    }
+  }
+  */
+
   removeDoctor(id: number) {
     if(confirm("Are you sure you want to delete this doctor?")) {
       this.doctorService.deleteDoctor(id).subscribe({
@@ -254,10 +267,7 @@ export class AppComponent implements OnInit {
   }
 
   saveAppointment() {
-    // 1. Używamy funkcji pomocniczej do "spakowania" ID w obiekty
     const appointmentToSend = this.prepareAppointmentData();
-    
-    // Jeśli walidacja nie przeszła, przerywamy
     if (!appointmentToSend) return;
 
     this.appointmentService.createAppointment(appointmentToSend).subscribe({
@@ -273,34 +283,30 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // --- NOWA FUNKCJA POMOCNICZA ---
+  
   prepareAppointmentData() {
-    const data = { ...this.newAppointment };
-    
-    // Konwersja patientId -> obiekt Patient { id: ... }
-    if (data.patientId) {
-       data.patient = { id: Number(data.patientId) };
-       delete data.patientId; // Usuwamy stare pole, żeby nie mylić Javy
+    const appointmentData = { ...this.newAppointment };
+
+    if (appointmentData.patientId) {
+      appointmentData.patient = { 
+        id: Number(appointmentData.patientId) 
+      };
+      delete appointmentData.patientId; 
     } else {
-       alert("Patient ID is required!");
-       return null;
+       appointmentData.patient = null;
     }
 
-    // Konwersja doctorId -> obiekt Doctor { id: ... }
-    if (data.doctorId) {
-       data.doctor = { id: Number(data.doctorId) };
-       delete data.doctorId;
+    if (appointmentData.doctorId) {
+       appointmentData.doctor = { id: Number(appointmentData.doctorId) };
+       delete appointmentData.doctorId;
     } else {
-       alert("Doctor ID is required!");
-       return null;
+       appointmentData.doctor = null;
+    }
+    if (appointmentData.visitTime) {
+       appointmentData.visitTime = appointmentData.visitTime.replace('T', ' ');
     }
 
-    // Opcjonalnie: Jeśli Java wymaga sekund, a input daje "YYYY-MM-DDTHH:MM"
-    if (data.visitTime && data.visitTime.length === 16) {
-        data.visitTime = data.visitTime + ":00";
-    }
-
-    return data;
+    return appointmentData;
   }
 
   /*
