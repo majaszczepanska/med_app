@@ -65,7 +65,7 @@ public class AppointmentController {
             if(visitTime.getMinute()% 15 != 0){
                 String currentMessage = errors.getOrDefault("visitTime", "");
                 String separator = currentMessage.isEmpty() ? "" : ", \n";
-                errors.put("visitTime",  currentMessage + separator + "Appointments only 15 minutes after previous (for example at 8:00, 8:15, 8:30 etc.)");
+                errors.put("visitTime",  currentMessage + separator + "Appointments only 15 minutes after previous \n       (8:00 8:15 8:30 etc.)");
             }
         } else {
             errors.put("visitTime", "Required (date & time)");
