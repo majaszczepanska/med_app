@@ -1,11 +1,13 @@
 package com.maja.med_app.controller;
 
+import java.lang.foreign.Linker.Option;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -66,15 +68,37 @@ public class AppointmentController {
                 errors.put("visitTime",  currentMessage + separator + "Appointments only 15 minutes after previous (for example at 8:00, 8:15, 8:30 etc.)");
             }
         } else {
-            errors.put("visitTime", "Visit time is mandatory");
+            errors.put("visitTime", "Required (date & time)");
         }
         
-        //Validate if ids are present
+        //Validate doctor
+        Long doctorId = null;
         if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null || appointment.getDoctor().getId() == 0 ){
-            errors.put("doctor", "Needed doctor id, id cannot be null or 0");
+            errors.put("doctor", "Required");
+        } else {
+            //Fetch full entities from db
+            doctorId = appointment.getDoctor().getId();
+            Optional<Doctor> doctorFromDb = doctorRepository.findById(doctorId);
+            if (doctorFromDb.isEmpty()){
+                errors.put("doctor", "No doctor with this id");
+            } else {
+                appointment.setDoctor(doctorFromDb.get());
+            }
         }
+
+        //Validate patient
+        Long patientId = null;
          if (appointment.getPatient() == null || appointment.getPatient().getId() == null || appointment.getPatient().getId() == 0){
-            errors.put("patient", "Needed patient id, id cannot be null or 0");
+            errors.put("patient", "Required");
+        } else {
+            //Fetch full entities from db
+            patientId = appointment.getPatient().getId();
+            Optional<Patient> patientFromDb = patientRepository.findById(patientId);
+            if (patientFromDb.isEmpty()){
+                errors.put("patient", "No patient with this id");
+            } else {
+                appointment.setPatient(patientFromDb.get());
+            }
         }
 
         //all errors collected, throw exception
@@ -82,30 +106,10 @@ public class AppointmentController {
             throw new AppValidationException(errors);
         }
 
-        //Data from db
-
-        Long doctorId = appointment.getDoctor().getId();
-        Long patientId = appointment.getPatient().getId();
-
-        //Fetch full entities from db
-        Doctor doctorFromDb = doctorRepository.findById(doctorId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No doctor with this id"));
-        Patient patientFromDb = patientRepository.findById(patientId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No patient with this id"));
-
-
-
         //Check if doctor is avaliable at that time
         if(appointmentRepository.existsByDoctorIdAndVisitTime(doctorId, appointment.getVisitTime())){
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Doctor is occupied");
         }
-
-       
-        //Set full entities to appointment
-        appointment.setDoctor(doctorFromDb);
-        appointment.setPatient(patientFromDb);
-        
-
 
         return appointmentRepository.save(appointment);
     }
