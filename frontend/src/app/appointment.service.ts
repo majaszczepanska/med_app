@@ -17,12 +17,12 @@ export class AppointmentService {
       return this.http.post(this.apiUrl, appointment);
     }
   
-    /*
+    
     updateAppointment(id: number, appointment: any): Observable<any> {
       return this.http.put(`${this.apiUrl}/${id}`, appointment);
     }
     
-    */
+    
     deleteAppointment(id: number): Observable<any> {
       return this.http.delete(`${this.apiUrl}/${id}`);
     }

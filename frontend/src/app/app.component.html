@@ -136,6 +136,7 @@
                 <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
                 <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
                 <td>
+                  <button (click)="editAppointment(a)" class="edit-btn">EDIT</button>
                   <button (click)="removeAppointment(a.id)" class="delete-btn">CANCEL</button>
                 </td>
               </tr>
@@ -144,6 +145,7 @@
           </tbody>
         </table>
       }
+      
 
     </div>
 

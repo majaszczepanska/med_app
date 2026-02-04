@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
 
   isEditing: boolean = false;
   currentPatientId: number | null = null;
+  currentAppointmentId: number | null = null;
 
   newPatient: any = {
     firstName: '',
@@ -270,6 +271,26 @@ export class AppComponent implements OnInit {
     const appointmentToSend = this.prepareAppointmentData();
     if (!appointmentToSend) return;
 
+    if(this.isEditing && this.currentAppointmentId) {
+      this.appointmentService.updateAppointment(this.currentAppointmentId, appointmentToSend).subscribe({
+        next: () => {
+          alert("Appointment updated successfully ✅");
+          this.refreshAppointments();
+          this.resetForm();
+        },
+        error: (err: any) => {
+          console.error(err);
+          if(err.status === 403) {
+            alert("❌ Cannot update this appointment (it is too late).");
+          } else if (err.error && err.error.message) {
+            alert("❌ ERROR: " + err.error.message);
+          } else {
+            this.handleErrors(err);
+          }
+        }
+      });
+      return;
+    }
     this.appointmentService.createAppointment(appointmentToSend).subscribe({
       next: () => {
         alert("Appointment added successfully ✅");
@@ -309,6 +330,21 @@ export class AppComponent implements OnInit {
     return appointmentData;
   }
 
+  editAppointment(appointment: any) {
+    this.isEditing = true;
+    this.currentAppointmentId = appointment.id;
+    this.activeTab = 'appointments';
+  
+    let formatedDate = appointment.visitTime;
+    if (formatedDate && formatedDate.includes(' ')) {
+      formatedDate = formatedDate.replace(' ', 'T');
+    }
+    this.newAppointment = {
+      visitTime: formatedDate,
+      patientId: appointment.patient?.id || null,
+      doctorId: appointment.doctor?.id || null
+    };
+  }
   
   removeAppointment(id: number) {
     if(confirm("Are you sure you want to delete this appointment?")) {
@@ -320,9 +356,9 @@ export class AppComponent implements OnInit {
         error: (err: any) => {
           console.error(err);
           if (err.error && err.error.message) {
-             alert("❌ ERROR: " + err.error.message); 
+             alert("❌ ERROR: \n " + err.error.message); 
           } else if (err.error && typeof err.error === 'string') {
-             alert("❌ ERROR: " + err.error);
+             alert("❌ ERROR: \n" + err.error);
           } else {
              alert("❌ Cannot cancel this appointment (it might be too late).");
           }
@@ -340,9 +376,10 @@ export class AppComponent implements OnInit {
   resetForm() {
     this.newPatient = {firstName: '', lastName: '', pesel: '', disease: '', mainDoctor: ''};
     this.newDoctor = {firstName: '', lastName: '', specialization: ''};
-    this.newAppointment = {visitTime: null, patientId: null, doctorId: ''};
+    this.newAppointment = {visitTime: '', patientId: null, doctorId: null};
     this.isEditing = false;
     this.currentPatientId = null;
+    this.currentAppointmentId = null;
   }
 
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -145,7 +146,41 @@ public class AppointmentController {
         }
 
         return availableSlots;
-    }   
+    }  
+    
+    @PutMapping("/{id}")
+    public Appointment updateAppointment(@PathVariable Long id, @Valid @RequestBody Appointment updatedAppointment){
+        Appointment existingAppointment = appointmentRepository.findById(id).orElse(null);
+
+        if (existingAppointment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        } else {
+            LocalDateTime oneDayFromNow = LocalDateTime.now().plusDays(1);
+            if(existingAppointment.getVisitTime().isBefore(oneDayFromNow)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot update appointment less than 1 day before visit");
+            }
+            if(updatedAppointment.getVisitTime() != null){
+                existingAppointment.setVisitTime(updatedAppointment.getVisitTime());
+            }
+            if(updatedAppointment.getDoctor() != null && updatedAppointment.getDoctor().getId() != null) {
+                Doctor newDoctor = doctorRepository.findById(updatedAppointment.getDoctor().getId()).orElse(null);
+                if (newDoctor == null){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor with this ID not found");
+                } else {
+                    existingAppointment.setDoctor(newDoctor);
+                }
+            }
+            if(updatedAppointment.getPatient() != null && updatedAppointment.getPatient().getId() != null) {
+                Patient newPatient = patientRepository.findById(updatedAppointment.getPatient().getId()).orElse(null);
+                if (newPatient == null){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient with this ID not found");
+                } else {
+                    existingAppointment.setPatient(newPatient);
+                }
+            }
+        }
+        return appointmentRepository.save(existingAppointment);
+    }
 
 
     @DeleteMapping("/{id}")
