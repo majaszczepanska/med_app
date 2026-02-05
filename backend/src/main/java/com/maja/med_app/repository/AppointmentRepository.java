@@ -12,7 +12,7 @@ import com.maja.med_app.model.Appointment;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long>  {
     List<Appointment> findAllByDeletedFalse();
     //existBy (select count(*)>0), Doctor (in appointment look for doctor in doctor look for the id field), VisitTime (in appointment look for VisitTime field)
-    boolean existsByPatientIdAndVisitTimeAfter(Long patientId, LocalDateTime visitTime);
-    boolean existsByDoctorIdAndVisitTimeAfter(Long doctorId, LocalDateTime visitTime);
-    List<Appointment> findAllByDoctorIdAndVisitTimeBetween(Long doctorId, LocalDateTime start, LocalDateTime end);
+    boolean existsByPatientIdAndVisitTimeAfterAndDeletedFalse(Long patientId, LocalDateTime visitTime);
+    boolean existsByDoctorIdAndVisitTimeAfterAndDeletedFalse(Long doctorId, LocalDateTime visitTime);
+    List<Appointment> findAllByDoctorIdAndVisitTimeBetweenAndDeletedFalse(Long doctorId, LocalDateTime start, LocalDateTime end);
 }
