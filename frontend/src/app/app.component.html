@@ -89,7 +89,7 @@
                 <td>{{ p.mainDoctor?.id || '-' }}</td>
                 <td>
                   <button (click)="editPatient(p)" class="edit-btn">EDIT</button>
-                  <button (click)="removePatient(p.id)" class="delete-btn">DEL</button>
+                  <button (click)="removePatient(p.id)" class="delete-btn">DELETE</button>
                 </td>
               </tr>
             }
@@ -112,7 +112,7 @@
                 <td>{{ d.firstName }} {{ d.lastName }}</td>
                 <td>{{ d.specialization }}</td>
                 <td>
-                  <button (click)="removeDoctor(d.id)" class="delete-btn">DEL</button>
+                  <button (click)="removeDoctor(d.id)" class="delete-btn">DELETE</button>
                 </td>
               </tr>
             }
@@ -136,12 +136,12 @@
             @for (a of appointments; track a.id){
               <tr>
                 <td>{{ a.id }}</td>
-                <td>{{ a.visitTime}}</td>
+                <td>{{ formatDateDisplay(a.visitTime) }}</td>
                 <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
                 <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
                 <td>
                   <button (click)="editAppointment(a)" class="edit-btn">EDIT</button>
-                  <button (click)="removeAppointment(a.id)" class="delete-btn">CANCEL</button>
+                  <button (click)="removeAppointment(a.id)" class="delete-btn">DELETE</button>
                 </td>
               </tr>
               

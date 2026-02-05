@@ -106,7 +106,7 @@ export class AppComponent implements OnInit {
   refreshAppointments() {
     this.appointmentService.getAppointments().subscribe({
       next: (data: any) => {
-        this.appointments = data.sort((a:any, b:any) => a.id - b.id);
+        this.appointments = data.sort((a:any, b:any) => (a.visitTime).localeCompare(b.visitTime));
         this.cdr.detectChanges();
       },
       error: (err: any) => console.error(err)
@@ -328,6 +328,25 @@ export class AppComponent implements OnInit {
     }
 
     return appointmentData;
+  }
+
+  formatDateDisplay(dateStr: string): string {
+    if(!dateStr) {
+      return '';
+    }
+    const dateT = dateStr.replace(' ', 'T');
+    const date = new Date(dateT);
+    if (isNaN(date.getTime())) {
+      return dateStr; 
+    }
+    return date.toLocaleDateString('pl-PL', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
   }
 
   editAppointment(appointment: any) {
