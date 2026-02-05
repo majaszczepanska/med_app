@@ -1,15 +1,19 @@
 package com.maja.med_app.service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.model.Doctor;
 import com.maja.med_app.model.Patient;
+import com.maja.med_app.repository.AppointmentRepository;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
 
@@ -22,6 +26,7 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
 
     public Patient createPatient(@NonNull Patient patient) {
         validateDoctor(patient);
@@ -29,7 +34,7 @@ public class PatientService {
     }
 
     public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
+        return patientRepository.findAllByDeletedFalse();
     }
 
     public Patient updatePatient(@NonNull Long id, @NonNull Patient updatedPatient) {
@@ -55,7 +60,16 @@ public class PatientService {
     }
 
     public void deletePatient(@NonNull Long id){
-        patientRepository.deleteById(id);
+        Patient patient = patientRepository.findById(id).orElse(null);
+        if(patient == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found");
+        }
+        boolean hasFutureAppointments = appointmentRepository.existsByPatientIdAndVisitTimeAfter(id, LocalDateTime.now());
+        if (hasFutureAppointments){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete patient with future appointments");
+        }
+        patient.setDeleted(true);
+        patientRepository.save(patient);
     }
 
     private void validateDoctor(Patient patient) {

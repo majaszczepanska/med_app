@@ -109,7 +109,7 @@ public class AppointmentController {
         }
 
         //Check if doctor is avaliable at that time
-        if(appointmentRepository.existsByDoctorIdAndVisitTime(doctorId, appointment.getVisitTime())){
+        if(appointmentRepository.existsByDoctorIdAndVisitTimeAfter(doctorId, appointment.getVisitTime())){
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Doctor is occupied");
         }
 

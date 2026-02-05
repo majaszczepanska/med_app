@@ -233,7 +233,14 @@ export class AppComponent implements OnInit {
     if(confirm("Are you sure you want to delete this patient?")) {
       this.patientService.deletePatient(id).subscribe({
         next: () => this.refreshPatients(),
-        error: (err: any) => console.error(err)
+        error: (err: any) => {
+          console.error(err)
+          if(err.status === 403) {
+            alert("❌ Cannot delete patient with future appointments.");
+          } else {
+            alert("Error deleting patient.");
+          }
+        }
       });
     }
   }
