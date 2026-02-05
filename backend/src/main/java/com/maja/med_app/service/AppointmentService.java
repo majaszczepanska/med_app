@@ -40,7 +40,7 @@ public class AppointmentService {
     public Appointment createAppointment(Appointment appointment){
         validateAppointment(appointment);
         //Check if doctor is avaliable at that time
-        if(appointmentRepository.existsByDoctorIdAndVisitTimeAfter(appointment.getDoctor().getId(), appointment.getVisitTime())){
+        if(appointmentRepository.existsByDoctorIdAndVisitTimeAfterAndDeletedFalse(appointment.getDoctor().getId(), appointment.getVisitTime())){
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Doctor is occupied");
         }
         return appointmentRepository.save(appointment);
@@ -103,7 +103,7 @@ public class AppointmentService {
     //GET AVAILABLE SLOTS
     public List<String> getAvailableSlots(Long doctorId,String date) {
         LocalDate searchDate = LocalDate.parse(date);
-        List<Appointment> takenAppointments = appointmentRepository.findAllByDoctorIdAndVisitTimeBetween(doctorId, searchDate.atStartOfDay(), searchDate.atTime(23, 59,59));
+        List<Appointment> takenAppointments = appointmentRepository.findAllByDoctorIdAndVisitTimeBetweenAndDeletedFalse(doctorId, searchDate.atStartOfDay(), searchDate.atTime(23, 59,59));
         List<String> availableSlots = new ArrayList<>();
         LocalDateTime startWork = searchDate.atTime(8, 0);
         LocalDateTime endWork = searchDate.atTime(16, 0);
