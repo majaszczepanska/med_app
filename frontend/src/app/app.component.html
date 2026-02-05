@@ -82,7 +82,7 @@
         <table class="patient-table">
           <thead>
             <tr>
-              <th>ID</th><th>Full Name</th><th>Pesel</th><th>Main Doctor</th><th>Actions</th>
+              <th>ID</th><th>Full Name</th><th>Pesel</th><th>Disease</th><th>Main Doctor</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -91,6 +91,7 @@
                 <td>{{ p.id }}</td>
                 <td>{{ p.firstName }} {{ p.lastName }}</td>
                 <td>{{ p.pesel }}</td>
+                <td>{{ p.disease }}</td>
                 <td>{{ p.mainDoctor?.id || '-' }}</td>
                 <td>
                   <button (click)="editPatient(p)" class="edit-btn">EDIT</button>
