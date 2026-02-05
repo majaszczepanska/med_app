@@ -47,7 +47,7 @@
       @if (activeTab === 'appointments') {
          <h3>@if(isEditing){Edit} @else{Book} Appointment</h3>
         <label>Date & Time:</label>
-        <input type="datetime-local" [(ngModel)]="newAppointment.visitTime">
+        <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" [min]="minDate" (click)="updateMinDate()">
         
         <label>Patient ID:</label>
         <input type="number" [(ngModel)]="newAppointment.patientId" placeholder="ID">
@@ -134,14 +134,14 @@
           </thead>
           <tbody>
             @for (a of appointments; track a.id){
-              <tr>
+              <tr [style.opacity]="isPastDate(a.visitTime) ? 0.3 : 1">
                 <td>{{ a.id }}</td>
                 <td>{{ formatDateDisplay(a.visitTime) }}</td>
                 <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
                 <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
                 <td>
-                  <button (click)="editAppointment(a)" class="edit-btn">EDIT</button>
-                  <button (click)="removeAppointment(a.id)" class="delete-btn">DELETE</button>
+                  <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)">EDIT</button>
+                  <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>
                 </td>
               </tr>
               

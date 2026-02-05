@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
     doctorId: ''
   };
 
-
+  minDate: string = '';
 
   constructor (
     private patientService: PatientService,
@@ -56,6 +56,7 @@ export class AppComponent implements OnInit {
   ){}
 
   ngOnInit() {
+    this.updateMinDate();
     this.refreshAll();
     setInterval(() => {
       if (this.activeTab === 'patients') {
@@ -68,6 +69,12 @@ export class AppComponent implements OnInit {
         this.refreshAppointments();
       }
     }, 2000);
+  }
+
+  updateMinDate() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    this.minDate = now.toISOString().slice(0, 16);
   }
 
   setActiveTab(tabName: string) {
@@ -347,6 +354,16 @@ export class AppComponent implements OnInit {
       minute: '2-digit'
     });
 
+  }
+
+  isPastDate(dateStr: string): boolean {
+    if(!dateStr) {
+      return false;
+    }
+    const dateT = dateStr.replace(' ', 'T');
+    const date = new Date(dateT);
+    const now = new Date();
+    return date < now;
   }
 
   editAppointment(appointment: any) {
