@@ -66,7 +66,7 @@ public class PatientService {
         }
         boolean hasFutureAppointments = appointmentRepository.existsByPatientIdAndVisitTimeAfter(id, LocalDateTime.now());
         if (hasFutureAppointments){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete patient with future appointments");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete patient with future appointments");
         }
         patient.setDeleted(true);
         patientRepository.save(patient);

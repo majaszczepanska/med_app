@@ -27,8 +27,6 @@ import com.maja.med_app.repository.AppointmentRepository;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
 
-import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -60,7 +58,8 @@ public class AppointmentService {
         if (existingAppointment == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
         } else {
-            checkEditTime(updatedAppointment.getVisitTime());
+            //ADMIN OPTION
+            //checkEditTime(updatedAppointment.getVisitTime());
             if(updatedAppointment.getVisitTime() != null){
                 existingAppointment.setVisitTime(updatedAppointment.getVisitTime());
             }
@@ -91,16 +90,17 @@ public class AppointmentService {
         
         if (appointment == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        } else {
-            checkEditTime(appointment.getVisitTime());
         }
+        //ADMIN OPTION
+        //checkEditTime(appointment.getVisitTime());
+        
         appointment.setDeleted(true);
         appointmentRepository.save(appointment);
         //appointmentRepository.deleteById(id);
     }
 
 
-        //GET AVAILABLE SLOTS
+    //GET AVAILABLE SLOTS
     public List<String> getAvailableSlots(Long doctorId,String date) {
         LocalDate searchDate = LocalDate.parse(date);
         List<Appointment> takenAppointments = appointmentRepository.findAllByDoctorIdAndVisitTimeBetween(doctorId, searchDate.atStartOfDay(), searchDate.atTime(23, 59,59));
@@ -121,9 +121,9 @@ public class AppointmentService {
     }  
 
     private void checkEditTime(LocalDateTime visitTime) {
-        LocalDateTime oneDayFromNow = LocalDateTime.now().plusDays(1);
-        if(visitTime.isBefore(oneDayFromNow)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete appointment less than 1 day before visit");
+        LocalDateTime oneHourFromNow = LocalDateTime.now().plusHours(1);
+        if(visitTime.isBefore(oneHourFromNow)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot edit appointment less than 1 hour before visit");
         }
     }
 
