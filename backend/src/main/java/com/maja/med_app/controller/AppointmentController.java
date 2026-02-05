@@ -29,7 +29,7 @@ import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.AppointmentRepository;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
-
+import com.maja.med_app.service.AppointmentService;
 import com.maja.med_app.exception.AppValidationException;
 
 import jakarta.validation.Valid;
@@ -43,159 +43,33 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "*")
 public class AppointmentController {
 
-    private final AppointmentRepository appointmentRepository;
-    private final DoctorRepository doctorRepository;
-    private final PatientRepository patientRepository;
+    private final AppointmentService appointmentService;
 
     @PostMapping
     public Appointment addAppointment(@Valid @RequestBody Appointment appointment){
-    
-        Map<String, String> errors = new HashMap<>();
-
-        //First validate visit time
-        LocalDateTime visitTime = appointment.getVisitTime();
-
-        if(visitTime != null){
-            if(visitTime.isBefore(LocalDateTime.now())){
-                errors.put("visitTime", "Visit time must be in the future");
-            }
-            if(visitTime.getHour() < 8 || visitTime.getHour() >= 16){
-                String currentMessage = errors.getOrDefault("visitTime", "");
-                String separator = currentMessage.isEmpty() ? "" : ", \n";
-                errors.put("visitTime", currentMessage + separator + "Appointments only between 8:00 and 16:00");
-            }   
-            if(visitTime.getMinute()% 15 != 0){
-                String currentMessage = errors.getOrDefault("visitTime", "");
-                String separator = currentMessage.isEmpty() ? "" : ", \n";
-                errors.put("visitTime",  currentMessage + separator + "Appointments only 15 minutes after previous \n       (8:00 8:15 8:30 etc.)");
-            }
-        } else {
-            errors.put("visitTime", "Required (date & time)");
-        }
-        
-        //Validate doctor
-        Long doctorId = null;
-        if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null || appointment.getDoctor().getId() == 0 ){
-            errors.put("doctor", "Required");
-        } else {
-            //Fetch full entities from db
-            doctorId = appointment.getDoctor().getId();
-            Optional<Doctor> doctorFromDb = doctorRepository.findById(doctorId);
-            if (doctorFromDb.isEmpty()){
-                errors.put("doctor", "No doctor with this id");
-            } else {
-                appointment.setDoctor(doctorFromDb.get());
-            }
-        }
-
-        //Validate patient
-        Long patientId = null;
-         if (appointment.getPatient() == null || appointment.getPatient().getId() == null || appointment.getPatient().getId() == 0){
-            errors.put("patient", "Required");
-        } else {
-            //Fetch full entities from db
-            patientId = appointment.getPatient().getId();
-            Optional<Patient> patientFromDb = patientRepository.findById(patientId);
-            if (patientFromDb.isEmpty()){
-                errors.put("patient", "No patient with this id");
-            } else {
-                appointment.setPatient(patientFromDb.get());
-            }
-        }
-
-        //all errors collected, throw exception
-        if (!errors.isEmpty()){
-            throw new AppValidationException(errors);
-        }
-
-        //Check if doctor is avaliable at that time
-        if(appointmentRepository.existsByDoctorIdAndVisitTimeAfter(doctorId, appointment.getVisitTime())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Doctor is occupied");
-        }
-
-        return appointmentRepository.save(appointment);
+        return appointmentService.createAppointment(appointment);
     }
 
     @GetMapping
     public List<Appointment> getAllAppointments() {
-        return appointmentRepository.findAll();
+        return appointmentService.getAllAppointments();
     }
 
 
-    @GetMapping("/doctor/{doctorId}/available")
-    public List<String> getAvailableSlots( 
-        @PathVariable Long doctorId,
-        @RequestParam String date) {
-        
-        LocalDate searchDate = LocalDate.parse(date);
-
-        List<Appointment> takenAppointments = appointmentRepository.findAllByDoctorIdAndVisitTimeBetween(doctorId, searchDate.atStartOfDay(), searchDate.atTime(23, 59,59));
-        List<String> availableSlots = new ArrayList<>();
-        LocalDateTime startWork = searchDate.atTime(8, 0);
-        LocalDateTime endWork = searchDate.atTime(16, 0);
-        
-        while (startWork.isBefore(endWork)){
-            final LocalDateTime currentSlot = startWork;
-            boolean isBusy = takenAppointments.stream()
-                .anyMatch(appointment -> appointment.getVisitTime().isEqual(currentSlot));
-
-            if (!isBusy){
-                availableSlots.add(currentSlot.toLocalTime().toString());
-            }
-            startWork = startWork.plusMinutes(15);
-        }
-
-        return availableSlots;
-    }  
-    
     @PutMapping("/{id}")
     public Appointment updateAppointment(@PathVariable Long id, @Valid @RequestBody Appointment updatedAppointment){
-        Appointment existingAppointment = appointmentRepository.findById(id).orElse(null);
-
-        if (existingAppointment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        } else {
-            LocalDateTime oneDayFromNow = LocalDateTime.now().plusDays(1);
-            if(existingAppointment.getVisitTime().isBefore(oneDayFromNow)) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot update appointment less than 1 day before visit");
-            }
-            if(updatedAppointment.getVisitTime() != null){
-                existingAppointment.setVisitTime(updatedAppointment.getVisitTime());
-            }
-            if(updatedAppointment.getDoctor() != null && updatedAppointment.getDoctor().getId() != null) {
-                Doctor newDoctor = doctorRepository.findById(updatedAppointment.getDoctor().getId()).orElse(null);
-                if (newDoctor == null){
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor with this ID not found");
-                } else {
-                    existingAppointment.setDoctor(newDoctor);
-                }
-            }
-            if(updatedAppointment.getPatient() != null && updatedAppointment.getPatient().getId() != null) {
-                Patient newPatient = patientRepository.findById(updatedAppointment.getPatient().getId()).orElse(null);
-                if (newPatient == null){
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient with this ID not found");
-                } else {
-                    existingAppointment.setPatient(newPatient);
-                }
-            }
-        }
-        return appointmentRepository.save(existingAppointment);
+        return appointmentService.updateAppointment(id, updatedAppointment);
     }
 
 
     @DeleteMapping("/{id}")
     public void deleteAppointment(@NonNull @PathVariable Long id) {
-        Appointment appointment = appointmentRepository.findById(id).orElse(null);
-        
-        if (appointment == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        } else {
-            LocalDateTime oneDayFromNow = LocalDateTime.now().plusDays(1);
-            if(appointment.getVisitTime().isBefore(oneDayFromNow)) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete appointment less than 1 day before visit");
-            }
-        }
-
-        appointmentRepository.deleteById(id);
+        appointmentService.deleteAppointment(id);
     }
+
+    @GetMapping("/doctor/{doctorId}/available")
+    public List<String> getAvailableSlots( @PathVariable Long doctorId, @RequestParam String date) {
+       return appointmentService.getAvailableSlots(doctorId, date);
+    }  
+    
 }

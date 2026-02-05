@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,4 +41,7 @@ public class Appointment {
     @JoinColumn(name = "doctor_id")
     @Schema(implementation = Object.class, example = "{\"id\": 0}")
     private Doctor doctor;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean deleted = false;
 }
