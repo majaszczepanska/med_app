@@ -1,6 +1,7 @@
 package com.maja.med_app.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,4 +40,8 @@ public class Doctor {
     private String lastName;
 
     private String specialization;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean deleted = false;
+
 }

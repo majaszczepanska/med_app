@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   isEditing: boolean = false;
   currentPatientId: number | null = null;
   currentAppointmentId: number | null = null;
+  currentDoctorId: number | null = null;
 
   newPatient: any = {
     firstName: '',
@@ -246,37 +247,62 @@ export class AppComponent implements OnInit {
   }
 
   saveDoctor() {
-    this.doctorService.createDoctor(this.newDoctor).subscribe({
+    if (this.isEditing && this.currentDoctorId){
+       this.doctorService.updateDoctor(this.currentDoctorId, this.newDoctor).subscribe({
       next: () => {
-        alert("Doctor added successfully");
+        alert("Doctor updated successfully ✅");
         this.refreshDoctors();
         this.resetForm();
       }
       ,
       error: (err: any) => {
         this.handleErrors(err);
-        console.error(err);
+        //console.error(err);
       }
     });
+    } else {
+      this.doctorService.createDoctor(this.newDoctor).subscribe({
+        next: () => {
+          alert("Doctor added successfully ✅");
+          this.refreshDoctors();
+          this.resetForm();
+        }
+        ,
+        error: (err: any) => {
+          this.handleErrors(err);
+          //console.error(err);
+        }
+      });
+    }
   }
 
-  /*
+  
   editDoctor(doctor:any) {
     this.isEditing = true;
-    //this.currentDoctorId = doctor.id;
+    this.currentDoctorId = doctor.id;
     this.newDoctor = {
       firstName: doctor.firstName,
       lastName: doctor.lastName,
       specialization: doctor.specialization
     }
   }
-  */
+  
 
   removeDoctor(id: number) {
     if(confirm("Are you sure you want to delete this doctor?")) {
       this.doctorService.deleteDoctor(id).subscribe({
-        next: () => this.refreshDoctors(),
-        error: (err: any) => console.error(err)
+        next: () => {
+          alert("Doctor deleted ✅");
+          this.refreshDoctors();
+        },
+        error: (err: any) => {
+          console.error(err);
+          if (err.error && err.error.message) {
+             alert("❌ ERROR: " + err.error.message); 
+          } else {
+             alert("❌ Cannot delete doctor (active appointments?)");
+          }
+        }
       });
     }
   }
@@ -423,6 +449,7 @@ export class AppComponent implements OnInit {
     this.isEditing = false;
     this.currentPatientId = null;
     this.currentAppointmentId = null;
+    this.currentDoctorId = null;
   }
 
 

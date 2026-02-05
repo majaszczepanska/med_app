@@ -31,7 +31,7 @@
       }
 
       @if (activeTab === 'doctors') {
-        <h3>Add Doctor</h3>
+        <h3>@if(isEditing){Edit} @else{Add} Doctor</h3>
         <label>First Name:</label>
         <input type="text" [(ngModel)]="newDoctor.firstName" placeholder="First name">
         
@@ -41,7 +41,12 @@
         <label>Specialization:</label>
         <input type="text" [(ngModel)]="newDoctor.specialization" placeholder="e.g. Cardiologist">
         
+        @if(isEditing) {
+          <button (click)="onSubmit()" class="update-btn">UPDATE DOCTOR</button>
+          <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
+        } @else {
         <button (click)="onSubmit()" class="save-btn" style="background-color: #007bff;">SAVE DOCTOR</button>
+        }
       }
 
       @if (activeTab === 'appointments') {
@@ -112,6 +117,7 @@
                 <td>{{ d.firstName }} {{ d.lastName }}</td>
                 <td>{{ d.specialization }}</td>
                 <td>
+                  <button (click)="editDoctor(d)" class="edit-btn">EDIT</button>
                   <button (click)="removeDoctor(d.id)" class="delete-btn">DELETE</button>
                 </td>
               </tr>

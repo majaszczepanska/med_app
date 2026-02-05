@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maja.med_app.model.Doctor;
 import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.DoctorRepository;
+import com.maja.med_app.service.DoctorService;
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.util.ValidationErrorUtils;
 
@@ -31,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "*")
 public class DoctorController {
 
-    private final DoctorRepository doctorRepository;
+    private final DoctorService doctorService;
     /*without Lombok
     public DoctorController (DoctorRepository doctorRepository){
         this.doctorRepository = doctorRepository;    
@@ -41,36 +42,33 @@ public class DoctorController {
     //save doctor
     @PostMapping
     public Doctor addDoctor(@NonNull @Valid @RequestBody Doctor doctor, BindingResult result) {  
-
         Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
-
         if(!errors.isEmpty()){
             throw new AppValidationException(errors);
         }
-        return doctorRepository.save(doctor);
+        return doctorService.createDoctor(doctor);
     }
 
     // get doctors
     @GetMapping
     public List<Doctor> getAllDoctors() {
-        return doctorRepository.findAll();
+        return doctorService.getAllDoctors();
     }
 
     // update doctor 
-    /* 
     @PutMapping("/{id}")
-    public Doctor updateDoctor(@PathVariable Long id, @Valid @RequestBody Doctor updatedDoctor, BindingResult result){
+    public Doctor updateDoctor(@PathVariable Long id, @Valid @RequestBody Doctor doctor, BindingResult result){
         Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
         if (!errors.isEmpty()){
             throw new AppValidationException(errors);
         }
-        return doctorRepository.save(updatedDoctor);
+        return doctorService.updateDoctor(id, doctor);
     }
-    */
+
 
     @DeleteMapping("/{id}")
-    public void deleteDoctor(@NonNull@PathVariable Long id) {
-        doctorRepository.deleteById(id);
+    public void deleteDoctor(@NonNull @PathVariable Long id) {
+        doctorService.deleteDoctor(id);
     }
     
 }

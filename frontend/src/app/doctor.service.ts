@@ -17,11 +17,11 @@ export class DoctorService {
       return this.http.post(this.apiUrl, doctor);
     }
   
-    /*
+    
     updateDoctor(id: number, doctor: any): Observable<any> {
       return this.http.put(`${this.apiUrl}/${id}`, doctor);
     }
-    */
+  
   
     deleteDoctor(id: number): Observable<any> {
       return this.http.delete(`${this.apiUrl}/${id}`);
