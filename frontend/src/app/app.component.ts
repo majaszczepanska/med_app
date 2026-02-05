@@ -399,6 +399,15 @@ export class AppComponent implements OnInit {
     return date < now;
   }
 
+  isToday(dateStr: string): boolean {
+    if (!dateStr) {
+      return false;
+    }
+    const visitDate = new Date(dateStr.replace(' ', 'T'));
+    const today = new Date();
+    return visitDate.toDateString() === today.toDateString();
+  }
+
   editAppointment(appointment: any) {
     this.isEditing = true;
     this.currentAppointmentId = appointment.id;
