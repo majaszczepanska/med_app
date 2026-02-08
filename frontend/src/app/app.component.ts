@@ -4,7 +4,6 @@ import { PatientService } from './patient.service';
 import { DoctorService } from './doctor.service';
 import { AppointmentService } from './appointment.service';
 import { FormsModule } from '@angular/forms';
-//import { RouterOutlet } from '@angular/router';
 import {FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -84,6 +83,8 @@ export class AppComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ){}
 
+
+  //ON INIT (REFRESH TABS)
   ngOnInit() {
     this.updateMinDate();
     this.refreshAll();
@@ -100,12 +101,14 @@ export class AppComponent implements OnInit {
     }, 2000);
   }
 
+  //CALENDAR - disabled for past dates
   updateMinDate() {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     this.minDate = now.toISOString().slice(0, 16);
   }
 
+  //ACTIVE TAB AND REFRESH
   setActiveTab(tabName: string) {
     this.activeTab = tabName;
     this.isEditing = false;
@@ -113,12 +116,14 @@ export class AppComponent implements OnInit {
     this.refreshAll();
   }
 
+  //REFRESH
   refreshAll() {
     this.refreshPatients();
     this.refreshDoctors();
     this.refreshAppointments();
   }
 
+  //REFRESH PATIENTS
   refreshPatients() {
     this.patientService.getPatients().subscribe({
       next: (data:any) => {
@@ -129,6 +134,7 @@ export class AppComponent implements OnInit {
     });
   }
 
+  //REFRESH DOCTORS
   refreshDoctors() {
     this.doctorService.getDoctors().subscribe({
       next: (data: any) => {
@@ -139,6 +145,7 @@ export class AppComponent implements OnInit {
     });
   }
 
+  //REFRESH APPOINTMENTS
   refreshAppointments() {
     this.appointmentService.getAppointments().subscribe({
       next: (data: any) => {
@@ -150,6 +157,7 @@ export class AppComponent implements OnInit {
     })
   }
 
+  //CALENDAR
   updateCalendarEvent() {
     this.calendarOptions.events = this.appointments.map(a => {
       const startDate = new Date(a.visitDate);
@@ -182,6 +190,7 @@ export class AppComponent implements OnInit {
     this.activeTab = 'appointments';
     document.querySelector('.form-panel')?.scrollIntoView({behavior: 'smooth'});
   }
+
   handleEventClick(arg: EventClickArg) {
     const appointmentId = Number(arg.event.id);
     const appointment = this.appointments.find(a => a.id === appointmentId);
@@ -193,6 +202,8 @@ export class AppComponent implements OnInit {
     }
   }
 
+
+  //SUBMIT
   onSubmit() {
     if (this.activeTab === 'patients') {
       if(this.isEditing) {
@@ -209,64 +220,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  doCreatePatient() {
-    const patientToSend = this.preparePatientData();
-    if(!patientToSend) return;
-    this.patientService.createPatient(patientToSend).subscribe({
-      next: () => {
-        alert("Patient added successfully");
-        this.refreshPatients();
-        this.resetForm();
-      },
-      error: (err: any) => {
-        this.handleErrors(err);
-      }
-    });
-  }
-
-  doUpdatePatient() {
-    if(!this.currentPatientId) return;
-    const patientToSend = this.preparePatientData();
-    if(!patientToSend) return;
-    this.patientService.updatePatient(this.currentPatientId, patientToSend).subscribe({
-      next: () => {
-        alert("Patient updated successfully");
-        this.refreshPatients();
-        this.resetForm();
-      },
-      error: (err: any) => {
-        this.handleErrors(err);
-      }
-    });
-  }
-
-  editPatient(patient:any) {
-    this.isEditing = true;
-    this.currentPatientId = patient.id;
-    this.newPatient = {
-      firstName: patient.firstName,
-      lastName: patient.lastName,
-      pesel: patient.pesel,
-      disease: patient.disease,
-      mainDoctor: patient.mainDoctor ? patient.mainDoctor.id : ''
-    }
-  }
-
-  preparePatientData() {
-    const patientData = { ...this.newPatient };
-    if(patientData.mainDoctor && patientData.mainDoctor !== '') {
-      const doctorId = Number(patientData.mainDoctor);
-      if(!isNaN(doctorId) && doctorId > 0) {
-        patientData.mainDoctor = {
-          "id": doctorId
-        }
-      }
-    } else {
-      patientData.mainDoctor = null;
-    }
-    return patientData;
-  }
-  
+  //ERRORS
   handleErrors(err: any) {
     console.error(err);
     if (err.error && err.error.message) {
@@ -300,10 +254,74 @@ export class AppComponent implements OnInit {
       alert("❌ ERROR: " + err.error);
       return;
     } 
-
     alert("❌ UNKNOWN ERROR (" + err.status + "): " + (err.statusText || "Server error"));
   }
 
+
+  //PATIENTS 
+  //CREATE
+  doCreatePatient() {
+    const patientToSend = this.preparePatientData();
+    if(!patientToSend) return;
+    this.patientService.createPatient(patientToSend).subscribe({
+      next: () => {
+        alert("Patient added successfully");
+        this.refreshPatients();
+        this.resetForm();
+      },
+      error: (err: any) => {
+        this.handleErrors(err);
+      }
+    });
+  }
+
+  //UPDATE
+  doUpdatePatient() {
+    if(!this.currentPatientId) return;
+    const patientToSend = this.preparePatientData();
+    if(!patientToSend) return;
+    this.patientService.updatePatient(this.currentPatientId, patientToSend).subscribe({
+      next: () => {
+        alert("Patient updated successfully");
+        this.refreshPatients();
+        this.resetForm();
+      },
+      error: (err: any) => {
+        this.handleErrors(err);
+      }
+    });
+  }
+
+  //EDIT - for html form
+  editPatient(patient:any) {
+    this.isEditing = true;
+    this.currentPatientId = patient.id;
+    this.newPatient = {
+      firstName: patient.firstName,
+      lastName: patient.lastName,
+      pesel: patient.pesel,
+      disease: patient.disease,
+      mainDoctor: patient.mainDoctor ? patient.mainDoctor.id : ''
+    }
+  }
+
+  //PREPARE DATA (convert doctor id to object)
+  preparePatientData() {
+    const patientData = { ...this.newPatient };
+    if(patientData.mainDoctor && patientData.mainDoctor !== '') {
+      const doctorId = Number(patientData.mainDoctor);
+      if(!isNaN(doctorId) && doctorId > 0) {
+        patientData.mainDoctor = {
+          "id": doctorId
+        }
+      }
+    } else {
+      patientData.mainDoctor = null;
+    }
+    return patientData;
+  }
+  
+  //DELETE
   removePatient(id: number) {
     if(confirm("Are you sure you want to delete this patient?")) {
       this.patientService.deletePatient(id).subscribe({
@@ -315,6 +333,9 @@ export class AppComponent implements OnInit {
     }
   }
 
+
+  //DOCTOR
+  //CREATE AND UPDATE
   saveDoctor() {
     if (this.isEditing && this.currentDoctorId){
        this.doctorService.updateDoctor(this.currentDoctorId, this.newDoctor).subscribe({
@@ -343,7 +364,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  
+  //EDIT - for html form
   editDoctor(doctor:any) {
     this.isEditing = true;
     this.currentDoctorId = doctor.id;
@@ -354,7 +375,7 @@ export class AppComponent implements OnInit {
     }
   }
   
-
+  //DELETE DOCTOR
   removeDoctor(id: number) {
     if(confirm("Are you sure you want to delete this doctor?")) {
       this.doctorService.deleteDoctor(id).subscribe({
@@ -369,6 +390,9 @@ export class AppComponent implements OnInit {
     }
   }
 
+
+  //APOINTMENTS
+  //CREATE AND UPDATE 
   saveAppointment() {
     const appointmentToSend = this.prepareAppointmentData();
     if (!appointmentToSend) return;
@@ -398,7 +422,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  
+  //PREPARE DATA (convert patient and doctor id to objects )
   prepareAppointmentData() {
     const appointmentData = { ...this.newAppointment };
 
@@ -424,6 +448,7 @@ export class AppComponent implements OnInit {
     return appointmentData;
   }
 
+  //DATE in normal format for user
   formatDateDisplay(dateStr: string): string {
     if(!dateStr) {
       return '';
@@ -443,6 +468,7 @@ export class AppComponent implements OnInit {
 
   }
 
+  //DATE - check if date is in past
   isPastDate(dateStr: string): boolean {
     if(!dateStr) {
       return false;
@@ -453,6 +479,7 @@ export class AppComponent implements OnInit {
     return date < now;
   }
 
+  //DATE - check if date is today
   isToday(dateStr: string): boolean {
     if (!dateStr) {
       return false;
@@ -462,6 +489,7 @@ export class AppComponent implements OnInit {
     return visitDate.toDateString() === today.toDateString();
   }
 
+  //EDIT - for html to form
   editAppointment(appointment: any) {
     this.isEditing = true;
     this.currentAppointmentId = appointment.id;
@@ -478,6 +506,7 @@ export class AppComponent implements OnInit {
     };
   }
   
+  //DELETE
   removeAppointment(id: number) {
     if(confirm("Are you sure you want to delete this appointment?")) {
       this.appointmentService.deleteAppointment(id).subscribe({
@@ -500,11 +529,12 @@ export class AppComponent implements OnInit {
   }
   
 
-
+  //CANCEL BUTTON
   cancelEdit() {
     this.resetForm();
   }
 
+  //RESET FORM
   resetForm() {
     this.newPatient = {firstName: '', lastName: '', pesel: '', disease: '', mainDoctor: ''};
     this.newDoctor = {firstName: '', lastName: '', specialization: ''};
