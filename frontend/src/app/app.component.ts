@@ -10,6 +10,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { HttpClient } from '@angular/common/http';
+import enGb from '@fullcalendar/core/locales/en-gb';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,8 @@ export class AppComponent implements OnInit {
   currentPatientId: number | null = null;
   currentAppointmentId: number | null = null;
   currentDoctorId: number | null = null;
+
+  selectedDoctorId: number | null = null;
 
   showCalendar: boolean = true;
 
@@ -69,6 +72,11 @@ export class AppComponent implements OnInit {
     slotDuration: '00:15:00',
     slotLabelInterval: '01:00',
     allDaySlot: false,
+    displayEventTime: false,
+
+    locale: enGb,
+    dayHeaderFormat: { weekday: 'short', day: '2-digit', month: 'numeric', omitCommas: true },
+    titleFormat: { year: 'numeric', month: 'long', day: 'numeric' },
 
     height: 'auto',
     headerToolbar: {
@@ -165,7 +173,12 @@ export class AppComponent implements OnInit {
 
   //CALENDAR
   updateCalendarEvent() {
-    this.calendarOptions.events = this.appointments.map(a => {
+    let filetredAppointments = this.appointments;
+    if (this.selectedDoctorId) {
+      filetredAppointments = this.appointments.filter(a => a.doctor?.id === Number(this.selectedDoctorId));
+    }
+
+    this.calendarOptions.events = filetredAppointments.map(a => {
       const startDate = new Date(a.visitTime);
       const endDate = new Date(startDate.getTime() + 15 * 60000);
       return {
@@ -178,6 +191,10 @@ export class AppComponent implements OnInit {
       }
 
     })                               
+  }
+
+  onDoctorFilterChange(){
+    this.updateCalendarEvent();
   }
 
   handleDateClick(arg: any){
