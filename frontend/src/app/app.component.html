@@ -128,6 +128,25 @@
       }
 
       @if (activeTab === 'appointments') {
+        @if (activeTab === 'appointments') {
+        <h3 style="color: #6f42c1">Appointments Schedule</h3>
+        
+        <div style="margin-bottom: 15px;">
+          <button (click)="showCalendar = false" [style.background]="!showCalendar ? '#6f42c1' : '#ccc'">List View</button>
+          <button (click)="showCalendar = true" [style.background]="showCalendar ? '#6f42c1' : '#ccc'">Calendar View</button>
+        </div>
+
+        @if (!showCalendar) {
+          <table class="patient-table">
+             </table>
+        }
+
+        @if (showCalendar) {
+          <div class="calendar-container">
+            <full-calendar [options]="calendarOptions"></full-calendar>
+          </div>
+        }
+      }
         <h3 style="color: #6f42c1">Appointments List</h3>
         <table class="patient-table">
           <thead>
