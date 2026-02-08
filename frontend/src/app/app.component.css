@@ -21,12 +21,16 @@ h1 {
 
 /* --- LEFT SIDE FORM --- */
 .form-panel {
+  flex: 0 0 300px;
   width: 300px;
   padding: 25px;
   background: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 20px;
+  height: fit-content;
 }
 
 .form-panel h3 {
@@ -122,6 +126,8 @@ input:focus {
   flex-grow: 1;
   background: white;
   padding: 10px;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .table-panel h3 {
@@ -232,6 +238,43 @@ input:focus {
 .tabs button.active:nth-child(3) { /* Appointments */
   border-bottom-color: #6f42c1;
 }
+
+
+
+/* Przełącznik widoku (List / Calendar) */
+.view-switcher {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: #f1f1f1;
+  padding: 5px;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.view-switcher button {
+  padding: 8px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+/* Styl aktywnego przycisku */
+.view-switcher button.active-view {
+  background-color: #6f42c1; /* Fioletowy */
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.view-switcher button:hover:not(.active-view) {
+  background-color: #e2e2e2;
+}
+
+
 
 
 /* small screen */

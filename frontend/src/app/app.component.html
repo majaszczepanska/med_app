@@ -131,53 +131,49 @@
         @if (activeTab === 'appointments') {
         <h3 style="color: #6f42c1">Appointments Schedule</h3>
         
-        <div style="margin-bottom: 15px;">
-          <button (click)="showCalendar = false" [style.background]="!showCalendar ? '#6f42c1' : '#ccc'">List View</button>
-          <button (click)="showCalendar = true" [style.background]="showCalendar ? '#6f42c1' : '#ccc'">Calendar View</button>
+        <div class="view-switcher">
+          <button (click)="showCalendar = false" [class.active-view]="!showCalendar">List View</button>
+          <button (click)="showCalendar = true" [class.active-view]="showCalendar">Calendar View</button>
         </div>
-
-        @if (!showCalendar) {
-          <table class="patient-table">
-             </table>
-        }
 
         @if (showCalendar) {
           <div class="calendar-container">
             <full-calendar [options]="calendarOptions"></full-calendar>
           </div>
         }
-      }
-        <h3 style="color: #6f42c1">Appointments List</h3>
-        <table class="patient-table">
-          <thead>
-            <tr>
-              <th style="background-color: #6f42c1;">ID</th>
-              <th style="background-color: #6f42c1;">Date</th>
-              <th style="background-color: #6f42c1;">Patient</th>
-              <th style="background-color: #6f42c1;">Doctor</th>
-              <th style="background-color: #6f42c1;">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (a of appointments; track a.id){
-              @if (!isPastDate(a.visitTime) || isToday(a.visitTime)){
-                <tr [style.opacity]="isPastDate(a.visitTime) ? 0.3 : 1">
-                  <td>{{ a.id }}</td>
-                  <td>{{ formatDateDisplay(a.visitTime) }}</td>
-                  <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
-                  <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
-                  <td>
-                    <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)">EDIT</button>
-                    <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>
-                  </td>
-                </tr>
-              }
 
-            }
-          </tbody>
-        </table>
+        @if (!showCalendar) {
+          <table class="patient-table">
+            <thead>
+              <tr>
+                <th style="background-color: #6f42c1;">ID</th>
+                <th style="background-color: #6f42c1;">Date</th>
+                <th style="background-color: #6f42c1;">Patient</th>
+                <th style="background-color: #6f42c1;">Doctor</th>
+                <th style="background-color: #6f42c1;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of appointments; track a.id){
+                @if (!isPastDate(a.visitTime) || isToday(a.visitTime)){
+                  <tr [style.opacity]="isPastDate(a.visitTime) ? 0.3 : 1">
+                    <td>{{ a.id }}</td>
+                    <td>{{ formatDateDisplay(a.visitTime) }}</td>
+                    <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
+                    <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
+                    <td>
+                      <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)">EDIT</button>
+                      <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>
+                    </td>
+                  </tr>
+                }
+
+              }
+            </tbody>
+          </table>
+        }
+        }
       }
-      
 
     </div>
 

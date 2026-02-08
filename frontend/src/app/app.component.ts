@@ -64,6 +64,12 @@ export class AppComponent implements OnInit {
     weekends: false,
     slotMinTime: '08:00:00',
     slotMaxTime: '16:00:00',
+
+    expandRows: true,
+    slotDuration: '00:15:00',
+    slotLabelInterval: '01:00',
+    allDaySlot: false,
+
     height: 'auto',
     headerToolbar: {
       left: 'prev, next today',
@@ -160,7 +166,7 @@ export class AppComponent implements OnInit {
   //CALENDAR
   updateCalendarEvent() {
     this.calendarOptions.events = this.appointments.map(a => {
-      const startDate = new Date(a.visitDate);
+      const startDate = new Date(a.visitTime);
       const endDate = new Date(startDate.getTime() + 15 * 60000);
       return {
         id: a.id.toString(),
