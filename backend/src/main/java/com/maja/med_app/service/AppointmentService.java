@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -81,6 +82,13 @@ public class AppointmentService {
                 } else {
                     existingAppointment.setPatient(newPatient);
                 }
+            }
+
+            if (appointmentRepository.existsByDoctorIdAndVisitTimeAndDeletedFalseAndIdNot(existingAppointment.getDoctor().getId(), existingAppointment.getVisitTime(), id)){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Doctor is occupied at this time");
+            }
+            if (appointmentRepository.existsByPatientIdAndVisitTimeAndDeletedFalseAndIdNot(existingAppointment.getPatient().getId(), existingAppointment.getVisitTime(), id)){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "This patient already has an appointment at this time");
             }
         }
         return appointmentRepository.save(existingAppointment);
