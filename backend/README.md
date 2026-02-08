@@ -61,3 +61,91 @@ ng new med-app-frontend
 cd med-app-frontend/
 code .
 ng serve
+
+
+
+
+
+
+
+
+DB
+-- 1. CZYSZCZENIE TABEL (Wyczyść stare dane)
+-- Używamy TRUNCATE z CASCADE, co jest szybsze i czyści powiązania w Postgresie
+TRUNCATE TABLE appointment, patient, doctor RESTART IDENTITY CASCADE;
+
+-- Alternatywnie, jeśli TRUNCATE robi problemy, użyj klasycznych DELETE:
+-- DELETE FROM appointment;
+-- DELETE FROM patient;
+-- DELETE FROM doctor;
+
+
+-- 2. DODAWANIE LEKARZY (10 rekordów - English)
+INSERT INTO doctor (id, first_name, last_name, specialization) VALUES
+(1, 'Gregory', 'House', 'Diagnostician'),
+(2, 'James', 'Wilson', 'Oncologist'),
+(3, 'Lisa', 'Cuddy', 'Endocrinologist'),
+(4, 'Eric', 'Foreman', 'Neurologist'),
+(5, 'Allison', 'Cameron', 'Immunologist'),
+(6, 'Robert', 'Chase', 'Surgeon'),
+(7, 'Chris', 'Taub', 'Plastic Surgeon'),
+(8, 'Remy', 'Hadley', 'Internist'),
+(9, 'Lawrence', 'Kutner', 'Sports Medicine'),
+(10, 'Amber', 'Volakis', 'Radiologist');
+
+
+-- 3. DODAWANIE PACJENTÓW (10 rekordów - English)
+INSERT INTO patient (id, first_name, last_name, pesel, disease, main_doctor_id) VALUES
+(1, 'John', 'Smith', '85010112345', 'Flu', 1),
+(2, 'Emily', 'Johnson', '92030354321', 'Migraine', 4),
+(3, 'Michael', 'Williams', '78112267890', 'Diabetes', 3),
+(4, 'Sarah', 'Brown', '65050511223', 'Hypertension', 2),
+(5, 'David', 'Jones', '99121209876', 'Broken leg', 6),
+(6, 'Jennifer', 'Garcia', '88070733445', 'Allergy', 5),
+(7, 'James', 'Miller', '75090966778', 'Back pain', 1),
+(8, 'Elizabeth', 'Davis', '95021455667', 'Sore throat', 8),
+(9, 'Robert', 'Rodriguez', '82042399887', 'Arrhythmia', 2),
+(10, 'Mary', 'Martinez', '60010122334', 'Rheumatism', 1);
+
+
+-- 4. DODAWANIE WIZYT (12 rekordów na tydzień 9-13 Feb 2026)
+-- Format daty ISO: 'YYYY-MM-DDTHH:MM:SS'
+
+-- Monday 09.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-09T08:00:00', 1, 1, false), -- Dr House (John Smith)
+('2026-02-09T08:15:00', 1, 7, false), -- Dr House (James Miller)
+('2026-02-09T09:00:00', 2, 4, false), -- Dr Wilson
+('2026-02-09T10:30:00', 4, 2, false); -- Dr Foreman
+
+-- Tuesday 10.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-10T08:30:00', 3, 3, false), -- Dr Cuddy
+('2026-02-10T12:00:00', 6, 5, false); -- Dr Chase
+
+-- Wednesday 11.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-11T14:00:00', 5, 6, false), -- Dr Cameron
+('2026-02-11T14:15:00', 5, 9, false); -- Dr Cameron (Consultation)
+
+-- Thursday 12.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-12T09:15:00', 1, 10, false), -- Dr House
+('2026-02-12T11:00:00', 8, 8, false);  -- Dr Hadley
+
+-- Friday 13.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-13T08:00:00', 2, 9, false),  -- Dr Wilson
+('2026-02-13T15:45:00', 7, 3, false);  -- Dr Taub
+
+
+-- 5. NAPRAWA LICZNIKÓW ID (Dla PostgreSQL)
+-- To jest kluczowe! Ponieważ wpisaliśmy ID ręcznie (1, 2, 3...), 
+-- Postgres "myśli", że licznik nadal jest na 1. 
+-- Te komendy ustawią licznik na najwyższą wartość + 1.
+
+SELECT setval(pg_get_serial_sequence('doctor', 'id'), (SELECT MAX(id) FROM doctor));
+SELECT setval(pg_get_serial_sequence('patient', 'id'), (SELECT MAX(id) FROM patient));
+SELECT setval(pg_get_serial_sequence('appointment', 'id'), (SELECT MAX(id) FROM appointment));
+
+//data from ai, alt+x in dbeaver to run 
