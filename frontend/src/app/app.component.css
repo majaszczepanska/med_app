@@ -240,40 +240,73 @@ input:focus {
 }
 
 
+/* --- NOWY UKŁAD KONTROLEK --- */
 
-/* Przełącznik widoku (List / Calendar) */
-.view-switcher {
+/* Główny kontener trzymający lewą i prawą stronę */
+.controls-container {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  background: #f1f1f1;
+  justify-content: space-between; /* Rozsuwa elementy maksymalnie na boki */
+  align-items: center;
+  margin-bottom: 25px; /* Większy odstęp od kalendarza */
+  flex-wrap: wrap; /* Na małych ekranach spadnie niżej */
+  gap: 15px;
+}
+
+/* 1. Przełącznik Widoku (Lewa strona) */
+.view-switcher {
+  background: #f1f1f1; /* Szare tło TYLKO pod przyciskami */
   padding: 5px;
   border-radius: 8px;
-  width: fit-content;
+  display: inline-flex;
+  gap: 5px;
 }
 
 .view-switcher button {
-  padding: 8px 20px;
+  padding: 8px 16px;
   border: none;
   background: transparent;
   cursor: pointer;
   border-radius: 6px;
   font-weight: 600;
   color: #666;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-/* Styl aktywnego przycisku */
 .view-switcher button.active-view {
-  background-color: #6f42c1; /* Fioletowy */
-  color: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  background-color: white; /* Białe tło dla aktywnego (ładny kontrast) */
+  color: #6f42c1;          /* Fioletowy tekst */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.view-switcher button:hover:not(.active-view) {
-  background-color: #e2e2e2;
+/* 2. Filtr Lekarza (Prawa strona) */
+.doctor-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
+.doctor-filter label {
+  font-weight: bold;
+  color: #555;
+  margin: 0; /* Reset marginesu */
+}
+
+.doctor-filter select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  min-width: 200px; /* Żeby lista nie była za wąska */
+  transition: border-color 0.2s;
+}
+
+.doctor-filter select:focus {
+  border-color: #6f42c1; /* Fioletowa ramka po kliknięciu */
+}
 
 /* small screen */
 @media (max-width: 768px) {

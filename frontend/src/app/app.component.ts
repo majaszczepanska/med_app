@@ -11,6 +11,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { HttpClient } from '@angular/common/http';
 import enGb from '@fullcalendar/core/locales/en-gb';
+import plLocale from '@fullcalendar/core/locales/pl';
 
 @Component({
   selector: 'app-root',
@@ -76,13 +77,12 @@ export class AppComponent implements OnInit {
 
     locale: enGb,
     dayHeaderFormat: { weekday: 'short', day: '2-digit', month: 'numeric', omitCommas: true },
-    titleFormat: { year: 'numeric', month: 'long', day: 'numeric' },
 
     height: 'auto',
     headerToolbar: {
-      left: 'prev, next today',
+      left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth, timeGridWeek, timeGridDay'
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
     events: [],
     dateClick: (arg) => this.handleDateClick(arg),
