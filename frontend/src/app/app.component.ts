@@ -5,11 +5,17 @@ import { DoctorService } from './doctor.service';
 import { AppointmentService } from './appointment.service';
 import { FormsModule } from '@angular/forms';
 //import { RouterOutlet } from '@angular/router';
+import {FullCalendarModule } from '@fullcalendar/angular';
+import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FullCalendarModule, ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -26,6 +32,8 @@ export class AppComponent implements OnInit {
   currentPatientId: number | null = null;
   currentAppointmentId: number | null = null;
   currentDoctorId: number | null = null;
+
+  showCalendar: boolean = true;
 
   newPatient: any = {
     firstName: '',
@@ -48,6 +56,26 @@ export class AppComponent implements OnInit {
   };
 
   minDate: string = '';
+
+
+  //CALENDAR
+  calendarOptions: CalendarOptions = {
+    initialView: 'timeGridWeek',
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    weekends: false,
+    slotMinTime: '08:00:00',
+    slotMaxTime: '16:00:00',
+    height: 'auto',
+    headerToolbar: {
+      left: 'prev, next today',
+      center: 'title',
+      right: 'dayGridMonth, timeGridWeek, timeGridDay'
+    },
+    events: [],
+    dateClick: (arg) => this.handleDateClick(arg),
+    eventClick: (arg) => this.handleEventClick(arg)
+  };
+
 
   constructor (
     private patientService: PatientService,
@@ -116,9 +144,53 @@ export class AppComponent implements OnInit {
       next: (data: any) => {
         this.appointments = data.sort((a:any, b:any) => (a.visitTime).localeCompare(b.visitTime));
         this.cdr.detectChanges();
+        this.updateCalendarEvent();
       },
       error: (err: any) => console.error(err)
     })
+  }
+
+  updateCalendarEvent() {
+    this.calendarOptions.events = this.appointments.map(a => {
+      const startDate = new Date(a.visitDate);
+      const endDate = new Date(startDate.getTime() + 15 * 60000);
+      return {
+        id: a.id.toString(),
+        title: `${a.patient?.lastName} (${a.doctor?.lastName})`,
+        start: a.visitTime,
+        end: endDate.toISOString(),
+        backgroundColor: this.isPastDate(a.visitTime) ? '#6c757d' : '#6f42c1', 
+        borderColor: 'transparent'
+      }
+
+    })                               
+  }
+
+  handleDateClick(arg: any){
+    if (this.isPastDate(arg.dateStr) && !this.isToday(arg.dateStr)) {
+      alert("Cannot book inside the past");
+      return;
+    }
+
+    this.newAppointment = {
+      visitTime: arg.dateStr.slice(0, 16),
+      patientId: null,
+      doctorId: null
+    };
+
+    this.isEditing = false;
+    this.activeTab = 'appointments';
+    document.querySelector('.form-panel')?.scrollIntoView({behavior: 'smooth'});
+  }
+  handleEventClick(arg: EventClickArg) {
+    const appointmentId = Number(arg.event.id);
+    const appointment = this.appointments.find(a => a.id === appointmentId);
+
+    if(appointment) {
+      this.editAppointment(appointment);
+      this.activeTab = 'appointments';
+      document.querySelector('.form-panel')?.scrollIntoView({behavior: 'smooth'});
+    }
   }
 
   onSubmit() {
@@ -147,7 +219,6 @@ export class AppComponent implements OnInit {
         this.resetForm();
       },
       error: (err: any) => {
-        //alert("Error adding patient");
         this.handleErrors(err);
       }
     });
@@ -164,7 +235,6 @@ export class AppComponent implements OnInit {
         this.resetForm();
       },
       error: (err: any) => {
-        //alert("Error updating patient");
         this.handleErrors(err);
       }
     });
@@ -199,11 +269,17 @@ export class AppComponent implements OnInit {
   
   handleErrors(err: any) {
     console.error(err);
-    let errorMessage = "";
-    if (err.error && typeof err.error === 'object' && !err.error.message) {
-      errorMessage = "❌ ERRORS:\n";
+    if (err.error && err.error.message) {
+      alert("❌ ERROR: " + err.error.message);
+      return;
+    }
+    if (err.error && typeof err.error === 'object') {
+      let errorMessage = "❌ VALIDATION ERRORS:\n";
+      let hasValidationErrors = false;
+
         for (const key in err.error) {
           if (err.error.hasOwnProperty(key)) {
+            hasValidationErrors = true;
             errorMessage += `\n• ${key.toUpperCase()}:\n`;
             const fullErrorText = err.error[key];
             let lines = fullErrorText.split(',');
@@ -213,21 +289,19 @@ export class AppComponent implements OnInit {
             lines.forEach((line: string) => {
               errorMessage += `    • ${line}\n`;
             });
-          }
+          } 
+        }
+        if (hasValidationErrors) {
+            alert(errorMessage);
+            return;
         }
     } 
-    else if (typeof err.error === 'string') {
-      errorMessage = "ERRORS IN FORM:\n";
-      const lines = err.error.split(',');
-      lines.forEach((line: string) => {
-        errorMessage += `• ${line.trim()}\n`;
-      });
+    if (typeof err.error === 'string') {
+      alert("❌ ERROR: " + err.error);
+      return;
     } 
-    else {
-      errorMessage += "An unknown error: " + (err.message || err);
-    }
-    
-    alert(errorMessage);
+
+    alert("❌ UNKNOWN ERROR (" + err.status + "): " + (err.statusText || "Server error"));
   }
 
   removePatient(id: number) {
@@ -235,12 +309,7 @@ export class AppComponent implements OnInit {
       this.patientService.deletePatient(id).subscribe({
         next: () => this.refreshPatients(),
         error: (err: any) => {
-          console.error(err)
-          if(err.status === 403) {
-            alert("❌ Cannot delete patient with future appointments.");
-          } else {
-            alert("Error deleting patient.");
-          }
+          this.handleErrors(err);
         }
       });
     }
@@ -257,7 +326,6 @@ export class AppComponent implements OnInit {
       ,
       error: (err: any) => {
         this.handleErrors(err);
-        //console.error(err);
       }
     });
     } else {
@@ -270,7 +338,6 @@ export class AppComponent implements OnInit {
         ,
         error: (err: any) => {
           this.handleErrors(err);
-          //console.error(err);
         }
       });
     }
@@ -296,12 +363,7 @@ export class AppComponent implements OnInit {
           this.refreshDoctors();
         },
         error: (err: any) => {
-          console.error(err);
-          if (err.error && err.error.message) {
-             alert("❌ ERROR: " + err.error.message); 
-          } else {
-             alert("❌ Cannot delete doctor (active appointments?)");
-          }
+          this.handleErrors(err);
         }
       });
     }
@@ -319,14 +381,7 @@ export class AppComponent implements OnInit {
           this.resetForm();
         },
         error: (err: any) => {
-          console.error(err);
-          if(err.status === 403) {
-            alert("❌ Cannot update this appointment (it is too late).");
-          } else if (err.error && err.error.message) {
-            alert("❌ ERROR: " + err.error.message);
-          } else {
-            this.handleErrors(err);
-          }
+         this.handleErrors(err);
         }
       });
       return;
@@ -339,7 +394,6 @@ export class AppComponent implements OnInit {
       },
       error: (err: any) => {
         this.handleErrors(err);
-        console.error(err);
       }
     });
   }
