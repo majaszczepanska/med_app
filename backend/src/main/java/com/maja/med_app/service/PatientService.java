@@ -64,7 +64,7 @@ public class PatientService {
         if(patient == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found");
         }
-        boolean hasFutureAppointments = appointmentRepository.existsByPatientIdAndVisitTimeAfterAndDeletedFalse(id, LocalDateTime.now());
+        boolean hasFutureAppointments = appointmentRepository.existsByPatientIdAndVisitTimeAndDeletedFalse(id, LocalDateTime.now());
         if (hasFutureAppointments){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete patient with future appointments");
         }

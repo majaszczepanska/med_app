@@ -49,7 +49,7 @@ public class DoctorService {
         if (doctor == null)  {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor not found");
         } else {
-            boolean hasFutureVisits = appointmentRepository.existsByDoctorIdAndVisitTimeAfterAndDeletedFalse(id, LocalDateTime.now());
+            boolean hasFutureVisits = appointmentRepository.existsByDoctorIdAndVisitTimeAndDeletedFalse(id, LocalDateTime.now());
             if (hasFutureVisits) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete doctor with scheduled appointments");
             }

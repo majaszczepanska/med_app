@@ -40,8 +40,11 @@ public class AppointmentService {
     public Appointment createAppointment(Appointment appointment){
         validateAppointment(appointment);
         //Check if doctor is avaliable at that time
-        if(appointmentRepository.existsByDoctorIdAndVisitTimeAfterAndDeletedFalse(appointment.getDoctor().getId(), appointment.getVisitTime())){
+        if(appointmentRepository.existsByDoctorIdAndVisitTimeAndDeletedFalse(appointment.getDoctor().getId(), appointment.getVisitTime())){
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Doctor is occupied");
+        }
+        if(appointmentRepository.existsByPatientIdAndVisitTimeAndDeletedFalse(appointment.getPatient().getId(), appointment.getVisitTime())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Patient has an appointment");
         }
         return appointmentRepository.save(appointment);
     }
