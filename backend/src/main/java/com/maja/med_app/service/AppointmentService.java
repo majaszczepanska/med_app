@@ -1,5 +1,6 @@
 package com.maja.med_app.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -159,6 +160,11 @@ public class AppointmentService {
                 String separator = currentMessage.isEmpty() ? "" : ", \n";
                 errors.put("visitTime", currentMessage + separator + "Appointments only between 8:00 and 16:00");
             }   
+            if(visitTime.getDayOfWeek() == DayOfWeek.SATURDAY || visitTime.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                String currentMessage = errors.getOrDefault("visitTime", "");
+                String separator = currentMessage.isEmpty() ? "" : ", \n";
+                errors.put("visitTime", currentMessage + separator + "Clinic is closed on weekends");
+            }
             if(visitTime.getMinute()% 15 != 0){
                 String currentMessage = errors.getOrDefault("visitTime", "");
                 String separator = currentMessage.isEmpty() ? "" : ", \n";
