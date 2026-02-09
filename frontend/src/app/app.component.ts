@@ -57,7 +57,8 @@ export class AppComponent implements OnInit {
   newAppointment: any = {
     visitTime: null,
     patientId: null,
-    doctorId: ''
+    doctorId: '',
+    description: ''
   };
 
   minDate: string = '';
@@ -209,7 +210,8 @@ export class AppComponent implements OnInit {
     this.newAppointment = {
       visitTime: arg.dateStr.slice(0, 16),
       patientId: null,
-      doctorId: null
+      doctorId: null,
+      description: ''
     };
 
     this.isEditing = false;
@@ -555,7 +557,8 @@ export class AppComponent implements OnInit {
     this.newAppointment = {
       visitTime: formatedDate,
       patientId: appointment.patient?.id || null,
-      doctorId: appointment.doctor?.id || null
+      doctorId: appointment.doctor?.id || null,
+      description:appointment.description || '',
     };
   }
   
@@ -591,7 +594,7 @@ export class AppComponent implements OnInit {
   resetForm() {
     this.newPatient = {firstName: '', lastName: '', pesel: '', disease: '', mainDoctor: ''};
     this.newDoctor = {firstName: '', lastName: '', specialization: ''};
-    this.newAppointment = {visitTime: '', patientId: null, doctorId: null};
+    this.newAppointment = {visitTime: '', patientId: null, doctorId: null, description: ''};
     this.isEditing = false;
     this.currentPatientId = null;
     this.currentAppointmentId = null;

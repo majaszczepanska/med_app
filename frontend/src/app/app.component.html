@@ -59,6 +59,13 @@
         
         <label>Doctor ID:</label>
         <input type="number" [(ngModel)]="newAppointment.doctorId" placeholder="ID">
+
+        <label>Diagnosis / Notes:</label>
+        <textarea [(ngModel)]="newAppointment.description" 
+                  placeholder="Enter diagnosis, symptoms, or medications..."
+                  rows="3"
+                  style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; resize: vertical; margin-bottom: 15px;">
+        </textarea>
         @if (isEditing) {
           <button (click)="onSubmit()" class="update-btn">UPDATE VISIT</button>
           <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
@@ -182,6 +189,7 @@
                 <th style="background-color: #6f42c1;">Date</th>
                 <th style="background-color: #6f42c1;">Patient</th>
                 <th style="background-color: #6f42c1;">Doctor</th>
+                <th style="background-color: #6f42c1;">Notes</th>
                 <th style="background-color: #6f42c1;">Actions</th>
               </tr>
             </thead>
@@ -193,6 +201,7 @@
                     <td>{{ formatDateDisplay(a.visitTime) }}</td>
                     <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
                     <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
+                    <td style="font-style: italic; color: #555;">{{ a.description || '-'}}</td>
                     <td>
                       <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)">EDIT</button>
                       <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>

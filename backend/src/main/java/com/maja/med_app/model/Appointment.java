@@ -42,6 +42,12 @@ public class Appointment {
     @Schema(implementation = Object.class, example = "{\"id\": 0}")
     private Doctor doctor;
 
+
+    @Column(length = 500)
+    private String description;
+    
+
+
     @Column(columnDefinition = "boolean default false")
     private boolean deleted = false;
 }

@@ -83,7 +83,8 @@ public class AppointmentService {
                     existingAppointment.setPatient(newPatient);
                 }
             }
-
+            
+            existingAppointment.setDescription(updatedAppointment.getDescription());
             if (appointmentRepository.existsByDoctorIdAndVisitTimeAndDeletedFalseAndIdNot(existingAppointment.getDoctor().getId(), existingAppointment.getVisitTime(), id)){
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Doctor is occupied at this time");
             }

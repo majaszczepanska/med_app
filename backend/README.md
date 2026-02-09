@@ -138,6 +138,32 @@ INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES
 ('2026-02-13T08:00:00', 2, 9, false),  -- Dr Wilson
 ('2026-02-13T15:45:00', 7, 3, false);  -- Dr Taub
 
+-- Poniedziałek 16.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-16T08:30:00', 1, 2, false),  -- Dr House (Emily Johnson)
+('2026-02-16T10:00:00', 3, 5, false),  -- Dr Cuddy (David Jones)
+('2026-02-16T15:00:00', 7, 1, false);  -- Dr Taub (John Smith)
+
+-- Wtorek 17.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-17T09:00:00', 2, 8, false),  -- Dr Wilson (Elizabeth Davis)
+('2026-02-17T11:15:00', 4, 3, false),  -- Dr Foreman (Michael Williams)
+('2026-02-17T11:30:00', 4, 7, false);  -- Dr Foreman (James Miller) - krótka wizyta
+
+-- Środa 18.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-18T13:00:00', 5, 6, false),  -- Dr Cameron (Jennifer Garcia)
+('2026-02-18T14:45:00', 10, 9, false); -- Dr Volakis (Robert Rodriguez)
+
+-- Czwartek 19.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-19T08:00:00', 6, 4, false),  -- Dr Chase (Sarah Brown)
+('2026-02-19T09:30:00', 8, 10, false); -- Dr Hadley (Mary Martinez)
+
+-- Piątek 20.02
+INSERT INTO appointment (visit_time, doctor_id, patient_id, deleted) VALUES 
+('2026-02-20T10:00:00', 9, 5, false),  -- Dr Kutner (David Jones)
+('2026-02-20T12:15:00', 2, 1, false);  -- Dr Wilson (John Smith)
 
 -- 5. NAPRAWA LICZNIKÓW ID (Dla PostgreSQL)
 -- To jest kluczowe! Ponieważ wpisaliśmy ID ręcznie (1, 2, 3...), 
