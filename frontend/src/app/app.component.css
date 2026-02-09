@@ -136,31 +136,31 @@ input:focus {
   margin-bottom: 20px;
 }
 
-.patient-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.patient-table th, 
-.patient-table td {
+.data-table th, 
+.data-table td {
   padding: 12px 10px;
   border: 1px solid #dee2e6;
   text-align: center;
 }
 
-.patient-table th {
+.data-table th {
   background-color: #0056b3;
   color: white;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
-.patient-table tr:nth-child(even) {
+.data-table tr:nth-child(even) {
   background-color: #f8f9fa;
 }
 
-.patient-table tr:hover {
+.data-table tr:hover {
   background-color: #e2e6ea;
 }
 

@@ -79,14 +79,20 @@
 
       @if (activeTab === 'patients') {
         <h3>Patient Registry</h3>
-        <table class="patient-table">
+        <div style="margin-bottom: 15px;">
+          <input type="text" 
+                 [(ngModel)]="searchText" 
+                 placeholder="🔍 Search Last name or PESEL..." 
+                 style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <table class="data-table">
           <thead>
             <tr>
               <th>ID</th><th>Full Name</th><th>Pesel</th><th>Disease</th><th>Main Doctor</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            @for (p of patients; track p.id){
+            @for (p of filteredPatients; track p.id){
               <tr>
                 <td>{{ p.id }}</td>
                 <td>{{ p.firstName }} {{ p.lastName }}</td>
@@ -105,14 +111,20 @@
 
       @if (activeTab === 'doctors') {
         <h3 style="color: #007bff">Doctors List</h3>
-        <table class="patient-table">
+        <div style="margin-bottom: 15px;">
+          <input type="text" 
+                 [(ngModel)]="searchText" 
+                 placeholder="🔍 Search Last name or specialization" 
+                 style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <table class="data-table">
           <thead>
             <tr style="background-color: #007bff;">
               <th>ID</th><th>Full Name</th><th>Specialization</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            @for (d of doctors; track d.id){
+            @for (d of filteredDoctors; track d.id){
               <tr>
                 <td>{{ d.id }}</td>
                 <td>{{ d.firstName }} {{ d.lastName }}</td>
@@ -157,7 +169,13 @@
         }
 
         @if (!showCalendar) {
-          <table class="patient-table">
+          <div style="margin-bottom: 15px;">
+            <input type="text" 
+                [(ngModel)]="searchText" 
+                placeholder="🔍 Search patient or doctor Last name" 
+                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+          <table class="data-table">
             <thead>
               <tr>
                 <th style="background-color: #6f42c1;">ID</th>
@@ -168,7 +186,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (a of appointments; track a.id){
+              @for (a of filetredAppointments; track a.id){
                 @if (!isPastDate(a.visitTime) || isToday(a.visitTime)){
                   <tr [style.opacity]="isPastDate(a.visitTime) ? 0.3 : 1">
                     <td>{{ a.id }}</td>

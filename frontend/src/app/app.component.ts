@@ -36,6 +36,8 @@ export class AppComponent implements OnInit {
 
   selectedDoctorId: number | null = null;
 
+  searchText: string = '';
+
   showCalendar: boolean = true;
 
   newPatient: any = {
@@ -126,6 +128,7 @@ export class AppComponent implements OnInit {
   setActiveTab(tabName: string) {
     this.activeTab = tabName;
     this.isEditing = false;
+    this.searchText = '';
     this.resetForm();
     this.refreshAll();
   }
@@ -282,6 +285,15 @@ export class AppComponent implements OnInit {
 
 
   //PATIENTS 
+  //FILTER
+  get filteredPatients() {
+  if (!this.searchText) {
+    return this.patients; 
+  }
+  const lowerSearch = this.searchText.toLowerCase();
+  return this.patients.filter(p => p.lastName.toLowerCase().includes(lowerSearch) || p.pesel.includes(lowerSearch));
+}
+
   //CREATE
   doCreatePatient() {
     const patientToSend = this.preparePatientData();
@@ -358,6 +370,15 @@ export class AppComponent implements OnInit {
 
 
   //DOCTOR
+  //FILTER
+  get filteredDoctors() {
+  if (!this.searchText) {
+    return this.doctors; 
+  }
+  const lowerSearch = this.searchText.toLowerCase();
+  return this.doctors.filter(d => d.lastName.toLowerCase().includes(lowerSearch) || d.specialization.toLowerCase().includes(lowerSearch));
+}
+
   //CREATE AND UPDATE
   saveDoctor() {
     if (this.isEditing && this.currentDoctorId){
@@ -415,6 +436,15 @@ export class AppComponent implements OnInit {
 
 
   //APOINTMENTS
+  //FILTER
+  get filetredAppointments() {
+  if (!this.searchText) {
+    return this.appointments; 
+  }
+  const lowerSearch = this.searchText.toLowerCase();
+  return this.appointments.filter(a => a.patient.lastName.toLowerCase().includes(lowerSearch) || a.doctor.lastName.toLowerCase().includes(lowerSearch));
+}
+
   //CREATE AND UPDATE 
   saveAppointment() {
     const appointmentToSend = this.prepareAppointmentData();
