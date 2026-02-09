@@ -40,6 +40,9 @@ export class AppComponent implements OnInit {
 
   showCalendar: boolean = true;
 
+  patientHistory: any[] = [];
+  selectedPatientForHistory: any = null;
+
   newPatient: any = {
     firstName: '',
     lastName: '',
@@ -368,6 +371,29 @@ export class AppComponent implements OnInit {
         }
       });
     }
+  }
+
+  //HISTORY
+  showPatientHistory(patient: any) {
+    this.selectedPatientForHistory = patient;
+    this.activeTab = 'history';
+    this.patientHistory = [];
+
+    this.appointmentService.getAppointmentsByPatient(patient.id).subscribe({
+      next: (data) => {
+        this.patientHistory = data.sort((a: any, b: any) => b.visitTime.localeCompare(a.visitTime));
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.handleErrors(err);
+      }
+    });
+  }
+
+  closeHistory() {
+    this.selectedPatientForHistory = null;
+    this.patientHistory = [];
+    this.activeTab = 'patients';
   }
 
 

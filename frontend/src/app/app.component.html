@@ -107,8 +107,11 @@
                 <td>{{ p.disease }}</td>
                 <td>{{ p.mainDoctor?.id || '-' }}</td>
                 <td>
-                  <button (click)="editPatient(p)" class="edit-btn">EDIT</button>
-                  <button (click)="removePatient(p.id)" class="delete-btn">DELETE</button>
+                  <div class="action-buttons-wrapper">
+                    <button (click)="showPatientHistory(p)" class="history-btn">📜</button>
+                    <button (click)="editPatient(p)" class="edit-btn">EDIT</button>
+                    <button (click)="removePatient(p.id)" class="delete-btn">DELETE</button>
+                  </div>
                 </td>
               </tr>
             }
@@ -137,8 +140,10 @@
                 <td>{{ d.firstName }} {{ d.lastName }}</td>
                 <td>{{ d.specialization }}</td>
                 <td>
-                  <button (click)="editDoctor(d)" class="edit-btn">EDIT</button>
-                  <button (click)="removeDoctor(d.id)" class="delete-btn">DELETE</button>
+                  <div class="action-buttons-wrapper">
+                    <button (click)="editDoctor(d)" class="edit-btn">EDIT</button>
+                    <button (click)="removeDoctor(d.id)" class="delete-btn">DELETE</button>
+                  </div>
                 </td>
               </tr>
             }
@@ -203,8 +208,10 @@
                     <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
                     <td class="truncate-cell" [title]="a.description">{{ a.description || '-'}}</td>
                     <td>
-                      <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)" aria-describedby="You can edit this appointment">EDIT</button>
-                      <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>
+                      <div class="action-buttons-wrapper">
+                        <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)" aria-describedby="You can edit this appointment">EDIT</button>
+                        <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>
+                      </div>
                     </td>
                   </tr>
                 }
@@ -215,7 +222,48 @@
         }
         }
       }
-
+      @if (activeTab === 'history' && selectedPatientForHistory) {
+        <div class="history-container">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3>
+              Medical History: 
+              <span style="color: #007bff;">
+                {{ selectedPatientForHistory.firstName }} {{ selectedPatientForHistory.lastName }}
+              </span>
+            </h3>
+            <button (click)="closeHistory()" class="cancel-btn">⬅ BACK TO LIST</button>
+          </div>
+        
+          <div class="patient-info-card" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
+            <p><strong>PESEL:</strong> {{ selectedPatientForHistory.pesel }}</p>
+            <p><strong>Chronic Disease:</strong> {{ selectedPatientForHistory.disease }}</p>
+            <p><strong>Primary Doctor:</strong> {{ selectedPatientForHistory.mainDoctor?.lastName || '-' }}</p>
+          </div>
+        
+          @if (patientHistory.length === 0) {
+            <p>No medical history found for this patient.</p>
+          } @else {
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="background-color: #17a2b8;">Date</th>
+                  <th style="background-color: #17a2b8;">Doctor</th>
+                  <th style="background-color: #17a2b8;">Diagnosis / Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (h of patientHistory; track h.id) {
+                  <tr>
+                    <td>{{ formatDateDisplay(h.visitTime) }}</td>
+                    <td>Dr. {{ h.doctor?.lastName }} ({{ h.doctor?.specialization }})</td>
+                    <td style="font-style: italic;">{{ h.description || '-' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      }
     </div>
 
   </div>

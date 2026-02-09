@@ -132,13 +132,17 @@ public class AppointmentService {
         return availableSlots;
     }  
 
+    public List<Appointment> getAppointmentsByPatient(Long patientId){
+        return appointmentRepository.findAllByPatientIdAndDeletedFalse(patientId);
+    }
+
+
     private void checkEditTime(LocalDateTime visitTime) {
         LocalDateTime oneHourFromNow = LocalDateTime.now().plusHours(1);
         if(visitTime.isBefore(oneHourFromNow)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot edit appointment less than 1 hour before visit");
         }
     }
-
 
 
     private void validateAppointment(Appointment appointment){

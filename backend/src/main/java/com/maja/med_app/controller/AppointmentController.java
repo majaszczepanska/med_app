@@ -56,5 +56,10 @@ public class AppointmentController {
     public List<String> getAvailableSlots( @PathVariable Long doctorId, @RequestParam String date) {
        return appointmentService.getAvailableSlots(doctorId, date);
     }  
+
+    @GetMapping("/patient/{patientId}")
+    public List<Appointment> getPatientHistory(@PathVariable Long patientId) {
+        return appointmentService.getAppointmentsByPatient(patientId);
+    }
     
 }

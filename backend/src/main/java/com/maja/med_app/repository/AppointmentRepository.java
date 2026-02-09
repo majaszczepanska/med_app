@@ -19,4 +19,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     boolean existsByDoctorIdAndVisitTimeAndDeletedFalseAndIdNot(Long doctorId, LocalDateTime visitTime, Long appointmentId);
     
     List<Appointment> findAllByDoctorIdAndVisitTimeBetweenAndDeletedFalse(Long doctorId, LocalDateTime start, LocalDateTime end);
+
+    List<Appointment> findAllByPatientIdAndDeletedFalse(Long patientId);
 }
