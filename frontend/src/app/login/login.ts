@@ -26,10 +26,12 @@ export class LoginComponent {
     const headers = new HttpHeaders({
       'Authorization': 'Basic ' + credentials
     });
-    this.http.get('http://localhost:8080/doctors', {headers}).subscribe({
-      next: () => {
+    this.http.get('http://localhost:8080/auth/me', {headers}).subscribe({
+      next: (userData: any) => {
         //alert("Login successful");
         sessionStorage.setItem('authData', 'Basic '+ credentials);
+        sessionStorage.setItem('userRole', userData.role);
+        sessionStorage.setItem('userId', userData.id);
         this.loginSuccess.emit();
       },
       error: () => {

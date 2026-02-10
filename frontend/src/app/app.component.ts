@@ -26,6 +26,7 @@ import { LoginComponent } from './login/login';
 export class AppComponent implements OnInit {
 
   isLoggedIn: boolean = false;
+  userRole: string = '';
 
   activeTab: string = 'dashboard';
 
@@ -112,12 +113,14 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     if(sessionStorage.getItem('authData')) {
       this.isLoggedIn = true;
+      this.userRole = sessionStorage.getItem('userRole') || '';
       this.initData();
     }
   }
 
   onLoginSuccess() {
     this.isLoggedIn = true;
+    this.userRole = sessionStorage.getItem('userRole') || '';
     this.initData();
   }
 

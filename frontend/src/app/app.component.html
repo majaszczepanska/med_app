@@ -84,9 +84,18 @@
 
         <div class="tabs">
           <button [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">📊 Dashboard</button>
-          <button [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Patients</button>
-          <button [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctors</button>
+          @if (userRole === 'ADMIN' || userRole === 'DOCTOR'){
+            <button [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Patients</button>
+          }
+          @if (userRole === 'ADMIN'){
+            <button [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctors</button>
+          }
           <button [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">Appointments</button>
+          @if (userRole === 'PATIENT') {
+            <button (click)="setActiveTab('history')" [class.active]="activeTab === 'history'">📜 My History</button>
+          }
+          <button class="logout-btn" (click)="logout()">🚪 Logout</button>
+          
         </div>
 
 
