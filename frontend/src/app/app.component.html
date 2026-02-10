@@ -16,7 +16,7 @@
         <label>PESEL:</label>
         <input type="text" [(ngModel)]="newPatient.pesel" placeholder="PESEL">
         
-        <label>Disease:</label>
+        <label>Chronic Diseases / Allergies:</label>
         <input type="text" [(ngModel)]="newPatient.disease" placeholder="Disease">
         
         <label>Main doctor (ID):</label>
@@ -79,11 +79,66 @@
     <div class="table-panel">
       
       <div class="tabs">
+        <button [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">📊 Dashboard</button>
         <button [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Patients</button>
         <button [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctors</button>
         <button [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">Appointments</button>
       </div>
 
+
+      @if (activeTab === 'dashboard') {
+        <div class="dashboard-container">
+          <div class="stats-grid">
+            <div class="stat-card card-blue">
+              <div class="stat-number">{{ patients.length }}</div>
+              <div class="stat-label">Patients Registered</div>
+            </div>
+          
+            <div class="stat-card card-green">
+              <div class="stat-number">{{ doctors.length }}</div>
+              <div class="stat-label">Active Doctors</div>
+            </div>
+          
+            <div class="stat-card card-purple">
+              <div class="stat-number">{{ appointments.length }}</div>
+              <div class="stat-label">Total Appointments</div>
+            </div>
+          </div>
+      
+          <h3 style="margin-top: 30px; border-bottom: 2px solid #ddd; padding-bottom: 10px;">
+            📅 Upcoming Appointments (Next 5)
+          </h3>
+      
+          @if (upcomingAppointments.length === 0) {
+            <p class="empty-state">No upcoming appointments scheduled.</p>
+          } @else {
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="background-color: #6c757d;">Time</th>
+                  <th style="background-color: #6c757d;">Patient</th>
+                  <th style="background-color: #6c757d;">Doctor</th>
+                  <th style="background-color: #6c757d;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (a of upcomingAppointments; track a.id) {
+                  <tr>
+                    <td style="font-weight: bold;">{{ formatDateDisplay(a.visitTime) }}</td>
+                    <td>{{ a.patient?.lastName }} {{ a.patient?.firstName }}</td>
+                    <td>Dr. {{ a.doctor?.lastName }}</td>
+                    <td>
+                      <span style="background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 10px; font-size: 12px;">
+                        SCHEDULED
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      }
       @if (activeTab === 'patients') {
         <h3>Patient Registry</h3>
         <div style="margin-bottom: 15px;">
@@ -95,7 +150,12 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>ID</th><th>Full Name</th><th>Pesel</th><th>Disease</th><th>Main Doctor</th><th>Actions</th>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Pesel</th>
+              <th>Chronic Disease</th>
+              <th>Main Doctor</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>

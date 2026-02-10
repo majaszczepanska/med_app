@@ -23,7 +23,7 @@ import plLocale from '@fullcalendar/core/locales/pl';
 
 export class AppComponent implements OnInit {
 
-  activeTab: string = 'patients';
+  activeTab: string = 'dashboard';
 
   patients: any[] = [];
   doctors: any[] = [];
@@ -176,6 +176,12 @@ export class AppComponent implements OnInit {
       },
       error: (err: any) => console.error(err)
     })
+  }
+
+  //DASHBOARD
+  get upcomingAppointments() {
+    const now = new Date()
+    return this.appointments.filter(a => !this.isPastDate(a.visitTime)).sort((a, b) => a.visitTime.localeCompare(b.visitTime)).slice(0,5);
   }
 
   //CALENDAR
