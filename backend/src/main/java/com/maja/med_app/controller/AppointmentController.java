@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
 //@CrossOrigin (origins = "http://localhost:4200")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;

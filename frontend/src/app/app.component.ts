@@ -12,16 +12,20 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { HttpClient } from '@angular/common/http';
 import enGb from '@fullcalendar/core/locales/en-gb';
 import plLocale from '@fullcalendar/core/locales/pl';
+import { RouterOutlet } from '@angular/router';
+import { LoginComponent } from './login/login';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, FullCalendarModule, ],
+  imports: [CommonModule, FormsModule, FullCalendarModule, RouterOutlet, LoginComponent ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 
 export class AppComponent implements OnInit {
+
+  isLoggedIn: boolean = true;
 
   activeTab: string = 'dashboard';
 
@@ -106,20 +110,43 @@ export class AppComponent implements OnInit {
 
   //ON INIT (REFRESH TABS)
   ngOnInit() {
+    if(sessionStorage.getItem('authData')) {
+      this.isLoggedIn = true;
+      this.initData();
+    }
+  }
+
+  onLoginSuccess() {
+    this.isLoggedIn = true;
+    this.initData();
+  }
+
+  initData(){
     this.updateMinDate();
     this.refreshAll();
     setInterval(() => {
-      if (this.activeTab === 'patients') {
-        this.refreshPatients();
-      }
-      if (this.activeTab === 'doctors') {
-        this.refreshDoctors();
-      }
-      if (this.activeTab === 'appointments') {
-        this.refreshAppointments();
-      }
+      if (this.isLoggedIn) {
+        if (this.activeTab === 'patients') {
+          this.refreshPatients();
+        }
+        if (this.activeTab === 'doctors') {
+          this.refreshDoctors();
+        }
+        if (this.activeTab === 'appointments') {
+          this.refreshAppointments();
+        }
+      } 
     }, 2000);
   }
+
+  logout() {
+    sessionStorage.removeItem('authData');
+    this.isLoggedIn = false;
+    this.patients = [];
+    this.doctors = [];
+    this.appointments = [];
+  }
+
 
   //CALENDAR - disabled for past dates
   updateMinDate() {

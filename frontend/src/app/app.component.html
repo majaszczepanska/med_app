@@ -1,330 +1,336 @@
-<div class="container">
-  <h1>Medical Management System (Admin Panel)</h1>
+@if (!isLoggedIn) {
+  <app-login (loginSuccess)="onLoginSuccess()"></app-login>
+}
+@else {
+  <div class="container">
+    <h1>Medical Management System (Admin Panel)</h1>
 
-  <div class="layout">
-    
-    <div class="form-panel">
-      
-      @if (activeTab === 'patients') {
-        <h3>@if(isEditing){Edit} @else{Add} Patient</h3>
-        <label>First Name:</label>
-        <input type="text" [(ngModel)]="newPatient.firstName" placeholder="First name">
-        
-        <label>Last Name:</label>
-        <input type="text" [(ngModel)]="newPatient.lastName" placeholder="Last name">
-        
-        <label>PESEL:</label>
-        <input type="text" [(ngModel)]="newPatient.pesel" placeholder="PESEL">
-        
-        <label>Chronic Diseases / Allergies:</label>
-        <input type="text" [(ngModel)]="newPatient.disease" placeholder="Disease">
-        
-        <label>Main doctor (ID):</label>
-        <input type="number" min="1" [(ngModel)]="newPatient.mainDoctor" placeholder="Doctor ID">
+    <div class="layout">
 
-        @if (isEditing) {
-          <button (click)="onSubmit()" class="update-btn">UPDATE PATIENT</button>
-          <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
-        } @else {
-          <button (click)="onSubmit()" class="save-btn">SAVE PATIENT</button>
+      <div class="form-panel">
+
+        @if (activeTab === 'patients') {
+          <h3>@if(isEditing){Edit} @else{Add} Patient</h3>
+          <label>First Name:</label>
+          <input type="text" [(ngModel)]="newPatient.firstName" placeholder="First name">
+
+          <label>Last Name:</label>
+          <input type="text" [(ngModel)]="newPatient.lastName" placeholder="Last name">
+
+          <label>PESEL:</label>
+          <input type="text" [(ngModel)]="newPatient.pesel" placeholder="PESEL">
+
+          <label>Chronic Diseases / Allergies:</label>
+          <input type="text" [(ngModel)]="newPatient.disease" placeholder="Disease">
+
+          <label>Main doctor (ID):</label>
+          <input type="number" min="1" [(ngModel)]="newPatient.mainDoctor" placeholder="Doctor ID">
+
+          @if (isEditing) {
+            <button (click)="onSubmit()" class="update-btn">UPDATE PATIENT</button>
+            <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
+          } @else {
+            <button (click)="onSubmit()" class="save-btn">SAVE PATIENT</button>
+          }
         }
-      }
 
-      @if (activeTab === 'doctors') {
-        <h3>@if(isEditing){Edit} @else{Add} Doctor</h3>
-        <label>First Name:</label>
-        <input type="text" [(ngModel)]="newDoctor.firstName" placeholder="First name">
-        
-        <label>Last Name:</label>
-        <input type="text" [(ngModel)]="newDoctor.lastName" placeholder="Last name">
-        
-        <label>Specialization:</label>
-        <input type="text" [(ngModel)]="newDoctor.specialization" placeholder="e.g. Cardiologist">
-        
-        @if(isEditing) {
-          <button (click)="onSubmit()" class="update-btn">UPDATE DOCTOR</button>
-          <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
-        } @else {
-        <button (click)="onSubmit()" class="save-btn" style="background-color: #007bff;">SAVE DOCTOR</button>
+        @if (activeTab === 'doctors') {
+          <h3>@if(isEditing){Edit} @else{Add} Doctor</h3>
+          <label>First Name:</label>
+          <input type="text" [(ngModel)]="newDoctor.firstName" placeholder="First name">
+
+          <label>Last Name:</label>
+          <input type="text" [(ngModel)]="newDoctor.lastName" placeholder="Last name">
+
+          <label>Specialization:</label>
+          <input type="text" [(ngModel)]="newDoctor.specialization" placeholder="e.g. Cardiologist">
+
+          @if(isEditing) {
+            <button (click)="onSubmit()" class="update-btn">UPDATE DOCTOR</button>
+            <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
+          } @else {
+          <button (click)="onSubmit()" class="save-btn" style="background-color: #007bff;">SAVE DOCTOR</button>
+          }
         }
-      }
 
-      @if (activeTab === 'appointments') {
-         <h3>@if(isEditing){Edit} @else{Book} Appointment</h3>
-        <label>Date & Time:</label>
-        <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" [min]="minDate" (click)="updateMinDate()">
-        
-        <label>Patient ID:</label>
-        <input type="number" [(ngModel)]="newAppointment.patientId" placeholder="ID">
-        
-        <label>Doctor ID:</label>
-        <input type="number" [(ngModel)]="newAppointment.doctorId" placeholder="ID">
+        @if (activeTab === 'appointments') {
+           <h3>@if(isEditing){Edit} @else{Book} Appointment</h3>
+          <label>Date & Time:</label>
+          <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" [min]="minDate" (click)="updateMinDate()">
 
-        <label>Diagnosis / Notes:</label>
-        <textarea [(ngModel)]="newAppointment.description" 
-                  placeholder="Enter diagnosis, symptoms, or medications..."
-                  rows="3"
-                  style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; resize: vertical; margin-bottom: 15px;">
-        </textarea>
-        @if (isEditing) {
-          <button (click)="onSubmit()" class="update-btn">UPDATE VISIT</button>
-          <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
-        } @else {
-          <button (click)="onSubmit()" class="save-btn" style="background-color: #6f42c1;">BOOK VISIT</button>
+          <label>Patient ID:</label>
+          <input type="number" [(ngModel)]="newAppointment.patientId" placeholder="ID">
+
+          <label>Doctor ID:</label>
+          <input type="number" [(ngModel)]="newAppointment.doctorId" placeholder="ID">
+
+          <label>Diagnosis / Notes:</label>
+          <textarea [(ngModel)]="newAppointment.description" 
+                    placeholder="Enter diagnosis, symptoms, or medications..."
+                    rows="3"
+                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; resize: vertical; margin-bottom: 15px;">
+          </textarea>
+          @if (isEditing) {
+            <button (click)="onSubmit()" class="update-btn">UPDATE VISIT</button>
+            <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
+          } @else {
+            <button (click)="onSubmit()" class="save-btn" style="background-color: #6f42c1;">BOOK VISIT</button>
+          }
         }
-      }
 
-    </div>
-
-    <div class="table-panel">
-      
-      <div class="tabs">
-        <button [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">📊 Dashboard</button>
-        <button [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Patients</button>
-        <button [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctors</button>
-        <button [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">Appointments</button>
       </div>
 
+      <div class="table-panel">
 
-      @if (activeTab === 'dashboard') {
-        <div class="dashboard-container">
-          <div class="stats-grid">
-            <div class="stat-card card-blue">
-              <div class="stat-number">{{ patients.length }}</div>
-              <div class="stat-label">Patients Registered</div>
+        <div class="tabs">
+          <button [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">📊 Dashboard</button>
+          <button [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Patients</button>
+          <button [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctors</button>
+          <button [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">Appointments</button>
+        </div>
+
+
+        @if (activeTab === 'dashboard') {
+          <div class="dashboard-container">
+            <div class="stats-grid">
+              <div class="stat-card card-blue">
+                <div class="stat-number">{{ patients.length }}</div>
+                <div class="stat-label">Patients Registered</div>
+              </div>
+            
+              <div class="stat-card card-green">
+                <div class="stat-number">{{ doctors.length }}</div>
+                <div class="stat-label">Active Doctors</div>
+              </div>
+            
+              <div class="stat-card card-purple">
+                <div class="stat-number">{{ appointments.length }}</div>
+                <div class="stat-label">Total Appointments</div>
+              </div>
             </div>
           
-            <div class="stat-card card-green">
-              <div class="stat-number">{{ doctors.length }}</div>
-              <div class="stat-label">Active Doctors</div>
-            </div>
+            <h3 style="margin-top: 30px; border-bottom: 2px solid #ddd; padding-bottom: 10px;">
+              📅 Upcoming Appointments (Next 5)
+            </h3>
           
-            <div class="stat-card card-purple">
-              <div class="stat-number">{{ appointments.length }}</div>
-              <div class="stat-label">Total Appointments</div>
-            </div>
-          </div>
-      
-          <h3 style="margin-top: 30px; border-bottom: 2px solid #ddd; padding-bottom: 10px;">
-            📅 Upcoming Appointments (Next 5)
-          </h3>
-      
-          @if (upcomingAppointments.length === 0) {
-            <p class="empty-state">No upcoming appointments scheduled.</p>
-          } @else {
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="background-color: #6c757d;">Time</th>
-                  <th style="background-color: #6c757d;">Patient</th>
-                  <th style="background-color: #6c757d;">Doctor</th>
-                  <th style="background-color: #6c757d;">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (a of upcomingAppointments; track a.id) {
+            @if (upcomingAppointments.length === 0) {
+              <p class="empty-state">No upcoming appointments scheduled.</p>
+            } @else {
+              <table class="data-table">
+                <thead>
                   <tr>
-                    <td style="font-weight: bold;">{{ formatDateDisplay(a.visitTime) }}</td>
-                    <td>{{ a.patient?.lastName }} {{ a.patient?.firstName }}</td>
-                    <td>Dr. {{ a.doctor?.lastName }}</td>
-                    <td>
-                      <span style="background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 10px; font-size: 12px;">
-                        SCHEDULED
-                      </span>
-                    </td>
+                    <th style="background-color: #6c757d;">Time</th>
+                    <th style="background-color: #6c757d;">Patient</th>
+                    <th style="background-color: #6c757d;">Doctor</th>
+                    <th style="background-color: #6c757d;">Status</th>
                   </tr>
-                }
-              </tbody>
-            </table>
-          }
-        </div>
-      }
-      @if (activeTab === 'patients') {
-        <h3>Patient Registry</h3>
-        <div style="margin-bottom: 15px;">
-          <input type="text" 
-                 [(ngModel)]="searchText" 
-                 placeholder="🔍 Search Last name or PESEL..." 
-                 style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Full Name</th>
-              <th>Pesel</th>
-              <th>Chronic Disease</th>
-              <th>Main Doctor</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (p of filteredPatients; track p.id){
-              <tr>
-                <td>{{ p.id }}</td>
-                <td>{{ p.firstName }} {{ p.lastName }}</td>
-                <td>{{ p.pesel }}</td>
-                <td>{{ p.disease }}</td>
-                <td>{{ p.mainDoctor?.id || '-' }}</td>
-                <td>
-                  <div class="action-buttons-wrapper">
-                    <button (click)="showPatientHistory(p)" class="history-btn">📜</button>
-                    <button (click)="editPatient(p)" class="edit-btn">EDIT</button>
-                    <button (click)="removePatient(p.id)" class="delete-btn">DELETE</button>
-                  </div>
-                </td>
-              </tr>
+                </thead>
+                <tbody>
+                  @for (a of upcomingAppointments; track a.id) {
+                    <tr>
+                      <td style="font-weight: bold;">{{ formatDateDisplay(a.visitTime) }}</td>
+                      <td>{{ a.patient?.lastName }} {{ a.patient?.firstName }}</td>
+                      <td>Dr. {{ a.doctor?.lastName }}</td>
+                      <td>
+                        <span style="background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 10px; font-size: 12px;">
+                          SCHEDULED
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             }
-          </tbody>
-        </table>
-      }
-
-      @if (activeTab === 'doctors') {
-        <h3 style="color: #007bff">Doctors List</h3>
-        <div style="margin-bottom: 15px;">
-          <input type="text" 
-                 [(ngModel)]="searchText" 
-                 placeholder="🔍 Search Last name or specialization" 
-                 style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-        <table class="data-table">
-          <thead>
-            <tr style="background-color: #007bff;">
-              <th>ID</th><th>Full Name</th><th>Specialization</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (d of filteredDoctors; track d.id){
-              <tr>
-                <td>{{ d.id }}</td>
-                <td>{{ d.firstName }} {{ d.lastName }}</td>
-                <td>{{ d.specialization }}</td>
-                <td>
-                  <div class="action-buttons-wrapper">
-                    <button (click)="editDoctor(d)" class="edit-btn">EDIT</button>
-                    <button (click)="removeDoctor(d.id)" class="delete-btn">DELETE</button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      }
-
-      @if (activeTab === 'appointments') {
-        @if (activeTab === 'appointments') {
-        <h3 style="color: #6f42c1">Appointments Schedule</h3>
-        
-        <div class="controls-container">
-          
-          <div class="view-switcher">
-            <button (click)="showCalendar = false" [class.active-view]="!showCalendar">List View</button>
-            <button (click)="showCalendar = true" [class.active-view]="showCalendar">Calendar View</button>
-          </div>
-
-          <div class="doctor-filter">
-            <label>Filter by Doctor:</label>
-            <select [(ngModel)]="selectedDoctorId" (change)="onDoctorFilterChange()">
-              <option [ngValue]="null">-- ALL DOCTORS --</option>
-              @for (d of doctors; track d.id) {
-                <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
-              }
-            </select>
-          </div>
-
-        </div>
-
-        @if (showCalendar) {
-          <div class="calendar-container">
-            <full-calendar [options]="calendarOptions"></full-calendar>
           </div>
         }
-
-        @if (!showCalendar) {
+        @if (activeTab === 'patients') {
+          <h3>Patient Registry</h3>
           <div style="margin-bottom: 15px;">
             <input type="text" 
-                [(ngModel)]="searchText" 
-                placeholder="🔍 Search patient or doctor Last name" 
-                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                   [(ngModel)]="searchText" 
+                   placeholder="🔍 Search Last name or PESEL..." 
+                   style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
           </div>
           <table class="data-table">
             <thead>
               <tr>
-                <th style="background-color: #6f42c1;">ID</th>
-                <th style="background-color: #6f42c1;">Date</th>
-                <th style="background-color: #6f42c1;">Patient</th>
-                <th style="background-color: #6f42c1;">Doctor</th>
-                <th style="background-color: #6f42c1;">Notes</th>
-                <th style="background-color: #6f42c1;">Actions</th>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Pesel</th>
+                <th>Chronic Disease</th>
+                <th>Main Doctor</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @for (a of filetredAppointments; track a.id){
-                @if (!isPastDate(a.visitTime) || isToday(a.visitTime)){
-                  <tr [style.opacity]="isPastDate(a.visitTime) ? 0.3 : 1">
-                    <td>{{ a.id }}</td>
-                    <td>{{ formatDateDisplay(a.visitTime) }}</td>
-                    <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
-                    <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
-                    <td class="truncate-cell" [title]="a.description">{{ a.description || '-'}}</td>
-                    <td>
-                      <div class="action-buttons-wrapper">
-                        <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)" aria-describedby="You can edit this appointment">EDIT</button>
-                        <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>
-                      </div>
-                    </td>
-                  </tr>
-                }
-
+              @for (p of filteredPatients; track p.id){
+                <tr>
+                  <td>{{ p.id }}</td>
+                  <td>{{ p.firstName }} {{ p.lastName }}</td>
+                  <td>{{ p.pesel }}</td>
+                  <td>{{ p.disease }}</td>
+                  <td>{{ p.mainDoctor?.id || '-' }}</td>
+                  <td>
+                    <div class="action-buttons-wrapper">
+                      <button (click)="showPatientHistory(p)" class="history-btn">📜</button>
+                      <button (click)="editPatient(p)" class="edit-btn">EDIT</button>
+                      <button (click)="removePatient(p.id)" class="delete-btn">DELETE</button>
+                    </div>
+                  </td>
+                </tr>
               }
             </tbody>
           </table>
         }
+
+        @if (activeTab === 'doctors') {
+          <h3 style="color: #007bff">Doctors List</h3>
+          <div style="margin-bottom: 15px;">
+            <input type="text" 
+                   [(ngModel)]="searchText" 
+                   placeholder="🔍 Search Last name or specialization" 
+                   style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr style="background-color: #007bff;">
+                <th>ID</th><th>Full Name</th><th>Specialization</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of filteredDoctors; track d.id){
+                <tr>
+                  <td>{{ d.id }}</td>
+                  <td>{{ d.firstName }} {{ d.lastName }}</td>
+                  <td>{{ d.specialization }}</td>
+                  <td>
+                    <div class="action-buttons-wrapper">
+                      <button (click)="editDoctor(d)" class="edit-btn">EDIT</button>
+                      <button (click)="removeDoctor(d.id)" class="delete-btn">DELETE</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         }
-      }
-      @if (activeTab === 'history' && selectedPatientForHistory) {
-        <div class="history-container">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3>
-              Medical History: 
-              <span style="color: #007bff;">
-                {{ selectedPatientForHistory.firstName }} {{ selectedPatientForHistory.lastName }}
-              </span>
-            </h3>
-            <button (click)="closeHistory()" class="cancel-btn">⬅ BACK TO LIST</button>
+
+        @if (activeTab === 'appointments') {
+          @if (activeTab === 'appointments') {
+          <h3 style="color: #6f42c1">Appointments Schedule</h3>
+          
+          <div class="controls-container">
+
+            <div class="view-switcher">
+              <button (click)="showCalendar = false" [class.active-view]="!showCalendar">List View</button>
+              <button (click)="showCalendar = true" [class.active-view]="showCalendar">Calendar View</button>
+            </div>
+
+            <div class="doctor-filter">
+              <label>Filter by Doctor:</label>
+              <select [(ngModel)]="selectedDoctorId" (change)="onDoctorFilterChange()">
+                <option [ngValue]="null">-- ALL DOCTORS --</option>
+                @for (d of doctors; track d.id) {
+                  <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
+                }
+              </select>
+            </div>
+
           </div>
-        
-          <div class="patient-info-card" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
-            <p><strong>PESEL:</strong> {{ selectedPatientForHistory.pesel }}</p>
-            <p><strong>Chronic Disease:</strong> {{ selectedPatientForHistory.disease }}</p>
-            <p><strong>Primary Doctor:</strong> {{ selectedPatientForHistory.mainDoctor?.lastName || '-' }}</p>
-          </div>
-        
-          @if (patientHistory.length === 0) {
-            <p>No medical history found for this patient.</p>
-          } @else {
+
+          @if (showCalendar) {
+            <div class="calendar-container">
+              <full-calendar [options]="calendarOptions"></full-calendar>
+            </div>
+          }
+
+          @if (!showCalendar) {
+            <div style="margin-bottom: 15px;">
+              <input type="text" 
+                  [(ngModel)]="searchText" 
+                  placeholder="🔍 Search patient or doctor Last name" 
+                  style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th style="background-color: #17a2b8;">Date</th>
-                  <th style="background-color: #17a2b8;">Doctor</th>
-                  <th style="background-color: #17a2b8;">Diagnosis / Notes</th>
+                  <th style="background-color: #6f42c1;">ID</th>
+                  <th style="background-color: #6f42c1;">Date</th>
+                  <th style="background-color: #6f42c1;">Patient</th>
+                  <th style="background-color: #6f42c1;">Doctor</th>
+                  <th style="background-color: #6f42c1;">Notes</th>
+                  <th style="background-color: #6f42c1;">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                @for (h of patientHistory; track h.id) {
-                  <tr>
-                    <td>{{ formatDateDisplay(h.visitTime) }}</td>
-                    <td>Dr. {{ h.doctor?.lastName }} ({{ h.doctor?.specialization }})</td>
-                    <td style="font-style: italic;">{{ h.description || '-' }}</td>
-                  </tr>
+                @for (a of filetredAppointments; track a.id){
+                  @if (!isPastDate(a.visitTime) || isToday(a.visitTime)){
+                    <tr [style.opacity]="isPastDate(a.visitTime) ? 0.3 : 1">
+                      <td>{{ a.id }}</td>
+                      <td>{{ formatDateDisplay(a.visitTime) }}</td>
+                      <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
+                      <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
+                      <td class="truncate-cell" [title]="a.description">{{ a.description || '-'}}</td>
+                      <td>
+                        <div class="action-buttons-wrapper">
+                          <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)" aria-describedby="You can edit this appointment">EDIT</button>
+                          <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+
                 }
               </tbody>
             </table>
           }
-        </div>
-      }
-    </div>
+          }
+        }
+        @if (activeTab === 'history' && selectedPatientForHistory) {
+          <div class="history-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h3>
+                Medical History: 
+                <span style="color: #007bff;">
+                  {{ selectedPatientForHistory.firstName }} {{ selectedPatientForHistory.lastName }}
+                </span>
+              </h3>
+              <button (click)="closeHistory()" class="cancel-btn">⬅ BACK TO LIST</button>
+            </div>
+          
+            <div class="patient-info-card" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
+              <p><strong>PESEL:</strong> {{ selectedPatientForHistory.pesel }}</p>
+              <p><strong>Chronic Disease:</strong> {{ selectedPatientForHistory.disease }}</p>
+              <p><strong>Primary Doctor:</strong> {{ selectedPatientForHistory.mainDoctor?.lastName || '-' }}</p>
+            </div>
+          
+            @if (patientHistory.length === 0) {
+              <p>No medical history found for this patient.</p>
+            } @else {
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="background-color: #17a2b8;">Date</th>
+                    <th style="background-color: #17a2b8;">Doctor</th>
+                    <th style="background-color: #17a2b8;">Diagnosis / Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (h of patientHistory; track h.id) {
+                    <tr>
+                      <td>{{ formatDateDisplay(h.visitTime) }}</td>
+                      <td>Dr. {{ h.doctor?.lastName }} ({{ h.doctor?.specialization }})</td>
+                      <td style="font-style: italic;">{{ h.description || '-' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+        }
+      </div>
 
+    </div>
   </div>
-</div>
+} 
+
