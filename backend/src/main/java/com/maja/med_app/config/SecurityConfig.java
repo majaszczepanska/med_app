@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,9 +30,9 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             //.cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                //.anyRequest().authenticated()
-                .anyRequest().permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .anyRequest().authenticated()
+                //.anyRequest().permitAll()
             )
             .httpBasic(Customizer.withDefaults());
         return http.build();  
@@ -55,5 +56,19 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+        //return NoOpPasswordEncoder.getInstance();
     }
+
+    //create hash 
+    /*
+    @Bean
+    public org.springframework.boot.CommandLineRunner printHash(PasswordEncoder encoder) {
+        return args -> {
+            System.out.println("--- 🔑 TO JEST TWÓJ HASH DLA admin123 🔑 ---");
+            // To wygeneruje hash idealnie pasujący do Twojej wersji Springa
+            System.out.println(encoder.encode("patient")); 
+            System.out.println("---------------------------------------------");
+        };
+    }
+    */
 }

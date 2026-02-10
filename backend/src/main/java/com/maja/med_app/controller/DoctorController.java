@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RestController //class in internet
 @RequestMapping("/doctors") // localhost:8080/doctors
 @RequiredArgsConstructor  //create constructor for finals (line 21)
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 //@CrossOrigin(origins = "*")
 public class DoctorController {
 

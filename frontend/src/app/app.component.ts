@@ -25,7 +25,7 @@ import { LoginComponent } from './login/login';
 
 export class AppComponent implements OnInit {
 
-  isLoggedIn: boolean = true;
+  isLoggedIn: boolean = false;
 
   activeTab: string = 'dashboard';
 
