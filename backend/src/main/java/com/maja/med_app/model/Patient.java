@@ -55,6 +55,8 @@ public class Patient {
     @Schema(implementation = Object.class, example = "{\"id\": 0}")
     private Doctor mainDoctor;
 
+    private String email;
+
     @Column(columnDefinition = "boolean default false")
     private boolean deleted = false;
 

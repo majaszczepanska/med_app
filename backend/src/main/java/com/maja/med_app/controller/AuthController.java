@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.maja.med_app.model.AppUser;
+import com.maja.med_app.model.Patient;
+import com.maja.med_app.repository.PatientRepository;
 import com.maja.med_app.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,9 +25,10 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public record UserDto(Long id, String email, String role, String firstName, String lastName) {}
+    public record UserDto(Long id, Long patienId, String email, String role, String firstName, String lastName) {}
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody AppUser user){
@@ -50,8 +53,15 @@ public class AuthController {
             .orElseThrow(() -> new RuntimeException("User not found"));
             
         //user.setPassword(null);
+        Long patientId = null;
+        if ("PATIENT".equals(user.getRole())) {
+            patientId = patientRepository.findByEmail(email)
+                    .map(Patient::getId) // Wyciągamy ID jeśli pacjent istnieje
+                    .orElse(null);
+        }
         UserDto response = new UserDto(
             user.getId(),
+            patientId,
             user.getEmail(),
             user.getRole(),
             user.getFirstName(),

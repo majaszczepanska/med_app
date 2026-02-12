@@ -32,6 +32,10 @@ export class LoginComponent {
         sessionStorage.setItem('authData', 'Basic '+ credentials);
         sessionStorage.setItem('userRole', userData.role);
         sessionStorage.setItem('userId', userData.id);
+
+        if (userData.patientId) {
+          sessionStorage.setItem('patientId', userData.patientId)
+        }
         //this.loginSuccess.emit();
         window.location.href = '/';
       },
