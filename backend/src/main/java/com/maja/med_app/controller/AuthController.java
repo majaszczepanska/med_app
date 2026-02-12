@@ -1,6 +1,6 @@
 package com.maja.med_app.controller;
 
-import java.net.Authenticator;
+
 
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +25,8 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    public record UserDto(Long id, String email, String role) {}
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody AppUser user){
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -40,16 +42,21 @@ public class AuthController {
 
 
     @GetMapping("/me")
-    public ResponseEntity<AppUser> getCurrentUser() {
+    public ResponseEntity<UserDto> getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
         AppUser user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("User not found"));
             
-        user.setPassword(null);
+        //user.setPassword(null);
+        UserDto response = new UserDto(
+            user.getId(),
+            user.getEmail(),
+            user.getRole()
+        );
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -19,6 +19,10 @@ public class AppUser {
     private String email;
     private String password;
     private String role;
+    public boolean isPresent() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isPresent'");
+    }
 
 
 
