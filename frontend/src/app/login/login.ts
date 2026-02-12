@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Route, Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -32,7 +32,8 @@ export class LoginComponent {
         sessionStorage.setItem('authData', 'Basic '+ credentials);
         sessionStorage.setItem('userRole', userData.role);
         sessionStorage.setItem('userId', userData.id);
-        this.loginSuccess.emit();
+        //this.loginSuccess.emit();
+        window.location.href = '/';
       },
       error: () => {
         this.errorMessage = "Invalid email or password";
