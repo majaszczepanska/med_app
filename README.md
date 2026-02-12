@@ -1,63 +1,29 @@
-command:
-- run
-docker run --name medapp_container -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=medapp_db -p 5432:5432 -d postgres
-- stop/remove container
-docker rm -f medapp_container
-- enter db (from root)
-docker exec -it medapp_container psql -U postgres -d medapp_db
-- logs
-docker logs medapp_container
-- stop
-docker stop medapp_container
--start 
-docker start medapp_container
+🏥 MedApp - Medical Facility Management System
+📋 Project Overview
 
-postgres in system:
-sudo systemctl stop postgresql
-sudo systemctl disable postgresql
+MedApp is a full-stack web application designed to streamline medical appointment scheduling and patient records management. The system supports three distinct user roles (Patient, Doctor, and Admin), each with a dedicated set of functionalities to ensure efficient clinic workflow.
+🛠️ Tech Stack
 
-unused dependencies:
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+    Backend: Java 21, Spring Boot 3.3.5.
 
+Frontend: Angular (Standalone Components), RxJS, FullCalendar.
 
-used:
-- for api
-		<dependency>
-    		<groupId>org.springdoc</groupId>
-    		<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-    		<version>2.2.0</version>
-		</dependency>
+Database: PostgreSQL (production) / H2 (development).
 
+Security: Spring Security & BCrypt for secure password hashing.
 
-repair:
-rm -rf target
-pkill -f java
-mvn clean spring-boot:run
-mvn clean spring-boot:run -DskipTests
+Build Tool: Maven.
 
-repair when accidentally run from root:
-killall -9 java
-su -
-cd /home/maja/school/projects/med_app
-rm -rf target
-chown -R maja: .
-mvn clean install
-mvn spring-boot:run
+Libraries: Lombok, Hibernate.
 
-ANGULAR:
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-apt install -y nodejs
-apt install npm
-npm install -g @angular/cli
+🚀 Key Features
 
-cd ~/school/projects/
-ng new med-app-frontend
+    Role-Based Access Control: Secure registration and login system for Patients, Doctors, and Admins.
 
+    Appointment Management: Interactive calendar with real-time validation of doctor availability.
 
-cd med-app-frontend/
-code .
-ng serve
+    Patient Records: Comprehensive medical history tracking, including sensitive data management (PESEL, chronic diseases).
+
+    Admin Dashboard: Full CRUD operations for managing the database of doctors and patients.
+
+REST API: Fully documented backend endpoints communicating via JSON.
