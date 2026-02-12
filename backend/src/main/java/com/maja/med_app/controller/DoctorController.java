@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maja.med_app.model.Doctor;
-import com.maja.med_app.model.Patient;
-import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.service.DoctorService;
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.util.ValidationErrorUtils;
