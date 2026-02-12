@@ -94,4 +94,9 @@ public class PatientService {
             throw new AppValidationException(errors);
         }
     }
+
+    public Patient getPatientById(Long id) {
+    return patientRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient with id " + id + " not found"));
+}
 }

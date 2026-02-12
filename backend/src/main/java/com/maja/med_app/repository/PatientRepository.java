@@ -10,5 +10,6 @@ import com.maja.med_app.model.Patient;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long>{
     List<Patient> findAllByDeletedFalse();
+    Optional<Patient> findByEmail(String email);
     
 }

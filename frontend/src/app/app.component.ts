@@ -105,7 +105,8 @@ export class AppComponent implements OnInit {
     private patientService: PatientService,
     private doctorService: DoctorService,
     private appointmentService: AppointmentService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
   ){}
 
 
@@ -143,11 +144,15 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    sessionStorage.removeItem('authData');
+    //sessionStorage.removeItem('authData');
+    sessionStorage.clear()
     this.isLoggedIn = false;
     this.patients = [];
     this.doctors = [];
     this.appointments = [];
+    this.selectedPatientForHistory = null; 
+    this.activeTab = 'dashboard'; 
+    window.location.reload();
   }
 
 
@@ -163,8 +168,14 @@ export class AppComponent implements OnInit {
     this.activeTab = tabName;
     this.isEditing = false;
     this.searchText = '';
-    this.resetForm();
-    this.refreshAll();
+
+    if (tabName === 'history' && this.userRole === 'PATIENT') {
+      this.loadMyHistory();
+    } 
+    else if (tabName === 'dashboard') {
+      this.resetForm();
+      this.refreshAll(); 
+    }
   }
 
   //REFRESH
@@ -415,7 +426,7 @@ export class AppComponent implements OnInit {
     this.activeTab = 'history';
     this.patientHistory = [];
 
-    this.appointmentService.getAppointmentsByPatient(patient.id).subscribe({
+    this.appointmentService.getPatientHistory(patient.id).subscribe({
       next: (data) => {
         this.patientHistory = data.sort((a: any, b: any) => b.visitTime.localeCompare(a.visitTime));
         this.cdr.detectChanges();
@@ -431,6 +442,26 @@ export class AppComponent implements OnInit {
     this.patientHistory = [];
     this.activeTab = 'patients';
   }
+
+  //MY HISTORY
+  loadMyHistory() {
+  const myIdStr = sessionStorage.getItem('userId');
+
+  if (myIdStr) {
+    const myId = Number(myIdStr);
+
+    this.appointmentService.getPatientDetails(myId).subscribe({
+      next: (fullPatientData: any) => {
+        this.showPatientHistory(fullPatientData);
+      },
+      error: (err: any) => {
+        console.error("Error on loading patient data: ", err);
+        const tstPatient = { id: myId, firstName: 'My', lastName: 'History' };
+        this.showPatientHistory(tstPatient);
+      }
+    });
+  }
+}
 
 
   //DOCTOR

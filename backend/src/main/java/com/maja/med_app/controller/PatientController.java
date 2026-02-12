@@ -3,7 +3,7 @@ package com.maja.med_app.controller;
 import java.util.List;
 import java.util.Map;
 
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,5 +58,11 @@ public class PatientController {
     public void deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
+        return ResponseEntity.ok(patientService.getPatientById(id));
+    }
+
 }
 

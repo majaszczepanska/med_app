@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 
@@ -28,8 +28,20 @@ export class AppointmentService {
       return this.http.delete(`${this.apiUrl}/${id}`);
     }
 
-    getAppointmentsByPatient(patientId: number): Observable<any> {
+    getPatientHistory(patientId: number): Observable<any> {
       return this.http.get(`${this.apiUrl}/patient/${patientId}`);
     }
+    
+
+
+    getPatientDetails(id: number): Observable<any> {
+      const token = sessionStorage.getItem('authData');
+      const headers = new HttpHeaders({
+        'Authorization': token || ''
+      });
+  
+      return this.http.get(`http://localhost:8080/patients/${id}`, { headers });
+    }
+  
     
 }
