@@ -1,0 +1,92 @@
+/* 1. Wyśrodkowanie karty na ekranie */
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f7f6; /* Jasne, medyczne tło */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 2. Karta rejestracji */
+.register-container {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Miękki cień */
+  width: 100%;
+  max-width: 400px; /* Żeby nie była za szeroka */
+  text-align: center;
+}
+
+/* 3. Nagłówek */
+h2 {
+  margin-bottom: 25px;
+  color: #333;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* 4. Pola tekstowe i wybór roli */
+input, select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+  font-size: 14px;
+  box-sizing: border-box; /* Ważne, żeby padding nie rozpychał */
+  transition: all 0.3s ease;
+}
+
+/* Efekt po kliknięciu w pole */
+input:focus, select:focus {
+  outline: none;
+  border-color: #6f42c1; /* Twój fiolet */
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.1);
+}
+
+/* 5. Przycisk Rejestracji */
+button {
+  width: 100%;
+  padding: 14px;
+  background-color: #6f42c1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #5a32a3; /* Ciemniejszy fiolet po najechaniu */
+}
+
+/* 6. Link powrotu do logowania */
+p {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+a {
+  color: #6f42c1;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Opcjonalnie: Styl dla selecta, żeby był ładniejszy */
+select {
+  cursor: pointer;
+  color: #555;
+}

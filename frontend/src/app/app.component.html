@@ -1,5 +1,5 @@
 @if (!isLoggedIn) {
-  <app-login (loginSuccess)="onLoginSuccess()"></app-login>
+  <router-outlet></router-outlet>
 }
 @else {
   <div class="container">
