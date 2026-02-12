@@ -25,7 +25,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public record UserDto(Long id, String email, String role) {}
+    public record UserDto(Long id, String email, String role, String firstName, String lastName) {}
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody AppUser user){
@@ -53,7 +53,9 @@ public class AuthController {
         UserDto response = new UserDto(
             user.getId(),
             user.getEmail(),
-            user.getRole()
+            user.getRole(),
+            user.getFirstName(),
+            user.getLastName()
         );
 
         return ResponseEntity.ok(response);
