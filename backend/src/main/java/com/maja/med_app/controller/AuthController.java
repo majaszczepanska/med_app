@@ -17,6 +17,7 @@ import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.PatientRepository;
 import com.maja.med_app.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,19 +29,29 @@ public class AuthController {
     private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public record UserDto(Long id, Long patienId, String email, String role, String firstName, String lastName) {}
+    public record UserDto(Long id, Long patienId, String email, String role) {}
+    public record RegisterDto(String email, String password, String firstName, String lastName, String pesel) {}
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody AppUser user){
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+    @Transactional
+    public ResponseEntity<?> registerUser(@RequestBody RegisterDto request){
+        if (userRepository.findByEmail(request.email()).isPresent()) {
             return ResponseEntity.badRequest().body("Email already taken");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("PATIENT");
-        }
+        AppUser user = new AppUser();
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setRole("PATIENT");
         userRepository.save(user);
-        return ResponseEntity.ok("User registered successfuly");
+
+        Patient patient = new Patient();
+        patient.setUser(user);
+        patient.setFirstName(request.firstName());
+        patient.setLastName(request.lastName());
+        patient.setPesel(request.pesel());
+
+        patientRepository.save(patient);
+        return ResponseEntity.ok("User and Patient registered successfuly");
     }
 
 
@@ -55,17 +66,15 @@ public class AuthController {
         //user.setPassword(null);
         Long patientId = null;
         if ("PATIENT".equals(user.getRole())) {
-            patientId = patientRepository.findByEmail(email)
-                    .map(Patient::getId) // Wyciągamy ID jeśli pacjent istnieje
+            patientId = patientRepository.findByUser(user)
+                    .map(Patient::getId) 
                     .orElse(null);
         }
         UserDto response = new UserDto(
             user.getId(),
             patientId,
             user.getEmail(),
-            user.getRole(),
-            user.getFirstName(),
-            user.getLastName()
+            user.getRole()
         );
 
         return ResponseEntity.ok(response);
