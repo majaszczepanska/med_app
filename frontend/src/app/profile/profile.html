@@ -1,0 +1,18 @@
+<div class="profile-container">
+  <h2>Update your profile 🏥</h2>
+  <p class="subtitle">Add your medical details below</p>
+
+  <form (ngSubmit)="update()">
+    
+    <label>Phone Number</label>
+    <input [(ngModel)]="updateData.phoneNumber" name="phoneNumber" type="tel" placeholder="e.g. 123456789" required>
+    
+    <label>Home Address</label>
+    <input [(ngModel)]="updateData.address" name="address" type="text" placeholder="City, Street, Apt" required>
+    
+    <label>Medical History / Diseases</label>
+    <input [(ngModel)]="updateData.disease" name="disease" type="text" placeholder="Any chronic diseases?" required>
+
+    <button type="submit">Save Changes</button>
+  </form>
+</div>

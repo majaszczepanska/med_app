@@ -14,11 +14,12 @@ import enGb from '@fullcalendar/core/locales/en-gb';
 import plLocale from '@fullcalendar/core/locales/pl';
 import { RouterOutlet } from '@angular/router';
 import { LoginComponent } from './login/login';
+import { Profile } from './profile/profile';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, FullCalendarModule, RouterOutlet, LoginComponent ],
+  imports: [CommonModule, FormsModule, FullCalendarModule, RouterOutlet, LoginComponent, Profile ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -150,6 +150,9 @@
                 </tbody>
               </table>
             }
+            
+
+          <button (click)="setActiveTab('profile')" style="margin-top: 20px;">My Profile ⚙️</button>
           </div>
         }
         @if (activeTab === 'patients') {
@@ -336,6 +339,9 @@
               </table>
             }
           </div>
+        }
+        @if (activeTab === 'profile') {
+          <app-profile></app-profile>
         }
       </div>
 

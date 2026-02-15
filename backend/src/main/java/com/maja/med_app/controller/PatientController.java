@@ -3,7 +3,9 @@ package com.maja.med_app.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maja.med_app.model.AppUser;
 import com.maja.med_app.model.Patient;
+import com.maja.med_app.repository.PatientRepository;
+import com.maja.med_app.repository.UserRepository;
 import com.maja.med_app.service.PatientService;
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.util.ValidationErrorUtils;
@@ -30,6 +35,9 @@ import lombok.RequiredArgsConstructor;
 public class PatientController {
 
     private final PatientService patientService;
+    private final UserRepository userRepository;
+    private final PatientRepository patientRepository;
+    public record UpdateProfileDto(Integer phoneNumber, String address, String disease) {}
 
     @PostMapping
     public Patient addPatient(@Valid @RequestBody Patient patient, BindingResult result){
@@ -62,6 +70,26 @@ public class PatientController {
     @GetMapping("/{id}")
     public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
         return ResponseEntity.ok(patientService.getPatientById(id));
+    }
+
+    @PutMapping("/me/profile") 
+    public ResponseEntity<?> updatePatientProfile(@RequestBody UpdateProfileDto request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        AppUser user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        Patient patient = patientRepository.findByUser(user) 
+            .orElseThrow(() -> new RuntimeException("Patient profile not found"));
+
+        patient.setPhoneNumber(request.phoneNumber());
+        patient.setAddress(request.address());
+        patient.setDisease(request.disease());
+
+        patientRepository.save(patient);
+
+        return ResponseEntity.ok("Profile updated successfully");
     }
 
 }
