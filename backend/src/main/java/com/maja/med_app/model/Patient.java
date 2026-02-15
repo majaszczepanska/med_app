@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -27,6 +28,10 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(accessMode= Schema.AccessMode.READ_ONLY)
     private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private AppUser user;
 
     @NotBlank(message = "Required")
     @Size(min = 3, message= "Min. 3 characters")
@@ -47,15 +52,16 @@ public class Patient {
     @Schema(example = "12345678901")
     private String pesel;
 
+    private Integer phoneNumber;
+    private String address;
+
     private String disease;
     
     @ManyToOne
     @JoinColumn(name= "main_doctor_id")
-    @jakarta.validation.constraints.NotNull(message = "Required")
+    //@jakarta.validation.constraints.NotNull(message = "Required")
     @Schema(implementation = Object.class, example = "{\"id\": 0}")
     private Doctor mainDoctor;
-
-    private String email;
 
     @Column(columnDefinition = "boolean default false")
     private boolean deleted = false;
