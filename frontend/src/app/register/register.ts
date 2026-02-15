@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -12,20 +13,21 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './register.css',
 })
 export class RegisterComponent {
-  user = {
+  registerData = {
     email: '',
     password: '',
     firstName: '',
     lastName: '',
-    role: 'PATIENT' 
+    pesel: ''
   };
 
-  constructor(private http: HttpClient, private router: Router) {}
+  //constructor(private http: HttpClient, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   register() {
-    this.http.post('http://localhost:8080/auth/register', this.user, { responseType: 'text' }).subscribe({
+    this.authService.register(this.registerData).subscribe({
       next: (response) => {
-        alert("Account successfuly created ✅ Sign in");
+        alert("Account successfuly created ✅ \nSign in");
         this.router.navigate(['/login']);
       },
       error: (err) => {

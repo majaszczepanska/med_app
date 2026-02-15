@@ -2,16 +2,15 @@
   <h2>Create an account 🏥</h2>
   <form (ngSubmit)="register()">
     
-    <input [(ngModel)]="user.email" name="email" type="email" placeholder="email" required>
-    <input [(ngModel)]="user.password" name="password" type="password" placeholder="password" required>
+    <input [(ngModel)]="registerData.email" name="email" type="email" placeholder="email" required>
+    <input [(ngModel)]="registerData.password" name="password" type="password" placeholder="password" required>
     
-    <input [(ngModel)]="user.firstName" name="firstName" placeholder="First Name" required>
-    <input [(ngModel)]="user.lastName" name="lastName" placeholder="Last Name" required>
+    <input [(ngModel)]="registerData.firstName" name="firstName" placeholder="First name" required>
+    <input [(ngModel)]="registerData.lastName" name="lastName" placeholder="Last name" required>
 
-    <select [(ngModel)]="user.role" name="role">
-      <option value="PATIENT">Patient</option>
-      <option value="DOCTOR">Doctor</option>
-    </select>
+    <input [(ngModel)]="registerData.pesel" name="pesel" placeholder="PESEL" required>
+
+
 
     <button type="submit">Register</button>
   </form>
