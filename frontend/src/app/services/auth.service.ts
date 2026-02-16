@@ -40,6 +40,12 @@ export class AuthService {
     const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/patients/me`, {headers});
   }
+  login(credentials: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': 'Basic ' + credentials
+    });
+    return this.http.get(`${this.apiUrl}/auth/me`, { headers });
+  }
 
 
   private getAuthHeaders(): HttpHeaders {
