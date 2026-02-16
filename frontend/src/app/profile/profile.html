@@ -1,61 +1,71 @@
 <div class="profile-container">
   <h2>Update your profile 🏥</h2>
-  <p class="subtitle">Add your medical details below</p>
+  @if (userRole === 'PATIENT') {
+    <p class="subtitle">Add your medical details below</p>
 
-  <form (ngSubmit)="update()">
-    
-    <label>First name<span class="required-star">*</span></label>
-    <input [(ngModel)]="updateData.firstName" name="firstName" type="text" placeholder="">
-    
-    <label>Last name<span class="required-star">*</span></label>
-    <input [(ngModel)]="updateData.lastName" name="lastName" type="text" placeholder="">
-    
+    <form (ngSubmit)="update()">
 
-    <label>Pesel<span class="required-star">*</span></label>
-    <input [(ngModel)]="updateData.pesel" name="pesel" type="text" placeholder="">
-    
+      <label>First name<span class="required-star">*</span></label>
+      <input [(ngModel)]="updateData.firstName" name="firstName" type="text" placeholder="">
 
-    <label>Phone number</label>
-    <input [(ngModel)]="updateData.phoneNumber" name="phoneNumber" type="tel" placeholder="e.g. 123456789" required>
-    
-    <label>Home address</label>
-    <input [(ngModel)]="updateData.address" name="address" type="text" placeholder="City, Street, Apt" required>
-    
-    <label>Medical history / diseases</label>
-    <input [(ngModel)]="updateData.disease" name="disease" type="text" placeholder="Any chronic diseases?" required>
+      <label>Last name<span class="required-star">*</span></label>
+      <input [(ngModel)]="updateData.lastName" name="lastName" type="text" placeholder="">
 
-    <label>Choose your Main Doctor</label>
-    <select [(ngModel)]="updateData.mainDoctorId" name="mainDoctorId" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px;">
-      <option [ngValue]="null">-- Select a Doctor --</option>
-      @for (doc of doctorsList; track doc.id) {
-        <option [ngValue]="doc.id">Dr. {{ doc.firstName }} {{ doc.lastName }} ({{ doc.specialization }})</option>
-      }
-    </select>  
 
-    <button type="submit">Save Changes</button>
-  </form>
+      <label>Pesel<span class="required-star">*</span></label>
+      <input [(ngModel)]="updateData.pesel" name="pesel" type="text" placeholder="">
 
+
+      <label>Phone number</label>
+      <input [(ngModel)]="updateData.phoneNumber" name="phoneNumber" type="tel" placeholder="e.g. 123456789" required>
+
+      <label>Home address</label>
+      <input [(ngModel)]="updateData.address" name="address" type="text" placeholder="City, Street, Apt" required>
+
+      <label>Medical history / diseases</label>
+      <input [(ngModel)]="updateData.disease" name="disease" type="text" placeholder="Any chronic diseases?" required>
+
+      <label>Choose your Main Doctor</label>
+      <select [(ngModel)]="updateData.mainDoctorId" name="mainDoctorId" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px;">
+        <option [ngValue]="null">-- Select a Doctor --</option>
+        @for (doc of doctorsList; track doc.id) {
+          <option [ngValue]="doc.id">Dr. {{ doc.firstName }} {{ doc.lastName }} ({{ doc.specialization }})</option>
+        }
+      </select>  
+
+      <button type="submit">Save Changes</button>
+    </form>
     <hr>
-    <div class="password-change-section">
-      <h3>Change Password</h3>
-      
-      <form (ngSubmit)="changePassword()">
-        <div class="form-group">
-          <label>Current password</label>
-          <input type="password" [(ngModel)]="passwordData.oldPassword" name="oldPassword" required>
-        </div>
-      
-        <div class="form-group">
-          <label>New password</label>
-          <input type="password" [(ngModel)]="passwordData.newPassword" name="newPassword" required>
-        </div>
-      
-        <div class="form-group">
-          <label>Confirm new password</label>
-          <input type="password" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required>
-        </div>
-      
-        <button type="submit" class="btn btn-warning">Update Password</button>
-      </form>
+  }
+
+  @if (userRole === 'DOCTOR' || userRole === 'ADMIN') {
+    <div style="background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ffc107;">
+      <p style="margin: 0;"><strong>Security Settings</strong></p>
+      <p style="font-size: 0.9em; color: #555; margin-top: 5px;">
+        To change your personal details (Name, Specialization), please contact the Administrator. You can update your access password below.
+      </p>
     </div>
+  }
+  <div class="password-change-section">
+    <h3>Change Password</h3>
+    
+    <form (ngSubmit)="changePassword()">
+      <div class="form-group">
+        <label>Current password</label>
+        <input type="password" [(ngModel)]="passwordData.oldPassword" name="oldPassword" required>
+      </div>
+    
+      <div class="form-group">
+        <label>New password</label>
+        <input type="password" [(ngModel)]="passwordData.newPassword" name="newPassword" required>
+      </div>
+    
+      <div class="form-group">
+        <label>Confirm new password</label>
+        <input type="password" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required>
+      </div>
+    
+      <button type="submit" class="btn btn-warning">Update Password</button>
+    </form>
+  </div>
 </div>

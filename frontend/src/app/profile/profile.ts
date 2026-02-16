@@ -14,6 +14,8 @@ import { ErrorService } from '../services/error.service';
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
+  userRole = sessionStorage.getItem('userRole');
+
   updateData = {
     firstName: '',
     lastName: '',
@@ -36,10 +38,13 @@ export class Profile implements OnInit {
   constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef, private http: HttpClient, private errorService: ErrorService) {}
 
   ngOnInit() {
-    this.http.get('http://localhost:8080/doctors').subscribe({
-      next: (docs: any) => this.doctorsList = docs,
-      error: (err) => console.error("Could not load doctors: " + err)
-    });
+    if (this.userRole === 'PATIENT') {
+      this.http.get('http://localhost:8080/doctors').subscribe({
+        next: (docs: any) => this.doctorsList = docs,
+        error: (err) => console.error("Could not load doctors: " + err)
+      });
+    }
+    
 
     this.authService.getProfile().subscribe({
       next: (patient: any) => {
