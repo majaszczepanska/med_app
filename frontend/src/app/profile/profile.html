@@ -4,14 +4,16 @@
 
   <form (ngSubmit)="update()">
     
-    <label>First name</label>
-    <input [(ngModel)]="updateData.firstName" name="firstName" type="text" placeholder="" required>
+    <label>First name<span class="required-star">*</span></label>
+    <input [(ngModel)]="updateData.firstName" name="firstName" type="text" placeholder="">
+    
+    <label>Last name<span class="required-star">*</span></label>
+    <input [(ngModel)]="updateData.lastName" name="lastName" type="text" placeholder="">
+    
 
-    <label>Last name</label>
-    <input [(ngModel)]="updateData.lastName" name="lastName" type="text" placeholder="" required>
-
-    <label>Pesel</label>
-    <input [(ngModel)]="updateData.pesel" name="pesel" type="text" placeholder="" required>
+    <label>Pesel<span class="required-star">*</span></label>
+    <input [(ngModel)]="updateData.pesel" name="pesel" type="text" placeholder="">
+    
 
     <label>Phone number</label>
     <input [(ngModel)]="updateData.phoneNumber" name="phoneNumber" type="tel" placeholder="e.g. 123456789" required>

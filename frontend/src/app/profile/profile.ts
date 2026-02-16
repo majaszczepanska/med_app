@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -21,6 +21,8 @@ export class Profile implements OnInit {
     address: '',
     disease: ''
   };
+
+  @Output() onError = new EventEmitter<any>();
 
   constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef) {}
 
@@ -48,8 +50,13 @@ export class Profile implements OnInit {
         //this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        alert("Error while updating data ❌: " + (err.error || "Check your data"));
-        console.error(err);
+        if (err.error && typeof err.error === 'string') {
+          try {
+            err.error = JSON.parse(err.error);
+          } catch (e) {
+          }
+        }
+        this.onError.emit(err);
       }
     })
 

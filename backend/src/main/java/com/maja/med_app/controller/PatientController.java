@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
+import org.hibernate.validator.constraints.pl.PESEL;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -24,7 +25,11 @@ import com.maja.med_app.service.PatientService;
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.util.ValidationErrorUtils;
 
+import jakarta.persistence.Column;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,7 +42,25 @@ public class PatientController {
     private final PatientService patientService;
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
-    public record UpdateProfileDto(String firstName, String lastName, String pesel, Integer phoneNumber, String address, String disease) {}
+    public record UpdateProfileDto(
+        @NotBlank(message = "Required")
+        @Size(min = 3, message= "Min. 3 characters")
+        @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
+        String firstName,
+
+        @NotBlank(message = "Required")
+        @Size(min = 3, message= "Min. 3 characters")
+        @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
+        String lastName, 
+
+        @Column(unique = true)
+        @PESEL(message = "Invalid PESEL format")
+        String pesel, 
+
+        Integer phoneNumber, 
+        String address, 
+        String disease
+    ) {}
 
     @PostMapping
     public Patient addPatient(@Valid @RequestBody Patient patient, BindingResult result){
@@ -86,7 +109,12 @@ public class PatientController {
     }
 
     @PutMapping("/me/profile") 
-    public ResponseEntity<?> updatePatientProfile(@RequestBody UpdateProfileDto request) {
+    public ResponseEntity<?> updatePatientProfile(@Valid @RequestBody UpdateProfileDto request, BindingResult result) {
+        Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
+        if (!errors.isEmpty()){
+            throw new AppValidationException(errors); 
+        }
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 

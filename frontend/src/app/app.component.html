@@ -341,7 +341,7 @@
           </div>
         }
         @if (activeTab === 'profile') {
-          <app-profile></app-profile>
+          <app-profile (onError)="handleErrors($event)"></app-profile>
         }
       </div>
 
