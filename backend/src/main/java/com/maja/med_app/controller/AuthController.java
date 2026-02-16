@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import com.maja.med_app.model.AppUser;
 import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.PatientRepository;
 import com.maja.med_app.repository.UserRepository;
+import com.maja.med_app.util.ValidationErrorUtils;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
@@ -61,6 +63,15 @@ public class AuthController {
         @NotBlank(message = "Required")
         @PESEL(message = "Invalid PESEL format")
         String pesel
+    ) {}
+
+    public record ChangePasswordDto(
+        @NotBlank(message = "Required")
+        String oldPassword,
+
+        @NotBlank(message = "Required")
+        @Size(min = 6, message = "Min. 6 characters")
+        String newPassword
     ) {}
 
     @PostMapping("/register")
@@ -115,5 +126,28 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/change-password")
+    @Transactional
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDto request, BindingResult result) {
+        Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        AppUser user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            errors.put("oldPassword", "Incorrect current password");
+        }
+        if (!errors.isEmpty()) {
+            throw new AppValidationException(errors);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+    }
+
 
 }

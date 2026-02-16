@@ -32,19 +32,27 @@ export class AuthService {
   register(data: RegisterRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register`, data, { responseType: 'text' });
   }
+  
   updateProfile(data: UpdateProfileRequest): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.put(`${this.apiUrl}/patients/me/profile`, data, { headers, responseType: 'text' });
   }
+
   getProfile(): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/patients/me`, {headers});
   }
+
   login(credentials: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': 'Basic ' + credentials
     });
     return this.http.get(`${this.apiUrl}/auth/me`, { headers });
+  }
+
+  changePassword(data: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.put(`${this.apiUrl}/auth/change-password`, data, { headers });
   }
 
 

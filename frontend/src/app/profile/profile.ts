@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ErrorService } from '../services/error.service';
 
 @Component({
   selector: 'app-profile',
@@ -22,11 +23,17 @@ export class Profile implements OnInit {
     disease: '',
     mainDoctorId: null
   };
+  
+  passwordData = {
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
 
   doctorsList: any[] = [];
   @Output() onError = new EventEmitter<any>();
 
-  constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef, private http: HttpClient) {}
+  constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef, private http: HttpClient, private errorService: ErrorService) {}
 
   ngOnInit() {
     this.http.get('http://localhost:8080/doctors').subscribe({
@@ -67,7 +74,29 @@ export class Profile implements OnInit {
         this.onError.emit(err);
       }
     })
+  }
 
+  changePassword() {
+    if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
+      alert("❌ ERROR: Passwords do not match!");
+      return;
+    }
+
+    const payload = {
+      oldPassword: this.passwordData.oldPassword,
+      newPassword: this.passwordData.newPassword
+    };
+
+    this.authService.changePassword(payload).subscribe({
+      next: () => {
+        alert("Password changed successfully! ✅ \nPlease log in again.");
+        sessionStorage.clear();
+        window.location.href = '/login'; 
+      },
+      error: (err) => {
+        this.errorService.handleErrors(err);
+      }
+    });
   }
 }
 
