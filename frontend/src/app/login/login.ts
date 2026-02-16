@@ -36,8 +36,9 @@ export class LoginComponent {
         if (userData.patientId) {
           sessionStorage.setItem('patientId', userData.patientId)
         }
-        //this.loginSuccess.emit();
-        window.location.href = '/';
+        this.loginSuccess.emit();
+        this.router.navigate(['/']);
+        //window.location.href = '/';
       },
       error: () => {
         this.errorMessage = "Invalid email or password";
