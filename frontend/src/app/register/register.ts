@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { ErrorService } from '../services/error.service';
 
 @Component({
   selector: 'app-register',
@@ -21,8 +21,7 @@ export class RegisterComponent {
     pesel: ''
   };
 
-  //constructor(private http: HttpClient, private router: Router) {}
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private errorService: ErrorService) {}
 
   register() {
     this.authService.register(this.registerData).subscribe({
@@ -31,8 +30,7 @@ export class RegisterComponent {
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        alert("Error while registering ❌: " + (err.error || "Check your data"));
-        console.error(err);
+        this.errorService.handleErrors(err);
       }
     })
 

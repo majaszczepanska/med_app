@@ -15,7 +15,8 @@ import plLocale from '@fullcalendar/core/locales/pl';
 import { RouterOutlet } from '@angular/router';
 import { LoginComponent } from './login/login';
 import { Profile } from './profile/profile';
-import { email } from '@angular/forms/signals';
+import { ErrorService } from './services/error.service';
+
 
 @Component({
   selector: 'app-root',
@@ -110,7 +111,8 @@ export class AppComponent implements OnInit {
     private doctorService: DoctorService,
     private appointmentService: AppointmentService,
     private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private errorService: ErrorService
   ){}
 
 
@@ -304,6 +306,10 @@ export class AppComponent implements OnInit {
 
   //ERRORS
   handleErrors(err: any) {
+    this.errorService.handleErrors(err);
+  }
+  /*
+  handleErrors(err: any) {
     console.error(err);
     if (err.error && err.error.message) {
       alert("❌ ERROR: " + err.error.message);
@@ -336,8 +342,8 @@ export class AppComponent implements OnInit {
       alert("❌ ERROR: " + err.error);
       return;
     } 
-    alert("❌ UNKNOWN ERROR (" + err.status + "): " + (err.statusText || "Server error"));
-  }
+    alert("❌ ERROR: " + (err.error || "Server error"));
+  }*/
 
 
   //PATIENTS 
