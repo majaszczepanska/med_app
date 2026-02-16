@@ -27,7 +27,7 @@ public class AuthController {
     private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public record UserDto(Long id, Long patienId, String email, String role) {}
+    public record UserDto(Long id, Long patientId, String email, String role) {}
     public record RegisterDto(String email, String password, String firstName, String lastName, String pesel) {}
 
     @PostMapping("/register")
