@@ -37,7 +37,7 @@ public class PatientController {
     private final PatientService patientService;
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
-    public record UpdateProfileDto(Integer phoneNumber, String address, String disease) {}
+    public record UpdateProfileDto(String firstName, String lastName, String pesel, Integer phoneNumber, String address, String disease) {}
 
     @PostMapping
     public Patient addPatient(@Valid @RequestBody Patient patient, BindingResult result){
@@ -72,6 +72,19 @@ public class PatientController {
         return ResponseEntity.ok(patientService.getPatientById(id));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<Patient> getCurrentPatientData() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        AppUser user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        Patient patient = patientRepository.findByUser(user) 
+            .orElseThrow(() -> new RuntimeException("Patient profile not found"));
+
+        return ResponseEntity.ok(patient);
+    }
+
     @PutMapping("/me/profile") 
     public ResponseEntity<?> updatePatientProfile(@RequestBody UpdateProfileDto request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -82,6 +95,11 @@ public class PatientController {
         
         Patient patient = patientRepository.findByUser(user) 
             .orElseThrow(() -> new RuntimeException("Patient profile not found"));
+
+
+        patient.setFirstName(request.firstName());
+        patient.setLastName(request.lastName());
+        patient.setPesel(request.pesel());
 
         patient.setPhoneNumber(request.phoneNumber());
         patient.setAddress(request.address());
