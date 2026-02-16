@@ -1,21 +1,32 @@
 package com.maja.med_app.controller;
 
 import org.springframework.security.core.Authentication;
+
+import java.util.Map;
+
+import org.hibernate.validator.constraints.pl.PESEL;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.model.AppUser;
 import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.PatientRepository;
 import com.maja.med_app.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,14 +39,41 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     public record UserDto(Long id, Long patientId, String email, String role) {}
-    public record RegisterDto(String email, String password, String firstName, String lastName, String pesel) {}
+    public record RegisterDto(
+        @NotBlank(message = "Required")
+        @Email(message = "Invalid email format")
+        String email, 
+
+        @NotBlank(message = "Required")
+        @Size(min = 6, message= "Min. 6 characters")
+        String password, 
+
+        @NotBlank(message = "Required")
+        @Size(min = 3, message= "Min. 3 characters")
+        @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
+        String firstName, 
+
+        @NotBlank(message = "Required")
+        @Size(min = 3, message= "Min. 3 characters")
+        @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
+        String lastName, 
+
+        @NotBlank(message = "Required")
+        @PESEL(message = "Invalid PESEL format")
+        String pesel
+    ) {}
 
     @PostMapping("/register")
     @Transactional
-    public ResponseEntity<?> registerUser(@RequestBody RegisterDto request){
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterDto request, BindingResult result){
+        Map<String, String> errors = com.maja.med_app.util.ValidationErrorUtils.mapErrors(result);
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            return ResponseEntity.badRequest().body("Email already taken");
+            errors.put("email", "Email already taken");
         }
+        if(!errors.isEmpty()){
+            throw new AppValidationException(errors);
+        }
+
         AppUser user = new AppUser();
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
