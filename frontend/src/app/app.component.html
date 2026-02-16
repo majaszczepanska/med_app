@@ -93,6 +93,7 @@
           <button [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">Appointments</button>
           @if (userRole === 'PATIENT') {
             <button (click)="setActiveTab('history')" [class.active]="activeTab === 'history'">📜 My History</button>
+            <button (click)="setActiveTab('profile')" [class.active]="activeTab === 'profile'">My Profile ⚙️</button>
           }
           <button class="logout-btn" (click)="logout()">🚪 Logout</button>
           
@@ -152,7 +153,7 @@
             }
             
 
-          <button (click)="setActiveTab('profile')" style="margin-top: 20px;">My Profile ⚙️</button>
+          
           </div>
         }
         @if (activeTab === 'patients') {
@@ -307,7 +308,11 @@
                   {{ selectedPatientForHistory.firstName }} {{ selectedPatientForHistory.lastName }}
                 </span>
               </h3>
-              <button (click)="closeHistory()" class="cancel-btn">⬅ BACK TO LIST</button>
+              @if (userRole === 'PATIENT') {
+                <button (click)="closeHistory()" class="cancel-btn">⬅ BACK TO DASHBOARD</button>
+              } @else {
+                <button (click)="closeHistory()" class="cancel-btn">⬅ BACK TO LIST</button>
+              }     
             </div>
           
             <div class="patient-info-card" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
@@ -341,7 +346,10 @@
           </div>
         }
         @if (activeTab === 'profile') {
-          <app-profile (onError)="handleErrors($event)"></app-profile>
+          <div class="profile-container">
+            <app-profile (onError)="handleErrors($event)"></app-profile>
+          </div>
+          
         }
       </div>
 

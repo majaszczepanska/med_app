@@ -441,7 +441,11 @@ export class AppComponent implements OnInit {
   closeHistory() {
     this.selectedPatientForHistory = null;
     this.patientHistory = [];
-    this.activeTab = 'patients';
+    if (this.userRole === 'PATIENT') {
+      this.activeTab = 'dashboard';
+    } else {
+      this.activeTab = 'patients';
+    }
   }
 
   //MY HISTORY
