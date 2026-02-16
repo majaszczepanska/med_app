@@ -2,6 +2,8 @@ package com.maja.med_app.model;
 
 import org.hibernate.validator.constraints.pl.PESEL;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +31,7 @@ public class Patient {
     @Schema(accessMode= Schema.AccessMode.READ_ONLY)
     private Long id;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "user_id")
     private AppUser user;
@@ -57,6 +60,7 @@ public class Patient {
 
     private String disease;
     
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name= "main_doctor_id")
     //@jakarta.validation.constraints.NotNull(message = "Required")
