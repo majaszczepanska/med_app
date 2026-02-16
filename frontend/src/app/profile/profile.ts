@@ -19,14 +19,21 @@ export class Profile implements OnInit {
     pesel: '',
     phoneNumber: '',
     address: '',
-    disease: ''
+    disease: '',
+    mainDoctorId: null
   };
 
+  doctorsList: any[] = [];
   @Output() onError = new EventEmitter<any>();
 
-  constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef, private http: HttpClient) {}
 
   ngOnInit() {
+    this.http.get('http://localhost:8080/doctors').subscribe({
+      next: (docs: any) => this.doctorsList = docs,
+      error: (err) => console.error("Could not load doctors: " + err)
+    });
+
     this.authService.getProfile().subscribe({
       next: (patient: any) => {
         this.updateData.firstName = patient.firstName || '';
@@ -35,6 +42,7 @@ export class Profile implements OnInit {
         this.updateData.phoneNumber = patient.phoneNumber || '';
         this.updateData.address = patient.address || '';
         this.updateData.disease = patient.disease || '';
+        this.updateData.mainDoctorId = patient.mainDoctor ? patient.mainDoctor.id : null;
 
         this.cdr.detectChanges();
       },

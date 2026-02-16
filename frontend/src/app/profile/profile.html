@@ -24,6 +24,15 @@
     <label>Medical history / diseases</label>
     <input [(ngModel)]="updateData.disease" name="disease" type="text" placeholder="Any chronic diseases?" required>
 
+    <label>Choose your Main Doctor</label>
+    <select [(ngModel)]="updateData.mainDoctorId" name="mainDoctorId" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px;">
+      <option [ngValue]="null">-- Select a Doctor --</option>
+      @for (doc of doctorsList; track doc.id) {
+        <option [ngValue]="doc.id">Dr. {{ doc.firstName }} {{ doc.lastName }} ({{ doc.specialization }})</option>
+      }
+    </select>  
+
+
     <button type="submit">Save Changes</button>
   </form>
 </div>

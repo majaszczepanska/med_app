@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maja.med_app.model.AppUser;
+import com.maja.med_app.model.Doctor;
 import com.maja.med_app.model.Patient;
+import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
 import com.maja.med_app.repository.UserRepository;
 import com.maja.med_app.service.PatientService;
@@ -42,6 +44,8 @@ public class PatientController {
     private final PatientService patientService;
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
+
     public record UpdateProfileDto(
         @NotBlank(message = "Required")
         @Size(min = 3, message= "Min. 3 characters")
@@ -59,7 +63,8 @@ public class PatientController {
 
         Integer phoneNumber, 
         String address, 
-        String disease
+        String disease,
+        Long mainDoctorId
     ) {}
 
     @PostMapping
@@ -132,6 +137,12 @@ public class PatientController {
         patient.setPhoneNumber(request.phoneNumber());
         patient.setAddress(request.address());
         patient.setDisease(request.disease());
+
+        if(request.mainDoctorId() != null) {
+            @SuppressWarnings("null")
+            Doctor doctor = doctorRepository.findById(request.mainDoctorId()).orElse(null);
+            patient.setMainDoctor(doctor);
+        }
 
         patientRepository.save(patient);
 
