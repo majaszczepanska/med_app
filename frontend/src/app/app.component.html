@@ -105,8 +105,8 @@
           <button [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">Appointments</button>
           @if (userRole === 'PATIENT') {
             <button (click)="setActiveTab('history')" [class.active]="activeTab === 'history'">📜 My History</button>
-            <button (click)="setActiveTab('profile')" [class.active]="activeTab === 'profile'">My Profile ⚙️</button>
           }
+          <button (click)="setActiveTab('profile')" [class.active]="activeTab === 'profile'">My Profile ⚙️</button>
           <button class="logout-btn" (click)="logout()">🚪 Logout</button>
           
         </div>
