@@ -45,6 +45,18 @@
           <label>Specialization:</label>
           <input type="text" [(ngModel)]="newDoctor.specialization" placeholder="e.g. Cardiologist">
 
+          @if(!isEditing) {
+            <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #007bff;">
+              <p style="margin-top: 0; font-weight: bold; font-size: 0.9em; color: #555;">Doctor's Account Data:</p>
+              
+              <label>Email (Login):</label>
+              <input type="email" [(ngModel)]="newDoctor.email" placeholder="doctor@med.com" style="margin-bottom: 10px;">
+
+              <label>Password:</label>
+              <input type="password" [(ngModel)]="newDoctor.password" placeholder="Temporary password">
+            </div>
+          }
+
           @if(isEditing) {
             <button (click)="onSubmit()" class="update-btn">UPDATE DOCTOR</button>
             <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
@@ -150,12 +162,10 @@
                   }
                 </tbody>
               </table>
-            }
-            
-
-          
+            }       
           </div>
         }
+        
         @if (activeTab === 'patients') {
           <h3>Patient Registry</h3>
           <div style="margin-bottom: 15px;">

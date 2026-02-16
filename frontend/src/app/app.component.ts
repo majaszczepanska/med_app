@@ -15,6 +15,7 @@ import plLocale from '@fullcalendar/core/locales/pl';
 import { RouterOutlet } from '@angular/router';
 import { LoginComponent } from './login/login';
 import { Profile } from './profile/profile';
+import { email } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-root',
@@ -60,7 +61,9 @@ export class AppComponent implements OnInit {
   newDoctor: any = {
     firstName: '',
     lastName: '',
-    specialization: ''
+    specialization: '',
+    email: '',
+    password: ''
   };
 
   newAppointment: any = {
@@ -691,7 +694,7 @@ export class AppComponent implements OnInit {
   //RESET FORM
   resetForm() {
     this.newPatient = {firstName: '', lastName: '', pesel: '', disease: '', mainDoctor: ''};
-    this.newDoctor = {firstName: '', lastName: '', specialization: ''};
+    this.newDoctor = {firstName: '', lastName: '', specialization: '', email: '', password: ''};
     this.newAppointment = {visitTime: '', patientId: null, doctorId: null, description: ''};
     this.isEditing = false;
     this.currentPatientId = null;

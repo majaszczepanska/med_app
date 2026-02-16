@@ -3,6 +3,8 @@ package com.maja.med_app.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +15,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maja.med_app.model.AppUser;
 import com.maja.med_app.model.Doctor;
+import com.maja.med_app.repository.UserRepository;
 import com.maja.med_app.service.DoctorService;
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.util.ValidationErrorUtils;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -30,20 +39,61 @@ import lombok.RequiredArgsConstructor;
 public class DoctorController {
 
     private final DoctorService doctorService;
-    /*without Lombok
-    public DoctorController (DoctorRepository doctorRepository){
-        this.doctorRepository = doctorRepository;    
-    }
-    */
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public record CreateDoctorDto(
+        @NotBlank(message = "Required")
+        @Email(message = "Invalid email format")
+        String email,
+
+        @NotBlank(message = "Required")
+        @Size(min = 6, message= "Min. 6 characters")
+        String password,
+
+        @NotBlank(message = "Required")
+        @Size(min = 3, message= "Min. 3 characters")
+        @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
+        String firstName,
+
+        @NotBlank(message = "Required")
+        @Size(min = 3, message= "Min. 3 characters")
+        @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
+        String lastName,
+
+        @NotBlank(message = "Required")
+        String specialization
+
+    ) {}
 
     //save doctor
     @PostMapping
-    public Doctor addDoctor(@NonNull @Valid @RequestBody Doctor doctor, BindingResult result) {  
+    @Transactional
+    public ResponseEntity<?> addDoctor(@NonNull @Valid @RequestBody CreateDoctorDto request, BindingResult result) {  
         Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
+
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            errors.put("email", "Email already taken");
+        }
         if(!errors.isEmpty()){
             throw new AppValidationException(errors);
         }
-        return doctorService.createDoctor(doctor);
+
+        AppUser user = new AppUser();
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password())); 
+        user.setRole("DOCTOR"); 
+        userRepository.save(user);
+
+        Doctor doctor = new Doctor();
+        doctor.setUser(user); 
+        doctor.setFirstName(request.firstName());
+        doctor.setLastName(request.lastName());
+        doctor.setSpecialization(request.specialization());
+
+        doctorService.createDoctor(doctor);
+        //return doctorService.createDoctor(doctor);
+        return ResponseEntity.ok(doctor);
     }
 
     // get doctors
