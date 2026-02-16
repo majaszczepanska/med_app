@@ -19,7 +19,7 @@ import { Profile } from './profile/profile';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, FullCalendarModule, RouterOutlet, LoginComponent, Profile ],
+  imports: [CommonModule, FormsModule, FullCalendarModule, RouterOutlet, Profile ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -446,7 +446,7 @@ export class AppComponent implements OnInit {
 
   //MY HISTORY
   loadMyHistory() {
-  const myIdStr = sessionStorage.getItem('userId');
+  const myIdStr = sessionStorage.getItem('patientId');
 
   if (myIdStr) {
     const myId = Number(myIdStr);

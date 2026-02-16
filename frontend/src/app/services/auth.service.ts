@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -12,6 +12,9 @@ export interface RegisterRequest {
 }
 
 export interface UpdateProfileRequest {
+  firstName: string;
+  lastName: string;
+  pesel: string | number;
   phoneNumber: string | number; 
   address: string;
   disease: string;
@@ -22,13 +25,27 @@ export interface UpdateProfileRequest {
 })
 
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/auth';
-  private apiUrl2 = 'http://localhost:8080';
+  private apiUrl = 'http://localhost:8080';
+
   constructor(private http: HttpClient) {}
+
   register(data: RegisterRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, data, { responseType: 'text' });
+    return this.http.post(`${this.apiUrl}/auth/register`, data, { responseType: 'text' });
   }
   updateProfile(data: UpdateProfileRequest): Observable<any> {
-    return this.http.put(`${this.apiUrl2}/patients/me/profile`, data, { responseType: 'text' });
+    const headers = this.getAuthHeaders();
+    return this.http.put(`${this.apiUrl}/patients/me/profile`, data, { headers, responseType: 'text' });
+  }
+  getProfile(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${this.apiUrl}/patients/me`, {headers});
+  }
+
+
+  private getAuthHeaders(): HttpHeaders {
+    const authData = sessionStorage.getItem('authData'); 
+    return new HttpHeaders({
+      'Authorization': authData ? authData : ''
+    });
   }
 }
