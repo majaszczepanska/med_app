@@ -39,6 +39,22 @@ public class AppointmentService {
 
     //POST
     public Appointment createAppointment(Appointment appointment){
+       
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null || auth.isAuthenticated() || !"annonymousUser".equals(auth.getPrincipal())) {
+            AppUser user = userRepository.findByEmail(auth.getName()).orElse(null);
+
+            if (user != null && "PATIENT".equals(user.getRole())) {
+                Patient me = patientRepository.findByUser(user).orElse(null);
+                if (me != null) appointment.setPatient(me); 
+            }
+
+            if (user != null && "DOCTOR".equals(user.getRole())) {
+                Doctor me = doctorRepository.findByUser(user).orElse(null);
+                if (me != null) appointment.setDoctor(me);
+            }
+        }
+
         validateAppointment(appointment);
         Map<String, String> errors = new HashMap<>();
         //Check if doctor is avaliable at that time
