@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.model.Appointment;
+import com.maja.med_app.model.AppointmentStatus;
 import com.maja.med_app.model.Doctor;
 import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.AppointmentRepository;
@@ -33,57 +34,56 @@ public class AppointmentService {
     //POST
     public Appointment createAppointment(Appointment appointment){
         validateAppointment(appointment);
+        Map<String, String> errors = new HashMap<>();
         //Check if doctor is avaliable at that time
-        if(appointmentRepository.existsByDoctorIdAndVisitTimeAndDeletedFalse(appointment.getDoctor().getId(), appointment.getVisitTime())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Doctor is occupied");
+        if(appointmentRepository.existsByDoctorIdAndVisitTimeAndStatusNot(appointment.getDoctor().getId(), appointment.getVisitTime(), AppointmentStatus.CANCELLED)){
+            errors.put("visitTime", "Doctor is occupied");
         }
-        if(appointmentRepository.existsByPatientIdAndVisitTimeAndDeletedFalse(appointment.getPatient().getId(), appointment.getVisitTime())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Patient has an appointment");
+        if(appointmentRepository.existsByPatientIdAndVisitTimeAndStatusNot(appointment.getPatient().getId(), appointment.getVisitTime(), AppointmentStatus.CANCELLED)){
+            errors.put("visitTime", "Patient has an appointment");
+        }
+        if(!errors.isEmpty()) {
+            throw new AppValidationException(errors);
         }
         return appointmentRepository.save(appointment);
     }
 
     //GET
     public List<Appointment> getAllAppointments() {
-        return appointmentRepository.findAllByDeletedFalse();
+        return appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
     }
 
     //PUT
     public Appointment updateAppointment(Long id, Appointment updatedAppointment){
-        Appointment existingAppointment = appointmentRepository.findById(id).orElse(null);
+        Appointment existingAppointment = appointmentRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
 
-        if (existingAppointment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        } else {
-            //ADMIN OPTION
-            //checkEditTime(updatedAppointment.getVisitTime());
-            if(updatedAppointment.getVisitTime() != null){
-                existingAppointment.setVisitTime(updatedAppointment.getVisitTime());
-            }
-            if(updatedAppointment.getDoctor() != null && updatedAppointment.getDoctor().getId() != null) {
-                Doctor newDoctor = doctorRepository.findById(updatedAppointment.getDoctor().getId()).orElse(null);
-                if (newDoctor == null){
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor with this ID not found");
-                } else {
-                    existingAppointment.setDoctor(newDoctor);
-                }
-            }
-            if(updatedAppointment.getPatient() != null && updatedAppointment.getPatient().getId() != null) {
-                Patient newPatient = patientRepository.findById(updatedAppointment.getPatient().getId()).orElse(null);
-                if (newPatient == null){
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient with this ID not found");
-                } else {
-                    existingAppointment.setPatient(newPatient);
-                }
-            }
-            
-            existingAppointment.setDescription(updatedAppointment.getDescription());
-            if (appointmentRepository.existsByDoctorIdAndVisitTimeAndDeletedFalseAndIdNot(existingAppointment.getDoctor().getId(), existingAppointment.getVisitTime(), id)){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Doctor is occupied at this time");
-            }
-            if (appointmentRepository.existsByPatientIdAndVisitTimeAndDeletedFalseAndIdNot(existingAppointment.getPatient().getId(), existingAppointment.getVisitTime(), id)){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "This patient already has an appointment at this time");
-            }
+        //ADMIN OPTION
+        //checkEditTime(updatedAppointment.getVisitTime());
+        if(updatedAppointment.getVisitTime() != null){
+            existingAppointment.setVisitTime(updatedAppointment.getVisitTime());
+        }
+
+        if(updatedAppointment.getDoctor() != null && updatedAppointment.getDoctor().getId() != null) {
+            Doctor newDoctor = doctorRepository.findById(updatedAppointment.getDoctor().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor with this ID not found"));
+            existingAppointment.setDoctor(newDoctor);
+        }
+
+        if(updatedAppointment.getPatient() != null && updatedAppointment.getPatient().getId() != null) {
+            Patient newPatient = patientRepository.findById(updatedAppointment.getPatient().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient with this ID not found"));
+            existingAppointment.setPatient(newPatient);
+        }
+        
+        existingAppointment.setDescription(updatedAppointment.getDescription());
+
+        Map<String, String> errors = new HashMap<>();
+        if (appointmentRepository.existsByDoctorIdAndVisitTimeAndStatusNotAndIdNot(existingAppointment.getDoctor().getId(), existingAppointment.getVisitTime(), AppointmentStatus.CANCELLED, id)){
+            errors.put("visitTime", "Doctor is occupied at this time");
+        }
+        if (appointmentRepository.existsByPatientIdAndVisitTimeAndStatusNotAndIdNot(existingAppointment.getPatient().getId(), existingAppointment.getVisitTime(), AppointmentStatus.CANCELLED, id)){
+            errors.put("visitTime", "This patient already has an appointment at this time");
         }
         return appointmentRepository.save(existingAppointment);
     }
@@ -91,15 +91,13 @@ public class AppointmentService {
 
     //SOFT DELETE
     public void deleteAppointment(Long id) {
-        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        Appointment appointment = appointmentRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
         
-        if (appointment == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        }
         //ADMIN OPTION
         //checkEditTime(appointment.getVisitTime());
         
-        appointment.setDeleted(true);
+        appointment.setStatus(AppointmentStatus.CANCELLED);
         appointmentRepository.save(appointment);
         //appointmentRepository.deleteById(id);
     }
@@ -108,7 +106,7 @@ public class AppointmentService {
     //GET AVAILABLE SLOTS
     public List<String> getAvailableSlots(Long doctorId,String date) {
         LocalDate searchDate = LocalDate.parse(date);
-        List<Appointment> takenAppointments = appointmentRepository.findAllByDoctorIdAndVisitTimeBetweenAndDeletedFalse(doctorId, searchDate.atStartOfDay(), searchDate.atTime(23, 59,59));
+        List<Appointment> takenAppointments = appointmentRepository.findAllByDoctorIdAndVisitTimeBetweenAndStatusNot(doctorId, searchDate.atStartOfDay(), searchDate.atTime(23, 59,59), AppointmentStatus.CANCELLED);
         List<String> availableSlots = new ArrayList<>();
         LocalDateTime startWork = searchDate.atTime(8, 0);
         LocalDateTime endWork = searchDate.atTime(16, 0);
@@ -126,14 +124,15 @@ public class AppointmentService {
     }  
 
     public List<Appointment> getAppointmentsByPatient(Long patientId){
-        return appointmentRepository.findAllByPatientIdAndDeletedFalse(patientId);
+        return appointmentRepository.findAllByPatientIdAndStatusNot(patientId, AppointmentStatus.CANCELLED);
     }
 
 
     private void checkEditTime(LocalDateTime visitTime) {
+        Map<String, String> errors = new HashMap<>();
         LocalDateTime oneHourFromNow = LocalDateTime.now().plusHours(1);
         if(visitTime.isBefore(oneHourFromNow)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot edit appointment less than 1 hour before visit");
+            errors.put("visitTime", "Cannot edit appointment less than 1 hour before visit");
         }
     }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.maja.med_app.exception.AppValidationException;
+import com.maja.med_app.model.AppointmentStatus;
 import com.maja.med_app.model.Doctor;
 import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.AppointmentRepository;
@@ -64,7 +65,7 @@ public class PatientService {
         if(patient == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found");
         }
-        boolean hasFutureAppointments = appointmentRepository.existsByPatientIdAndVisitTimeAndDeletedFalse(id, LocalDateTime.now());
+        boolean hasFutureAppointments = appointmentRepository.existsByPatientIdAndVisitTimeAfterAndStatusNot(id, LocalDateTime.now(), AppointmentStatus.CANCELLED);
         if (hasFutureAppointments){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete patient with future appointments");
         }
@@ -80,6 +81,7 @@ public class PatientService {
                 errors.put("mainDoctor", "ID required (minimum 1)"); 
                 throw new AppValidationException(errors);
             }
+            @SuppressWarnings("null")
             Optional<Doctor> fullDoctor = doctorRepository.findById(doctorId);
             if (fullDoctor.isEmpty()){
                 Map<String, String> errors = new HashMap<>();
@@ -95,6 +97,7 @@ public class PatientService {
         }
     }
 
+    @SuppressWarnings("null")
     public Patient getPatientById(Long id) {
     return patientRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient with id " + id + " not found"));
