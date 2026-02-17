@@ -1,5 +1,6 @@
 package com.maja.med_app.service;
 
+import java.net.Authenticator;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,10 +11,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.maja.med_app.exception.AppValidationException;
+import com.maja.med_app.model.AppUser;
 import com.maja.med_app.model.Appointment;
 import com.maja.med_app.model.AppointmentStatus;
 import com.maja.med_app.model.Doctor;
@@ -21,6 +25,7 @@ import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.AppointmentRepository;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
+import com.maja.med_app.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +35,7 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
+    private final UserRepository userRepository;
 
     //POST
     public Appointment createAppointment(Appointment appointment){
@@ -50,7 +56,47 @@ public class AppointmentService {
 
     //GET
     public List<Appointment> getAllAppointments() {
-        return appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
+        List<Appointment> allAppointments = appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "annonymousUser".equals(auth.getPrincipal())) {
+            return allAppointments;
+        }
+
+        String email = auth.getName();
+        AppUser user = userRepository.findByEmail(email).orElse(null);
+
+        //PATIENT displays appointments
+        if (user != null && "PATIENT".equals(user.getRole())) {
+            Patient myPatientProfile = patientRepository.findByUser(user).orElse(null);
+            Long myId = (myPatientProfile != null) ? myPatientProfile.getId() : -1;
+
+            List<Appointment> rodoList = new ArrayList<>();
+            for (Appointment appointment : allAppointments) {
+                if (!appointment.getPatient().getId().equals(myId)) {
+                    Appointment hiddenAppointment = new Appointment();
+                    hiddenAppointment.setId(appointment.getId());
+                    hiddenAppointment.setVisitTime(appointment.getVisitTime());
+                    hiddenAppointment.setDoctor(appointment.getDoctor());
+                    hiddenAppointment.setStatus(appointment.getStatus());
+
+
+                    Patient hiddenPatient = new Patient();
+                    hiddenPatient.setFirstName("Slot");   
+                    hiddenPatient.setLastName(" taken"); 
+                    hiddenAppointment.setPatient(hiddenPatient);
+                    hiddenAppointment.setDescription("Access denied");
+
+                    rodoList.add(hiddenAppointment);
+                }
+                else {
+                    rodoList.add(appointment);
+                }
+            }
+            return rodoList;
+        }
+        //return appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
+        return allAppointments;
     }
 
     //PUT
