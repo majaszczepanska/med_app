@@ -98,8 +98,8 @@ public class AppointmentService {
 
 
                     Patient hiddenPatient = new Patient();
-                    hiddenPatient.setFirstName("Slot");   
-                    hiddenPatient.setLastName(" taken"); 
+                    hiddenPatient.setFirstName("taken");   
+                    hiddenPatient.setLastName("Slot taken"); 
                     hiddenAppointment.setPatient(hiddenPatient);
                     hiddenAppointment.setDescription("Access denied");
 

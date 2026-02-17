@@ -3,7 +3,13 @@
 }
 @else {
   <div class="container">
-    <h1>Medical Management System (Admin Panel)</h1>
+   @if (userRole === 'ADMIN') {
+      <h1>Medical Management System (Admin Panel) 👑</h1>
+    } @else if (userRole === 'DOCTOR') {
+      <h1>Doctor Dashboard 👨‍⚕️</h1>
+    } @else if (userRole === 'PATIENT') {
+      <h1>Patient Portal 🩺</h1>
+    }
 
     <div class="layout">
 
@@ -275,10 +281,12 @@
           
           <div class="controls-container">
 
+            @if (userRole === 'ADMIN' || userRole === 'PATIENT') {
             <div class="view-switcher">
               <button (click)="showCalendar = false" [class.active-view]="!showCalendar">List View</button>
               <button (click)="showCalendar = true" [class.active-view]="showCalendar">Calendar View</button>
             </div>
+          }
 
             <div class="doctor-filter">
               <label>Filter by Doctor:</label>

@@ -70,7 +70,7 @@ export class AppComponent implements OnInit {
   newAppointment: any = {
     visitTime: null,
     patientId: null,
-    doctorId: '',
+    doctorId: null,
     description: ''
   };
 
@@ -246,13 +246,20 @@ export class AppComponent implements OnInit {
     this.calendarOptions.events = filetredAppointments.map(a => {
       const startDate = new Date(a.visitTime);
       const endDate = new Date(startDate.getTime() + 15 * 60000);
+      const isOthers = a.patient?.firstName === 'taken';
+      const isPast = this.isPastDate(a.visitTime);
+      let bgColor = '#6f42c1'; 
+      if (isPast) bgColor = '#6c757d';
+      else if (isOthers) bgColor = '#dc3545';
+
       return {
         id: a.id.toString(),
         title: `${a.patient?.lastName} (${a.doctor?.lastName})`,
         start: a.visitTime,
         end: endDate.toISOString(),
-        backgroundColor: this.isPastDate(a.visitTime) ? '#6c757d' : '#6f42c1', 
-        borderColor: 'transparent'
+        backgroundColor: bgColor, 
+        borderColor: isOthers ? '#c82333' : 'transparent',
+        textColor: '#ffffff'
       }
 
     })                               
@@ -442,8 +449,9 @@ export class AppComponent implements OnInit {
     this.patientHistory = [];
 
     this.appointmentService.getPatientHistory(patient.id).subscribe({
-      next: (data) => {
-        this.patientHistory = data.sort((a: any, b: any) => b.visitTime.localeCompare(a.visitTime));
+      next: (data: any[]) => {
+        const pastVisits = data.filter(a => this.isPastDate(a.visitTime));
+        this.patientHistory = pastVisits.sort((a: any, b: any) => b.visitTime.localeCompare(a.visitTime));
         this.cdr.detectChanges();
       },
       error: (err) => {
