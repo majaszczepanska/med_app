@@ -111,7 +111,7 @@ public class AppointmentService {
             }
             return rodoList;
         }
-        
+
         //DOCTOR displays appointments
         if (user != null && "DOCTOR".equals(user.getRole())) {
             Doctor myDoctorProfile = doctorRepository.findByUser(user).orElse(null);
@@ -125,8 +125,8 @@ public class AppointmentService {
             }
             return doctorList;
         }
-
-
+        
+        //ADMIN displays appointments
         //return appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
         return allAppointments;
     }
