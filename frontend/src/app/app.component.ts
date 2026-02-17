@@ -228,7 +228,12 @@ export class AppComponent implements OnInit {
   //DASHBOARD
   get upcomingAppointments() {
     const now = new Date()
-    return this.appointments.filter(a => !this.isPastDate(a.visitTime)).sort((a, b) => a.visitTime.localeCompare(b.visitTime)).slice(0,5);
+    let upcoming = this.appointments.filter(a => !this.isPastDate(a.visitTime));
+    if (this.userRole === 'PATIENT') {
+      const myId = Number(sessionStorage.getItem('patientId'));
+      upcoming = upcoming.filter(a => a.patient?.id === myId);
+    }
+    return upcoming.sort((a, b) => a.visitTime.localeCompare(b.visitTime)).slice(0,5);
   }
 
   //CALENDAR

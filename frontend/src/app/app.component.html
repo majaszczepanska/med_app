@@ -136,22 +136,31 @@
 
         @if (activeTab === 'dashboard') {
           <div class="dashboard-container">
-            <div class="stats-grid">
-              <div class="stat-card card-blue">
-                <div class="stat-number">{{ patients.length }}</div>
-                <div class="stat-label">Patients Registered</div>
+            @if (userRole === 'ADMIN' || userRole === 'DOCTOR') {
+              <div class="stats-grid">
+                <div class="stat-card card-blue">
+                  <div class="stat-number">{{ patients.length }}</div>
+                  <div class="stat-label">Patients Registered</div>
+                </div>
+              
+                <div class="stat-card card-green">
+                  <div class="stat-number">{{ doctors.length }}</div>
+                  <div class="stat-label">Active Doctors</div>
+                </div>
+              
+                <div class="stat-card card-purple">
+                  <div class="stat-number">{{ appointments.length }}</div>
+                  <div class="stat-label">Total Appointments</div>
+                </div>
               </div>
-            
-              <div class="stat-card card-green">
-                <div class="stat-number">{{ doctors.length }}</div>
-                <div class="stat-label">Active Doctors</div>
+            }
+
+            @if (userRole === 'PATIENT') {
+              <div style="background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #17a2b8;">
+                <h2 style="margin-top: 0; color: #333;">Welcome to your Patient Portal 🩺</h2>
+                <p style="color: #555; margin-bottom: 0;">Here you can book new appointments, view your medical history, and update your details.</p>
               </div>
-            
-              <div class="stat-card card-purple">
-                <div class="stat-number">{{ appointments.length }}</div>
-                <div class="stat-label">Total Appointments</div>
-              </div>
-            </div>
+            }
           
             <h3 style="margin-top: 30px; border-bottom: 2px solid #ddd; padding-bottom: 10px;">
               📅 Upcoming Appointments (Next 5)
