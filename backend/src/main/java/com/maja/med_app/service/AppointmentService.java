@@ -111,6 +111,22 @@ public class AppointmentService {
             }
             return rodoList;
         }
+        
+        //DOCTOR displays appointments
+        if (user != null && "DOCTOR".equals(user.getRole())) {
+            Doctor myDoctorProfile = doctorRepository.findByUser(user).orElse(null);
+            Long myId = (myDoctorProfile != null) ? myDoctorProfile.getId() : -1L;
+            
+            List<Appointment> doctorList = new ArrayList<>();
+            for (Appointment app : allAppointments) {
+                if (app.getDoctor() != null && app.getDoctor().getId().equals(myId)) {
+                    doctorList.add(app);
+                }
+            }
+            return doctorList;
+        }
+
+
         //return appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
         return allAppointments;
     }
