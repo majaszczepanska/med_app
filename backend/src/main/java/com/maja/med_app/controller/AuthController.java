@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.model.AppUser;
+import com.maja.med_app.model.Doctor;
 import com.maja.med_app.model.Patient;
+import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
 import com.maja.med_app.repository.UserRepository;
 import com.maja.med_app.util.ValidationErrorUtils;
@@ -39,8 +41,9 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DoctorRepository doctorRepository;
 
-    public record UserDto(Long id, Long patientId, String email, String role) {}
+    public record UserDto(Long id, Long patientId, Long doctorId, String email, String role) {}
     public record RegisterDto(
         @NotBlank(message = "Required")
         @Email(message = "Invalid email format")
@@ -112,14 +115,20 @@ public class AuthController {
             
         //user.setPassword(null);
         Long patientId = null;
+        Long doctorId = null;
         if ("PATIENT".equals(user.getRole())) {
             patientId = patientRepository.findByUser(user)
                     .map(Patient::getId) 
+                    .orElse(null);
+        } else if ("DOCTOR".equals(user.getRole())){
+            doctorId = doctorRepository.findByUser(user)
+                    .map(Doctor::getId)
                     .orElse(null);
         }
         UserDto response = new UserDto(
             user.getId(),
             patientId,
+            doctorId,
             user.getEmail(),
             user.getRole()
         );

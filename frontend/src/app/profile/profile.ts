@@ -15,6 +15,8 @@ import { ErrorService } from '../services/error.service';
 })
 export class Profile implements OnInit {
   userRole = sessionStorage.getItem('userRole');
+  myEmail = sessionStorage.getItem('email');
+  myDoctorInfo: any = null;
 
   updateData = {
     firstName: '',
@@ -38,30 +40,37 @@ export class Profile implements OnInit {
   constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef, private http: HttpClient, private errorService: ErrorService) {}
 
   ngOnInit() {
-    if (this.userRole === 'PATIENT') {
-      this.http.get('http://localhost:8080/doctors').subscribe({
-        next: (docs: any) => this.doctorsList = docs,
-        error: (err) => console.error("Could not load doctors: " + err)
-      });
-    }
     
-
-    this.authService.getProfile().subscribe({
-      next: (patient: any) => {
-        this.updateData.firstName = patient.firstName || '';
-        this.updateData.lastName = patient.lastName || '';
-        this.updateData.pesel = patient.pesel || '';
-        this.updateData.phoneNumber = patient.phoneNumber || '';
-        this.updateData.address = patient.address || '';
-        this.updateData.disease = patient.disease || '';
-        this.updateData.mainDoctorId = patient.mainDoctor ? patient.mainDoctor.id : null;
-
-        this.cdr.detectChanges();
+    this.http.get('http://localhost:8080/doctors').subscribe({
+      next: (docs: any) => {
+        this.doctorsList = docs;
+        if (this.userRole === 'DOCTOR') {
+          const myDocId = Number(sessionStorage.getItem('doctorId'));
+          this.myDoctorInfo = this.doctorsList.find(d => d.id === myDocId);
+        }
       },
-      error: (err) => {
-        console.error("Error while uploading profile data");
-      }
-    })
+      error: (err) => console.error("Could not load doctors: " + err)
+    });
+      
+      
+    if (this.userRole === 'PATIENT') {
+      this.authService.getProfile().subscribe({
+        next: (patient: any) => {
+          this.updateData.firstName = patient.firstName || '';
+          this.updateData.lastName = patient.lastName || '';
+          this.updateData.pesel = patient.pesel || '';
+          this.updateData.phoneNumber = patient.phoneNumber || '';
+          this.updateData.address = patient.address || '';
+          this.updateData.disease = patient.disease || '';
+          this.updateData.mainDoctorId = patient.mainDoctor ? patient.mainDoctor.id : null;
+        
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error("Error while uploading profile data");
+        }
+      })
+    }
   }
   update() {
     this.authService.updateProfile(this.updateData).subscribe({

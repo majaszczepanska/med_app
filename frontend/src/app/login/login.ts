@@ -33,6 +33,10 @@ export class LoginComponent {
         if (userData.patientId) {
           sessionStorage.setItem('patientId', userData.patientId)
         }
+        if (userData.doctorId) {
+          sessionStorage.setItem('doctorId', userData.doctorId)
+        }
+        sessionStorage.setItem('email', this.email)
         window.location.href = '/';
       },
       error: () => {

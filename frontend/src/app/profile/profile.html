@@ -39,13 +39,36 @@
   }
 
   @if (userRole === 'DOCTOR' || userRole === 'ADMIN') {
-    <div style="background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ffc107;">
-      <p style="margin: 0;"><strong>Security Settings</strong></p>
-      <p style="font-size: 0.9em; color: #555; margin-top: 5px;">
-        To change your personal details (Name, Specialization), please contact the Administrator. You can update your access password below.
-      </p>
+    <div style="background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
+      <p style="margin: 0; font-size: 1.1em;"><strong>Account Details</strong></p>
+      
+      <div style="margin-top: 10px; padding: 15px; background: white; border-radius: 5px; border: 1px solid #ccc;">
+        <p style="margin: 0 0 5px 0;"><strong>System Role: </strong> <span style="color: #007bff; font-weight: bold;">{{ userRole }}</span></p>
+        
+        <p style="margin: 0 0 5px 0;"><strong>Email Address:</strong> {{ myEmail }}</p>
+
+        @if (userRole === 'DOCTOR') {
+          <hr style="margin: 10px 0; border-top: 1px solid #eee;">
+          <p style="margin: 0 0 5px 0;"><strong>Full Name:</strong> Dr. {{ myDoctorInfo.firstName }} {{ myDoctorInfo.lastName }}</p>
+          <p style="margin: 0;"><strong>Specialization:</strong> {{ myDoctorInfo.specialization }}</p>
+          
+          <p style="margin: 10px 0 0 0; font-size: 0.85em; color: #6c757d;">
+            👨‍⚕️ To update your personal details, please contact the Clinic Administrator.
+          </p>
+        }
+      </div>
+
+      @if (userRole === 'DOCTOR') {
+        <div style="background: #ffeeba; padding: 10px; border-radius: 5px; margin-top: 15px; border: 1px solid #ffe8a1;">
+          <p style="margin: 0; color: #856404; font-weight: bold;">💡 Security Tip:</p>
+          <p style="margin: 0; color: #856404; font-size: 0.9em;">
+            Make sure to change your temporary password provided by the Administrator to a private, secure one below.
+          </p>
+        </div>
+      }
     </div>
   }
+
   <div class="password-change-section">
     <h3>Change Password</h3>
     
