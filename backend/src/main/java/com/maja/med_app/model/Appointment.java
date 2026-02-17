@@ -54,6 +54,6 @@ public class Appointment {
     */
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(255 default 'SCHEDULED'")
+    @Column(columnDefinition = "varchar(255) default 'SCHEDULED'")
     private AppointmentStatus status = AppointmentStatus.SCHEDULED;
 }
