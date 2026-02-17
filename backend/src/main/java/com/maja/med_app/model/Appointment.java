@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,7 +48,12 @@ public class Appointment {
     @Column(length = 500)
     private String description;
 
-    
+    /* 
     @Column(columnDefinition = "boolean default false")
     private boolean deleted = false;
+    */
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(255 default 'SCHEDULED'")
+    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
 }
