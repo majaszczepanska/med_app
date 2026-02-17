@@ -15,6 +15,23 @@
 
       <div class="form-panel">
 
+        @if (activeTab === 'dashboard' || activeTab === 'profile' || activeTab === 'history') {
+          <div style="text-align: center; padding: 40px 10px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063206.png" alt="Medical Clinic" style="width: 130px; opacity: 0.9; margin-bottom: 20px;">
+            
+            <h3 style="color: #2c3e50; margin-bottom: 10px;">MedApp Clinic</h3>
+            <p style="color: #6c757d; font-size: 0.95em; line-height: 1.5;">
+              Advanced Healthcare<br>Right At Your Fingertips.
+            </p>
+            
+            <div style="margin-top: 40px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+              <p style="margin: 0; font-size: 0.85em; color: #555;">📞 Reception & Helpdesk:</p>
+              <p style="margin: 5px 0 0 0; font-weight: bold; font-size: 1.1em; color: #17a2b8;">+48 123 456 789</p>
+              <p style="margin: 5px 0 0 0; font-size: 0.8em; color: #777;">Mon - Fri: 8:00 - 16:00</p>
+            </div>
+          </div>
+        }
+        
         @if (activeTab === 'patients') {
           <h3>@if(isEditing){Edit} @else{Add} Patient</h3>
           <label>First Name:</label>
