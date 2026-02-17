@@ -70,11 +70,33 @@
           <label>Date & Time:</label>
           <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" [min]="minDate" (click)="updateMinDate()">
 
-          <label>Patient ID:</label>
-          <input type="number" [(ngModel)]="newAppointment.patientId" placeholder="ID">
+          @if (userRole === 'ADMIN') {
+            <label>Patient ID:</label>
+            <input type="number" [(ngModel)]="newAppointment.patientId" placeholder="Patient ID">
+            
+            <label>Doctor ID:</label>
+            <input type="number" [(ngModel)]="newAppointment.doctorId" placeholder="Doctor ID">
+          }
 
-          <label>Doctor ID:</label>
-          <input type="number" [(ngModel)]="newAppointment.doctorId" placeholder="ID">
+          @if (userRole === 'DOCTOR') {
+            <label>Choose Patient:</label>
+            <select [(ngModel)]="newAppointment.patientId" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
+              <option [ngValue]="null">-- Select Patient --</option>
+              @for (p of patients; track p.id) {
+                <option [ngValue]="p.id">{{ p.lastName }} {{ p.firstName }} (PESEL: {{ p.pesel }})</option>
+              }
+            </select>
+          }
+
+          @if (userRole === 'PATIENT') {
+            <label>Choose Doctor:</label>
+            <select [(ngModel)]="newAppointment.doctorId" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
+              <option [ngValue]="null">-- Select Doctor --</option>
+              @for (d of doctors; track d.id) {
+                <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
+              }
+            </select>
+          }
 
           <label>Diagnosis / Notes:</label>
           <textarea [(ngModel)]="newAppointment.description" 

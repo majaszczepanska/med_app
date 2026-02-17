@@ -588,6 +588,10 @@ export class AppComponent implements OnInit {
   prepareAppointmentData() {
     const appointmentData = { ...this.newAppointment };
 
+    if (this.userRole === 'PATIENT') {
+      appointmentData.patientId = sessionStorage.getItem('patientId');
+    }
+
     if (appointmentData.patientId) {
       appointmentData.patient = { 
         id: Number(appointmentData.patientId) 
@@ -596,7 +600,6 @@ export class AppComponent implements OnInit {
     } else {
        appointmentData.patient = null;
     }
-
     if (appointmentData.doctorId) {
        appointmentData.doctor = { id: Number(appointmentData.doctorId) };
        delete appointmentData.doctorId;
