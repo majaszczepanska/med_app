@@ -40,7 +40,6 @@ export class Profile implements OnInit {
   constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef, private http: HttpClient, private errorService: ErrorService) {}
 
   ngOnInit() {
-    
     this.http.get('http://localhost:8080/doctors').subscribe({
       next: (docs: any) => {
         this.doctorsList = docs;
@@ -48,6 +47,7 @@ export class Profile implements OnInit {
           const myDocId = Number(sessionStorage.getItem('doctorId'));
           this.myDoctorInfo = this.doctorsList.find(d => d.id === myDocId);
         }
+        this.cdr.detectChanges();
       },
       error: (err) => console.error("Could not load doctors: " + err)
     });
@@ -74,17 +74,10 @@ export class Profile implements OnInit {
   }
   update() {
     this.authService.updateProfile(this.updateData).subscribe({
-      next: (response) => {
+      next: () => {
         alert("Account successfuly updated ✅");
-        //this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        if (err.error && typeof err.error === 'string') {
-          try {
-            err.error = JSON.parse(err.error);
-          } catch (e) {
-          }
-        }
         this.onError.emit(err);
       }
     })
