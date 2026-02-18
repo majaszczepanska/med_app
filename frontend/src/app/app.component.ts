@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
 
   searchText: string = '';
 
-  showCalendar: boolean = true;
+  showCalendar: boolean = false;
 
   patientHistory: any[] = [];
   selectedPatientForHistory: any = null;
@@ -238,12 +238,12 @@ export class AppComponent implements OnInit {
 
   //CALENDAR
   updateCalendarEvent() {
-    let filetredAppointments = this.appointments;
+    let filteredAppointments = this.appointments;
     if (this.selectedDoctorId) {
-      filetredAppointments = this.appointments.filter(a => a.doctor?.id === Number(this.selectedDoctorId));
+      filteredAppointments = this.appointments.filter(a => a.doctor?.id === Number(this.selectedDoctorId));
     }
 
-    this.calendarOptions.events = filetredAppointments.map(a => {
+    this.calendarOptions.events = filteredAppointments.map(a => {
       const startDate = new Date(a.visitTime);
       const endDate = new Date(startDate.getTime() + 15 * 60000);
       const isOthers = a.patient?.firstName === 'Reserved';
@@ -361,11 +361,11 @@ export class AppComponent implements OnInit {
   //PATIENTS 
   //FILTER
   get filteredPatients() {
-  if (!this.searchText) {
-    return this.patients; 
-  }
-  const lowerSearch = this.searchText.toLowerCase();
-  return this.patients.filter(p => p.lastName.toLowerCase().includes(lowerSearch) || p.pesel.includes(lowerSearch));
+    if (!this.searchText) {
+      return this.patients; 
+    }
+    const lowerSearch = this.searchText.toLowerCase();
+    return this.patients.filter(p => p.lastName.toLowerCase().includes(lowerSearch) || p.pesel.includes(lowerSearch));
 }
 
   //CREATE
@@ -494,12 +494,12 @@ export class AppComponent implements OnInit {
   //DOCTOR
   //FILTER
   get filteredDoctors() {
-  if (!this.searchText) {
-    return this.doctors; 
+    if (!this.searchText) {
+      return this.doctors; 
+    }
+    const lowerSearch = this.searchText.toLowerCase();
+    return this.doctors.filter(d => d.lastName.toLowerCase().includes(lowerSearch) || d.specialization.toLowerCase().includes(lowerSearch));
   }
-  const lowerSearch = this.searchText.toLowerCase();
-  return this.doctors.filter(d => d.lastName.toLowerCase().includes(lowerSearch) || d.specialization.toLowerCase().includes(lowerSearch));
-}
 
   //CREATE AND UPDATE
   saveDoctor() {
@@ -559,12 +559,21 @@ export class AppComponent implements OnInit {
 
   //APOINTMENTS
   //FILTER
-  get filetredAppointments() {
-  if (!this.searchText) {
-    return this.appointments; 
-  }
-  const lowerSearch = this.searchText.toLowerCase();
-  return this.appointments.filter(a => a.patient.lastName.toLowerCase().includes(lowerSearch) || a.doctor.lastName.toLowerCase().includes(lowerSearch));
+  get filteredAppointments() {
+    if (this.userRole === 'PATIENT') {
+      const myId = Number(sessionStorage.getItem('patientId'));
+      this.appointments = this.appointments.filter(a => a.patient?.id === myId);
+    }
+    
+    if (this.userRole === 'DOCTOR') {
+      const myId = Number(sessionStorage.getItem('doctorId'));
+      this.appointments = this.appointments.filter(a => a.doctor?.id === myId);
+    }
+    if (!this.searchText) {
+      return this.appointments; 
+    }
+    const lowerSearch = this.searchText.toLowerCase();
+    return this.appointments.filter(a => a.patient.lastName.toLowerCase().includes(lowerSearch) || a.doctor.lastName.toLowerCase().includes(lowerSearch));
 }
 
   //CREATE AND UPDATE 
@@ -625,7 +634,6 @@ export class AppComponent implements OnInit {
 
     return appointmentData;
   }
-
   //DATE in normal format for user
   formatDateDisplay(dateStr: string): string {
     if(!dateStr) {

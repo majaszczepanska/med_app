@@ -335,6 +335,18 @@
                   placeholder="🔍 Search patient or doctor Last name" 
                   style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
+            @if (userRole === 'PATIENT') {
+              <div style="background-color: #e3f2fd; color: #0c5460; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 5px solid #17a2b8; font-size: 0.9em;">
+                ℹ️ <strong>Upcoming Appointments:</strong> This list shows only your future visits. 
+                For past visits and diagnosis, please check the <strong>"My History"</strong> tab.
+              </div>
+            }
+
+            @if (userRole === 'DOCTOR' || userRole === 'ADMIN') {
+              <div style="background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 5px solid #ffc107; font-size: 0.9em;">
+                📅 <strong>Active Schedule:</strong> Displaying all appointments for <strong>Today</strong> (including completed) and <strong>Future</strong> dates.
+              </div>
+            }
             <table class="data-table">
               <thead>
                 <tr>
@@ -347,8 +359,8 @@
                 </tr>
               </thead>
               <tbody>
-                @for (a of filetredAppointments; track a.id){
-                  @if (!isPastDate(a.visitTime) || isToday(a.visitTime)){
+                @for (a of filteredAppointments; track a.id){
+                  @if (!isPastDate(a.visitTime) || ((userRole === 'DOCTOR' || userRole === 'ADMIN') && isToday(a.visitTime))){
                     <tr [style.opacity]="isPastDate(a.visitTime) ? 0.5 : 1" 
                         [style.background-color]="isOngoing(a.visitTime) ? '#e8f5e9' : 'transparent'">                     
                       
@@ -411,7 +423,7 @@
             <div class="patient-info-card" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
               <p><strong>PESEL:</strong> {{ selectedPatientForHistory.pesel }}</p>
               <p><strong>Chronic Disease:</strong> {{ selectedPatientForHistory.disease }}</p>
-              <p><strong>Primary Doctor:</strong> {{ selectedPatientForHistory.mainDoctor?.lastName || '-' }}</p>
+              <p><strong>Primary Doctor:</strong> {{ getDoctorName(selectedPatientForHistory.mainDoctor) }}</p>
             </div>
           
             @if (patientHistory.length === 0) {
