@@ -648,19 +648,23 @@ export class AppComponent implements OnInit {
 
   //DATE - check if date is in past
   isPastDate(dateStr: string): boolean {
-    if(!dateStr) {
-      return false;
-    }
+    if(!dateStr) return false;
     const end = this.getEndTime(dateStr);
     const now = new Date();
     return end < now;
   }
 
+  //DATE - check if date is in the future
+  isFutureDate(dateStr: string): boolean {
+    if(!dateStr) return false;
+    const visitDate = new Date(dateStr.replace(' ', 'T'));
+    const now = new Date();
+    return visitDate > now;
+  }
+
   //DATE - check if date is today
   isToday(dateStr: string): boolean {
-    if (!dateStr) {
-      return false;
-    }
+    if (!dateStr) return false;
     const visitDate = new Date(dateStr.replace(' ', 'T'));
     const today = new Date();
     return visitDate.toDateString() === today.toDateString();

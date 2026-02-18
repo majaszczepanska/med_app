@@ -377,11 +377,11 @@
                       </td>
                       <td>
                         <div class="action-buttons-wrapper">
-                          @if (userRole === 'DOCTOR' && a.status === 'SCHEDULED' && isOngoing(a.visitTime)) {
+                          @if (userRole === 'DOCTOR' && a.status === 'SCHEDULED' && !isFutureDate(a.visitTime)) {
                             <button (click)="completeAppointment(a)" style="background-color: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8em; font-weight: bold;">COMPLETE</button>
                           }
 
-                          @if (a.status === 'SCHEDULED' && !isOngoing(a.visitTime)) {
+                          @if (a.status === 'SCHEDULED' || a.status === 'COMPLETED') {
                             <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)">EDIT</button>
                           }
 
