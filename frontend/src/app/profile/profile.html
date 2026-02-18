@@ -47,10 +47,9 @@
         
         <p style="margin: 0 0 5px 0;"><strong>Email Address:</strong> {{ myEmail }}</p>
 
-        @if (userRole === 'DOCTOR') {
-          <hr style="margin: 10px 0; border-top: 1px solid #eee;">
-          <p style="margin: 0 0 5px 0;"><strong>Full Name:</strong> Dr. {{ myDoctorInfo.firstName }} {{ myDoctorInfo.lastName }}</p>
-          <p style="margin: 0;"><strong>Specialization:</strong> {{ myDoctorInfo.specialization }}</p>
+        @if (userRole === 'DOCTOR' && myDoctorInfo) { <hr style="margin: 10px 0; border-top: 1px solid #eee;">
+          <p style="margin: 0 0 5px 0;"><strong>Full Name:</strong> Dr. {{ myDoctorInfo?.firstName }} {{ myDoctorInfo?.lastName }}</p>
+          <p style="margin: 0;"><strong>Specialization:</strong> {{ myDoctorInfo?.specialization }}</p>
           
           <p style="margin: 10px 0 0 0; font-size: 0.85em; color: #6c757d;">
             👨‍⚕️ To update your personal details, please contact the Clinic Administrator.
