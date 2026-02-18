@@ -99,10 +99,10 @@ public class AppointmentService {
 
 
                     Patient hiddenPatient = new Patient();
-                    hiddenPatient.setFirstName("taken");   
-                    hiddenPatient.setLastName("Slot taken"); 
+                    hiddenPatient.setFirstName("Reserved");   
+                    hiddenPatient.setLastName("Term"); 
                     hiddenAppointment.setPatient(hiddenPatient);
-                    hiddenAppointment.setDescription("Access denied");
+                    hiddenAppointment.setDescription("Private Appointment");
 
                     rodoList.add(hiddenAppointment);
                 }
