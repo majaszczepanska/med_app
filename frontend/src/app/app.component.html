@@ -322,9 +322,6 @@
                 </select>
               </div>
             }
-
-            
-
           </div>
 
           @if (showCalendar) {
@@ -355,30 +352,40 @@
               <tbody>
                 @for (a of filetredAppointments; track a.id){
                   @if (!isPastDate(a.visitTime) || isToday(a.visitTime)){
-                    <tr [style.opacity]="isPastDate(a.visitTime) ? 0.3 : 1">
+                    <tr [style.opacity]="isPastDate(a.visitTime) ? 0.3 : 1" [style.background-color]="isOngoing(a.visitTime) ? '#e8f5e9' : 'transparent'">
                       <td>{{ a.id }}</td>
                       <td>{{ formatDateDisplay(a.visitTime) }}</td>
                       <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
                       <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
                       <td class="truncate-cell" [title]="a.description">{{ a.description || '-'}}</td>
                       <td>
-                        @if (a.status === 'SCHEDULED') {
-                          <span style="background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">⏳ SCHEDULED</span>
-                        } @else if (a.status === 'COMPLETED') {
-                          <span style="background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">✅ COMPLETED</span>
+                        @if (a.status === 'COMPLETED') {
+                          <span style="background: #155724; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">
+                            ✅ COMPLETED
+                          </span>
+                        } 
+                        @else if (isOngoing(a.visitTime)) {
+                          <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; box-shadow: 0 0 5px #28a745;">
+                            🔄 IN PROGRESS
+                          </span>
+                        } 
+                        @else if (a.status === 'SCHEDULED') {
+                          <span style="background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">
+                            ⏳ SCHEDULED
+                          </span>
                         }
                       </td>
                       <td>
                         <div class="action-buttons-wrapper">
-                          @if (userRole === 'DOCTOR' && a.status === 'SCHEDULED') {
+                          @if (userRole === 'DOCTOR' && a.status === 'SCHEDULED' && isOngoing(a.visitTime)) {
                             <button (click)="completeAppointment(a)" style="background-color: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8em; font-weight: bold;">COMPLETE</button>
                           }
-                          
-                          @if (a.status === 'SCHEDULED') {
+
+                          @if (a.status === 'SCHEDULED' && !isOngoing(a.visitTime)) {
                             <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)">EDIT</button>
                           }
-                          
-                          @if (a.status === 'SCHEDULED') {
+
+                          @if (a.status === 'SCHEDULED' && !isOngoing(a.visitTime)) {
                             <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)" style="background-color: #dc3545;">CANCEL</button>
                           }
                         </div>

@@ -27,6 +27,11 @@ export class AppointmentService {
     deleteAppointment(id: number): Observable<any> {
       return this.http.delete(`${this.apiUrl}/${id}`);
     }
+    
+    completeAppointment(id: number, data: any) {
+    const headers = { 'Authorization': 'Basic ' + sessionStorage.getItem('authData') }; 
+    return this.http.put(`${this.apiUrl}/${id}/complete`, data, { headers });
+  }
 
     getPatientHistory(patientId: number): Observable<any> {
       return this.http.get(`${this.apiUrl}/patient/${patientId}`);

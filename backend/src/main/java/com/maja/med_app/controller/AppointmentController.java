@@ -1,6 +1,7 @@
 package com.maja.med_app.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,10 @@ public class AppointmentController {
         return appointmentService.updateAppointment(id, updatedAppointment);
     }
 
+    @PutMapping("/{id}/complete")
+    public void completeAppointment(@PathVariable Long id,@RequestBody Map<String, String> request) {
+        appointmentService.completeAppointment(id, request.get("description"));
+    }
 
     @DeleteMapping("/{id}")
     public void deleteAppointment(@NonNull @PathVariable Long id) {
