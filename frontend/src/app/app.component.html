@@ -94,11 +94,20 @@
           <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" [min]="minDate" (click)="updateMinDate()">
 
           @if (userRole === 'ADMIN') {
-            <label>Patient ID:</label>
-            <input type="number" [(ngModel)]="newAppointment.patientId" placeholder="Patient ID">
-            
-            <label>Doctor ID:</label>
-            <input type="number" [(ngModel)]="newAppointment.doctorId" placeholder="Doctor ID">
+            <label>Choose Patient:</label>
+            <select [(ngModel)]="newAppointment.patientId" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
+              <option [ngValue]="null">-- Select Patient --</option>
+              @for (p of patients; track p.id) {
+                <option [ngValue]="p.id">{{ p.lastName }} {{ p.firstName }} (PESEL: {{ p.pesel }})</option>
+              }
+            </select>
+            <label>Choose Doctor:</label>
+            <select [(ngModel)]="newAppointment.doctorId" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
+              <option [ngValue]="null">-- Select Doctor --</option>
+              @for (d of doctors; track d.id) {
+                <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
+              }
+            </select>
           }
 
           @if (userRole === 'DOCTOR') {
@@ -293,27 +302,28 @@
         }
 
         @if (activeTab === 'appointments') {
-          @if (activeTab === 'appointments') {
+          
           <h3 style="color: #6f42c1">Appointments Schedule</h3>
           
           <div class="controls-container">
-
-            @if (userRole === 'ADMIN' || userRole === 'PATIENT') {
             <div class="view-switcher">
               <button (click)="showCalendar = false" [class.active-view]="!showCalendar">List View</button>
               <button (click)="showCalendar = true" [class.active-view]="showCalendar">Calendar View</button>
             </div>
-          }
 
-            <div class="doctor-filter">
-              <label>Filter by Doctor:</label>
-              <select [(ngModel)]="selectedDoctorId" (change)="onDoctorFilterChange()">
-                <option [ngValue]="null">-- ALL DOCTORS --</option>
-                @for (d of doctors; track d.id) {
-                  <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
-                }
-              </select>
-            </div>
+            @if (userRole === 'ADMIN' || userRole === 'PATIENT') {
+              <div class="doctor-filter">
+                <label>Filter by Doctor:</label>
+                <select [(ngModel)]="selectedDoctorId" (change)="onDoctorFilterChange()">
+                  <option [ngValue]="null">-- ALL DOCTORS --</option>
+                  @for (d of doctors; track d.id) {
+                    <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
+                  }
+                </select>
+              </div>
+            }
+
+            
 
           </div>
 
@@ -338,6 +348,7 @@
                   <th style="background-color: #6f42c1;">Patient</th>
                   <th style="background-color: #6f42c1;">Doctor</th>
                   <th style="background-color: #6f42c1;">Notes</th>
+                  <th style="background-color: #6f42c1;">Status</th>
                   <th style="background-color: #6f42c1;">Actions</th>
                 </tr>
               </thead>
@@ -351,9 +362,25 @@
                       <td>{{ a.doctor?.firstName }} {{ a.doctor?.lastName}}</td>
                       <td class="truncate-cell" [title]="a.description">{{ a.description || '-'}}</td>
                       <td>
+                        @if (a.status === 'SCHEDULED') {
+                          <span style="background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">⏳ SCHEDULED</span>
+                        } @else if (a.status === 'COMPLETED') {
+                          <span style="background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">✅ COMPLETED</span>
+                        }
+                      </td>
+                      <td>
                         <div class="action-buttons-wrapper">
-                          <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)" aria-describedby="You can edit this appointment">EDIT</button>
-                          <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)">DELETE</button>
+                          @if (userRole === 'DOCTOR' && a.status === 'SCHEDULED') {
+                            <button (click)="completeAppointment(a)" style="background-color: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8em; font-weight: bold;">COMPLETE</button>
+                          }
+                          
+                          @if (a.status === 'SCHEDULED') {
+                            <button (click)="editAppointment(a)" class="edit-btn" [disabled]="isPastDate(a.visitTime)">EDIT</button>
+                          }
+                          
+                          @if (a.status === 'SCHEDULED') {
+                            <button (click)="removeAppointment(a.id)" class="delete-btn" [disabled]="isPastDate(a.visitTime)" style="background-color: #dc3545;">CANCEL</button>
+                          }
                         </div>
                       </td>
                     </tr>
@@ -363,7 +390,7 @@
               </tbody>
             </table>
           }
-          }
+          
         }
         @if (activeTab === 'history' && selectedPatientForHistory) {
           <div class="history-container">
