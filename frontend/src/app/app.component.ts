@@ -651,10 +651,9 @@ export class AppComponent implements OnInit {
     if(!dateStr) {
       return false;
     }
-    const dateT = dateStr.replace(' ', 'T');
-    const date = new Date(dateT);
+    const end = this.getEndTime(dateStr);
     const now = new Date();
-    return date < now;
+    return end < now;
   }
 
   //DATE - check if date is today
@@ -665,6 +664,22 @@ export class AppComponent implements OnInit {
     const visitDate = new Date(dateStr.replace(' ', 'T'));
     const today = new Date();
     return visitDate.toDateString() === today.toDateString();
+  }
+
+  //END of visit
+  getEndTime(dateStr: string): Date {
+    if (!dateStr) return new Date();
+    const start = new Date(dateStr.replace(' ', 'T'));
+    return new Date(start.getTime() + 15 * 60000);
+  }
+
+  //VISIT is now
+  isOngoing(dateStr: string): boolean {
+    if(!dateStr) return false;
+    const start = new Date(dateStr.replace(' ', 'T'));
+    const end = this.getEndTime(dateStr);
+    const now = new Date();
+    return start <= now && now <= end;
   }
 
   //EDIT - for html to form
@@ -687,24 +702,36 @@ export class AppComponent implements OnInit {
   
   //DELETE
   removeAppointment(id: number) {
-    if(confirm("Are you sure you want to delete this appointment?")) {
+    if(confirm("Are you sure you want to CANCEL this appointment?")) {
       this.appointmentService.deleteAppointment(id).subscribe({
         next: () => {
           alert("Appointment cancelled successfully ✅");
           this.refreshAppointments(); 
         },
         error: (err: any) => {
-          console.error(err);
-          if (err.error && err.error.message) {
-             alert("❌ ERROR: \n " + err.error.message); 
-          } else if (err.error && typeof err.error === 'string') {
-             alert("❌ ERROR: \n" + err.error);
-          } else {
-             alert("❌ Cannot cancel this appointment (it might be too late).");
-          }
+          this.handleErrors(err);
         }
      });
     }
+  }
+
+  // COMPLETE BUTTON
+  completeAppointment(appointment: any) {
+
+    const diagnosis = prompt("Enter diagnosis/notes for this completed visit:", appointment.description || "");
+    
+
+    if (diagnosis === null) return;
+
+    this.appointmentService.completeAppointment(appointment.id, { description: diagnosis }).subscribe({
+      next: () => {
+        alert("Appointment marked as COMPLETED! ✅");
+        this.refreshAppointments(); 
+      },
+      error: (err: any) => {
+        this.handleErrors(err);
+      }
+    });
   }
   
 
