@@ -39,7 +39,8 @@ public class AppointmentService {
 
     //POST
     public Appointment createAppointment(Appointment appointment){
-       
+        enforceRoleBoundaries(appointment);
+        /* 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null || auth.isAuthenticated() || !"annonymousUser".equals(auth.getPrincipal())) {
             AppUser user = userRepository.findByEmail(auth.getName()).orElse(null);
@@ -53,7 +54,7 @@ public class AppointmentService {
                 Doctor me = doctorRepository.findByUser(user).orElse(null);
                 if (me != null) appointment.setDoctor(me);
             }
-        }
+        }*/
 
         validateAppointment(appointment);
         Map<String, String> errors = new HashMap<>();
@@ -75,7 +76,7 @@ public class AppointmentService {
         List<Appointment> allAppointments = appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || "annonymousUser".equals(auth.getPrincipal())) {
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return allAppointments;
         }
 
@@ -136,6 +137,8 @@ public class AppointmentService {
         Appointment existingAppointment = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
 
+        verifyOwnership(existingAppointment);
+        enforceRoleBoundaries(updatedAppointment);
         //ADMIN OPTION
         //checkEditTime(updatedAppointment.getVisitTime());
         if(updatedAppointment.getVisitTime() != null){
@@ -174,10 +177,32 @@ public class AppointmentService {
         
         //ADMIN OPTION
         //checkEditTime(appointment.getVisitTime());
+
+        verifyOwnership(appointment);
         
         appointment.setStatus(AppointmentStatus.CANCELLED);
         appointmentRepository.save(appointment);
         //appointmentRepository.deleteById(id);
+    }
+
+    public void completeAppointment(Long id, String diagnosis) {
+        Appointment appointment = appointmentRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
+        verifyOwnership(appointment);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            AppUser user = userRepository.findByEmail(auth.getName()).orElse(null);
+            if (user == null || !"DOCTOR".equals(user.getRole()) && !"ADMIN".equals(user.getRole())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only doctors can complete appointments");
+            }
+        }
+
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        if (diagnosis != null && !diagnosis.trim().isEmpty()) {
+            appointment.setDescription(diagnosis);
+        }
+        
+        appointmentRepository.save(appointment);
     }
 
 
@@ -279,4 +304,43 @@ public class AppointmentService {
         }
     }
 
+
+
+    private void verifyOwnership(Appointment appointment) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) return;
+        
+        AppUser user = userRepository.findByEmail(auth.getName()).orElse(null);
+        if (user == null || "ADMIN".equals(user.getRole())) return; 
+
+        if ("PATIENT".equals(user.getRole())) {
+            Patient me = patientRepository.findByUser(user).orElse(null);
+            if (me == null || !appointment.getPatient().getId().equals(me.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: You can only modify your own appointments");
+            }
+        } else if ("DOCTOR".equals(user.getRole())) {
+            Doctor myDoc = doctorRepository.findByUser(user).orElse(null);
+            if (myDoc == null || !appointment.getDoctor().getId().equals(myDoc.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: You can only modify your own appointments");
+            }
+        }
+    }
+
+
+    private void enforceRoleBoundaries(Appointment appointment){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) return;
+        AppUser user = userRepository.findByEmail(auth.getName()).orElse(null);
+        if (user == null || "ADMIN".equals(user.getRole())) return;
+
+        if ("PATIENT".equals(user.getRole())) {
+            Patient me = patientRepository.findByUser(user).orElse(null);
+            if (me != null) appointment.setPatient(me); 
+        }
+        else if("DOCTOR".equals(user.getRole())) {
+            Doctor me = doctorRepository.findByUser(user).orElse(null);
+            if (me != null) appointment.setDoctor(me);
+        }
+        
+    }
 }
