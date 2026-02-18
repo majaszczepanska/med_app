@@ -246,7 +246,7 @@ export class AppComponent implements OnInit {
     this.calendarOptions.events = filetredAppointments.map(a => {
       const startDate = new Date(a.visitTime);
       const endDate = new Date(startDate.getTime() + 15 * 60000);
-      const isOthers = a.patient?.firstName === 'taken';
+      const isOthers = a.patient?.firstName === 'Reserved';
       const isPast = this.isPastDate(a.visitTime);
       let bgColor = '#6f42c1'; 
       if (isPast) bgColor = '#6c757d';
@@ -254,7 +254,7 @@ export class AppComponent implements OnInit {
 
       return {
         id: a.id.toString(),
-        title: `${a.patient?.lastName} (${a.doctor?.lastName})`,
+        title: isOthers ? `Reserved (${a.doctor?.lastName})` : `${a.patient?.lastName} (${a.doctor?.lastName})`,
         start: a.visitTime,
         end: endDate.toISOString(),
         backgroundColor: bgColor, 

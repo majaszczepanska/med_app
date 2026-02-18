@@ -100,7 +100,7 @@ public class AppointmentService {
 
                     Patient hiddenPatient = new Patient();
                     hiddenPatient.setFirstName("Reserved");   
-                    hiddenPatient.setLastName("Term"); 
+                    hiddenPatient.setLastName(""); 
                     hiddenAppointment.setPatient(hiddenPatient);
                     hiddenAppointment.setDescription("Private Appointment");
 
