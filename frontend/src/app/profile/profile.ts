@@ -47,13 +47,17 @@ export class Profile implements OnInit {
           const myDocId = Number(sessionStorage.getItem('doctorId'));
           this.myDoctorInfo = this.doctorsList.find(d => d.id === myDocId);
         }
+        if (this.userRole === 'PATIENT') {
+          this.loadPatientProfile();
+        }
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Could not load doctors: " + err)
     });
-      
-      
-    if (this.userRole === 'PATIENT') {
+    
+  }
+
+  loadPatientProfile() {
       this.authService.getProfile().subscribe({
         next: (patient: any) => {
           this.updateData.firstName = patient.firstName || '';
@@ -63,15 +67,14 @@ export class Profile implements OnInit {
           this.updateData.address = patient.address || '';
           this.updateData.disease = patient.disease || '';
           this.updateData.mainDoctorId = patient.mainDoctor ? patient.mainDoctor.id : null;
-        
           this.cdr.detectChanges();
         },
         error: (err) => {
           console.error("Error while uploading profile data");
         }
       })
-    }
   }
+
   update() {
     this.authService.updateProfile(this.updateData).subscribe({
       next: () => {

@@ -3,6 +3,7 @@ package com.maja.med_app.model;
 import org.hibernate.validator.constraints.pl.PESEL;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -60,7 +61,7 @@ public class Patient {
 
     private String disease;
     
-    @JsonIgnore
+    @JsonIgnoreProperties("patients")
     @ManyToOne
     @JoinColumn(name= "main_doctor_id")
     //@jakarta.validation.constraints.NotNull(message = "Required")

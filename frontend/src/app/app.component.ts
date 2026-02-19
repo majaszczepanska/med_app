@@ -634,6 +634,17 @@ export class AppComponent implements OnInit {
 
     return appointmentData;
   }
+
+  getDoctorName(doctor: any): string {
+    if (!doctor) return '-';
+    
+    if (doctor.firstName && doctor.lastName) {
+      return `Dr. ${doctor.firstName} ${doctor.lastName}`;
+    }
+
+    return 'Unknown';
+  }
+
   //DATE in normal format for user
   formatDateDisplay(dateStr: string): string {
     if(!dateStr) {
