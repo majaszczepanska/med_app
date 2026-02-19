@@ -422,7 +422,7 @@
           
             <div class="patient-info-card" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
               <p><strong>PESEL:</strong> {{ selectedPatientForHistory.pesel }}</p>
-              <p><strong>Chronic Disease:</strong> {{ selectedPatientForHistory.disease }}</p>
+              <p><strong>Chronic Disease:</strong> {{ selectedPatientForHistory.disease || ' ----'}}</p>
               <p><strong>Primary Doctor:</strong> {{ getDoctorName(selectedPatientForHistory.mainDoctor) }}</p>
             </div>
           

@@ -636,7 +636,7 @@ export class AppComponent implements OnInit {
   }
 
   getDoctorName(doctor: any): string {
-    if (!doctor) return '-';
+    if (!doctor) return ' ----';
     
     if (doctor.firstName && doctor.lastName) {
       return `Dr. ${doctor.firstName} ${doctor.lastName}`;
