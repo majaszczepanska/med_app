@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/doctors") // localhost:8080/doctors
 @RequiredArgsConstructor  //create constructor for finals (line 21)
 //@CrossOrigin(origins = "http://localhost:4200")
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class DoctorController {
 
     private final DoctorService doctorService;
