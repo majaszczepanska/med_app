@@ -40,7 +40,7 @@ export class Profile implements OnInit {
   constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef, private http: HttpClient, private errorService: ErrorService) {}
 
   ngOnInit() {
-    this.http.get('http://localhost:8080/doctors').subscribe({
+    this.http.get('http://192.168.131.213:8080/doctors').subscribe({
       next: (docs: any) => {
         this.doctorsList = docs;
         if (this.userRole === 'DOCTOR') {

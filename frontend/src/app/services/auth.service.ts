@@ -25,7 +25,7 @@ export interface UpdateProfileRequest {
 })
 
 export class AuthService {
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = 'http://192.168.131.213:8080';
 
   constructor(private http: HttpClient) {}
 

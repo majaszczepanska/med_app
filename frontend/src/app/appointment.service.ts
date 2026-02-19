@@ -6,8 +6,8 @@ import { Observable } from 'rxjs/internal/Observable';
   providedIn: 'root',
 })
 export class AppointmentService {
-  //private apiUrl = 'http://192.168.131.213:8080/appointments';
-  private apiUrl = 'http://localhost:8080/appointments';
+  private apiUrl = 'http://192.168.131.213:8080/appointments';
+  //private apiUrl = 'http://localhost:8080/appointments';
     constructor(private http: HttpClient) { }
 
     getAppointments(): Observable<any> {
@@ -45,7 +45,7 @@ export class AppointmentService {
         'Authorization': token || ''
       });
   
-      return this.http.get(`http://localhost:8080/patients/${id}`, { headers });
+      return this.http.get(`http://192.168.131.213:8080/patients/${id}`, { headers });
     }
   
     
