@@ -340,7 +340,7 @@
                   placeholder="🔍 Search patient or doctor Last name" 
                   style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
-            @if (userRole === 'PATIENT') {
+            @if (userRole === 'PATIENT' && !(filteredAppointments.length === 0)) {
               <div style="background-color: #e3f2fd; color: #0c5460; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 5px solid #17a2b8; font-size: 0.9em;">
                 ℹ️ <strong>Upcoming Appointments:</strong> This list shows only your future visits. 
                 For past visits and diagnosis, please check the <strong>"My History"</strong> tab.
@@ -352,28 +352,34 @@
                 📅 <strong>Active Schedule:</strong> Displaying all appointments for <strong>Today</strong> (including completed) and <strong>Future</strong> dates.
               </div>
             }
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="background-color: #6f42c1;">Date & Time</th>
-                  <th style="background-color: #6f42c1;">Patient</th>
-                  <th style="background-color: #6f42c1;">Doctor</th>
-                  <th style="background-color: #6f42c1;">Notes</th>
-                  <th style="background-color: #6f42c1;">Status</th>
-                  <th style="background-color: #6f42c1;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (a of filteredAppointments; track a.id){
-                  @if (!isPastDate(a.visitTime) || ((userRole === 'DOCTOR' || userRole === 'ADMIN') && isToday(a.visitTime))){
+            @if (filteredAppointments.length === 0) {
+              <div class="empty-state" style="margin-top: 20px;">
+                <p style="margin: 0; font-size: 1.1em; color: #6c757d;">
+                  📭 No appointments to display right now.
+                </p>
+              </div>
+            } @else {
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="background-color: #6f42c1;">Date & Time</th>
+                    <th style="background-color: #6f42c1;">Patient</th>
+                    <th style="background-color: #6f42c1;">Doctor</th>
+                    <th style="background-color: #6f42c1;">Notes</th>
+                    <th style="background-color: #6f42c1;">Status</th>
+                    <th style="background-color: #6f42c1;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (a of filteredAppointments; track a.id) {
                     <tr [style.opacity]="isPastDate(a.visitTime) ? 0.5 : 1" 
                         [style.background-color]="isOngoing(a.visitTime) ? '#e8f5e9' : 'transparent'">                     
-                      
+
                       <td style="font-weight: bold;">{{ formatDateDisplay(a.visitTime) }}</td>
                       <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
                       <td>Dr. {{ a.doctor?.lastName }}</td>
                       <td class="truncate-cell" [title]="a.description">{{ a.description || '-'}}</td>
-                      
+
                       <td>
                         @if (a.status === 'COMPLETED') {
                           <span style="background: #155724; color: white;">✅ COMPLETED</span>
@@ -403,9 +409,9 @@
                       </td>
                     </tr>
                   }
-                }
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            }
           }
           
         }

@@ -575,6 +575,15 @@ export class AppComponent implements OnInit {
       const myId = Number(sessionStorage.getItem('doctorId'));
       this.appointments = this.appointments.filter(a => a.doctor?.id === myId);
     }
+
+    this.appointments = this.appointments.filter(a => {
+      if (this.userRole === 'PATIENT') {
+        return !this.isPastDate(a.visitTime); 
+      } else {
+        return !this.isPastDate(a.visitTime) || this.isToday(a.visitTime); 
+      }
+    });
+
     if (!this.searchText) {
       return this.appointments; 
     }
