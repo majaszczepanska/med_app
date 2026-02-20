@@ -51,6 +51,8 @@ export class AppComponent implements OnInit {
   patientHistory: any[] = [];
   selectedPatientForHistory: any = null;
 
+  isMobileMenuOpen: boolean = false;
+
   newPatient: any = {
     firstName: '',
     lastName: '',
@@ -115,6 +117,9 @@ export class AppComponent implements OnInit {
     private errorService: ErrorService
   ){}
 
+  toggleMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
 
   //ON INIT (REFRESH TABS)
   ngOnInit() {
@@ -174,6 +179,7 @@ export class AppComponent implements OnInit {
     this.activeTab = tabName;
     this.isEditing = false;
     this.searchText = '';
+    this.isMobileMenuOpen = false;
 
     if (tabName === 'history' && this.userRole === 'PATIENT') {
       this.loadMyHistory();

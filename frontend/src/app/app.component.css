@@ -401,10 +401,10 @@ input:focus, select:focus, textarea:focus {
 /* ========================================= */
 
 @media (max-width: 992px) {
-  /* 1. Odwrócenie kolejności: Tabela u góry, Formularz na dole! */
+  /* 1. Odwrócenie układu: Główna treść wyżej, Formularze dodawania niżej */
   .layout {
     display: flex;
-    flex-direction: column-reverse; /* TO ROBI MAGIĘ */
+    flex-direction: column-reverse;
     gap: 20px;
   }
 
@@ -413,77 +413,95 @@ input:focus, select:focus, textarea:focus {
     max-width: 100%;
     position: static;
     box-sizing: border-box;
+    padding: 20px 15px; /* Lepsze marginesy wewnątrz dla czytelności */
   }
 
-  .form-panel {
-    padding: 15px;
-    margin-bottom: 30px; /* Odstęp na samym dole strony */
-  }
-
-  /* 2. Ukrywanie karetki */
+  /* 2. Ukrycie niepotrzebnej grafiki */
   .clinic-logo {
     display: none !important; 
   }
 
-  /* 3. Hamburger Menu Header */
+  /* 3. Nowoczesny mobilny nagłówek (Top Bar) */
   .mobile-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #dee2e6;
-    margin-bottom: 15px;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .mobile-header h3 {
+    margin: 0; 
+    color: #495057; 
+    font-size: 1.4em;
+    font-weight: 700;
   }
 
   .hamburger-btn {
-    background: none;
-    border: none;
-    font-size: 28px;
-    color: #333;
-    cursor: pointer;
-    padding: 0 5px;
-  }
-
-  /* 4. Menu rozwijane */
-  .tabs {
-    display: none; /* Domyślnie schowane */
-    flex-direction: column;
-    background: #fff;
+    background: #f8f9fa;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    overflow: hidden;
+    border-radius: 6px;
+    font-size: 24px;
+    color: #495057;
+    cursor: pointer;
+    padding: 4px 12px;
+    transition: background-color 0.2s;
   }
 
-  /* Pokazuje menu, gdy klikniemy hamburgera */
+  .hamburger-btn:active {
+    background-color: #e9ecef;
+  }
+
+  /* 4. Menu rozwijane (LEWITUJĄCE) - Modern Look */
+  .tabs {
+    display: none !important; 
+    flex-direction: column !important;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 12px; /* Bardziej zaokrąglone rogi */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Głębszy, delikatny cień */
+    
+    position: absolute !important;
+    top: 75px; /* Odsunięcie lekko w dół od przycisku ☰ */
+    right: 15px;
+    width: 260px; /* Minimalnie szersze, by tekst się nie łamał */
+    z-index: 9999;
+    padding: 8px 0; /* Marginesy na górze i dole menu */
+  }
+
+  /* Klasa aktywująca pokazywanie menu */
   .tabs.mobile-open {
-    display: flex; 
+    display: flex !important;
+    animation: slideDown 0.2s ease-out forwards; /* Delikatna animacja wysunięcia */
   }
 
   .tabs button {
-    width: 100%;
-    text-align: left; /* Tekst do lewej */
-    padding: 15px 20px;
-    border-bottom: 1px solid #f0f0f0 !important;
+    width: 100% !important;
+    text-align: left !important;
+    padding: 14px 20px;
+    border-bottom: none !important; /* Usuwamy kreski między elementami dla czystości */
     border-radius: 0 !important;
-  }
-
-  .tabs button:last-child {
-    border-bottom: none !important;
+    white-space: normal !important;
+    font-size: 1.05em;
+    color: #495057;
   }
 
   .tabs button.active {
-    background-color: #f8f9fa;
-    border-left: 4px solid #28a745; /* Zielony pasek po lewej zamiast na dole */
+    background-color: rgba(40, 167, 69, 0.1); /* Jasnozielone tło */
+    border-left: 4px solid #28a745; 
+    color: #28a745;
+    font-weight: bold;
   }
 
   .tabs button.logout-btn {
     text-align: left;
-    margin: 0;
+    margin-top: 8px;
+    border-top: 1px solid #f0f0f0 !important; /* Oddzielenie wylogowania od reszty */
+    color: #dc3545 !important;
   }
 
-  /* 5. Naprawa szerokości strony */
+  /* 5. Główne poprawki kontenera */
   .container {
     padding: 10px;
     max-width: 100vw;
@@ -491,18 +509,19 @@ input:focus, select:focus, textarea:focus {
   }
 
   .table-panel {
-    padding: 15px 10px;
+    position: relative;
   }
 
-  /* Scrollowanie samej tabeli */
+  /* 6. Ujarzmienie tabeli */
   .data-table {
-    display: block; /* Wymusza blokowy układ dla scrolla */
+    display: block; 
     width: 100%;
     overflow-x: auto;
-    white-space: nowrap; /* Zapobiega ściskaniu tekstu */
+    white-space: nowrap; 
+    border-radius: 8px; /* Ładniejsza ramka */
   }
 
-  /* Pozostałe poprawki mobilne */
+  /* Pozostałe drobnostki */
   .controls-container {
     flex-direction: column;
     align-items: stretch;
@@ -515,4 +534,10 @@ input:focus, select:focus, textarea:focus {
   .stats-grid {
     flex-direction: column;
   }
+}
+
+/* Animacja dla menu rozwijanego */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

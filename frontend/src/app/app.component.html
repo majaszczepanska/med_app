@@ -17,7 +17,7 @@
 
         @if (activeTab === 'dashboard' || activeTab === 'profile' || activeTab === 'history') {
           <div style="text-align: center; padding: 40px 10px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063206.png" alt="Medical Clinic" style="width: 130px; opacity: 0.9; margin-bottom: 20px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063206.png"  class="clinic-logo" alt="Medical Clinic" style="width: 130px; opacity: 0.9; margin-bottom: 20px;">
             
             <h3 style="color: #2c3e50; margin-bottom: 10px;">MedApp Clinic</h3>
             <p style="color: #6c757d; font-size: 0.95em; line-height: 1.5;">
@@ -148,7 +148,12 @@
 
       <div class="table-panel">
 
-        <div class="tabs">
+        <div class="mobile-header">
+          <h3 style="margin: 0; color: #6f42c1;">MedApp Menu</h3>
+          <button class="hamburger-btn" (click)="toggleMenu()">☰</button>
+        </div>
+
+        <div class="tabs" [class.mobile-open]="isMobileMenuOpen">
           <button [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">📊 Dashboard</button>
           @if (userRole === 'ADMIN' || userRole === 'DOCTOR'){
             <button [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Patients</button>
