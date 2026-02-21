@@ -15,7 +15,7 @@ export class ErrorService {
       }
     }
     if (err.error && err.error.message) {
-      alert("❌ ERROR: " + err.error.message);
+      //alert("❌ ERROR: " + err.error.message);
       return;
     }
     if (err.error && typeof err.error === 'object') {
@@ -37,14 +37,14 @@ export class ErrorService {
           } 
         }
         if (hasValidationErrors) {
-            alert(errorMessage);
+            //alert(errorMessage);
             return;
         }
     } 
     if (typeof err.error === 'string') {
-      alert("❌ ERROR: " + err.error);
+      //alert("❌ ERROR: " + err.error);
       return;
     } 
-    alert("❌ ERROR: " + (err.error || "Server error"));
+    //alert("❌ ERROR: " + (err.error || "Server error"));
   }
 }
