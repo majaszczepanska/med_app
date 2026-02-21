@@ -131,7 +131,7 @@ export class Profile implements OnInit {
     this.authService.changePassword(payload).subscribe({
       next: () => {
         //alert("Password changed successfully! ✅ \nPlease log in again.");
-        this.passSuccess = "Password changed successfully! ✅ Please log in again";
+        this.passSuccess = "Password changed successfully! ✅ Redirecting to login...";
         setTimeout(() => {
           sessionStorage.clear();
           window.location.href = '/login'; 
