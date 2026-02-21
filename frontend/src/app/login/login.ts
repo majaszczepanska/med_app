@@ -17,14 +17,19 @@ import { MatIconModule } from '@angular/material/icon';
 export class LoginComponent {
   email = '';
   password = '';
-  errorMessage = '';
+  //errorMessage = '';
+
+  loginSuccess = '';
+  loginError = '';
 
   showPass: boolean = false;
 
   constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   login() {
-    this.errorMessage = '';
+    //this.errorMessage = '';
+    this.loginSuccess = '';
+    this.loginError = '';
     const credentials = btoa(this.email + ':' + this.password);
     
     this.authService.login(credentials).subscribe({
@@ -40,15 +45,25 @@ export class LoginComponent {
           sessionStorage.setItem('doctorId', userData.doctorId)
         }
         sessionStorage.setItem('email', this.email)
-        window.location.href = '/';
+
+        this.loginSuccess = "Logged in successfully! ✅ Redirecting...";
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
       },
       error: () => {
-        this.errorMessage = "Invalid email or password";
+        this.loginError = "❌ Invalid email or password";
         this.cdr.detectChanges();
       }
     });
   }
 
- 
+  clearMessages() {
+    if (this.loginSuccess || this.loginError) {
+      this.loginSuccess = '';
+      this.loginError = '';
+    }
+  } 
 
 }
