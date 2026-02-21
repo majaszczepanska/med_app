@@ -56,7 +56,8 @@ public class Patient {
     @Schema(example = "12345678901")
     private String pesel;
 
-    private Integer phoneNumber;
+    @Pattern(regexp = "^[0-9]{9}$", message = "Phone number must consist of exactly 9 digits")
+    private String phoneNumber;
     private String address;
 
     private String disease;

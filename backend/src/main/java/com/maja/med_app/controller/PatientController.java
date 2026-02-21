@@ -62,7 +62,8 @@ public class PatientController {
         @PESEL(message = "Invalid PESEL format")
         String pesel, 
 
-        Integer phoneNumber, 
+        @Pattern(regexp = "^[0-9]{9}$", message = "Phone number must consist of exactly 9 digits")
+        String phoneNumber, 
         String address, 
         String disease,
         Long mainDoctorId
