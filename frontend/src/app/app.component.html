@@ -134,7 +134,8 @@
           <textarea [(ngModel)]="newAppointment.description" 
                     placeholder="Enter diagnosis, symptoms, or medications..."
                     rows="3"
-                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; resize: vertical; margin-bottom: 15px;">
+                    maxlength="500"
+                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; resize: vertical; margin-bottom: 15px; min-height: 100px; max-height: 300px;">
           </textarea>
           @if (isEditing) {
             <button (click)="onSubmit()" class="update-btn">UPDATE VISIT</button>
