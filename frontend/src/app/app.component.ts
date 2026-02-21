@@ -138,6 +138,13 @@ export class AppComponent implements OnInit {
 
   initData(){
     this.updateMinDate();
+    
+    if (this.userRole === 'PATIENT') {
+      this.showCalendar = true;
+    } else {
+      this.showCalendar = false;
+    }
+
     this.refreshAll();
     setInterval(() => {
       if (this.isLoggedIn) {
