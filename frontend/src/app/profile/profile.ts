@@ -5,10 +5,11 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ErrorService } from '../services/error.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, MatIconModule],
   standalone: true,
   templateUrl: './profile.html',
   styleUrl: './profile.css',
@@ -33,6 +34,10 @@ export class Profile implements OnInit {
     newPassword: '',
     confirmPassword: ''
   };
+
+  showOldPass: boolean = false;
+  showNewPass: boolean = false;
+  showConfPass: boolean = false;
 
   doctorsList: any[] = [];
   @Output() onError = new EventEmitter<any>();
