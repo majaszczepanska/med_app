@@ -92,6 +92,16 @@ export class Profile implements OnInit {
   }
 
   changePassword() {
+    if (this.passwordData.newPassword.length < 6) {
+      alert("❌ ERROR: New password must be at least 6 characters long!");
+      return;
+    }
+    
+    if (this.passwordData.newPassword === this.passwordData.oldPassword) {
+      alert("❌ ERROR: New password must be different from the current password!");
+      return;
+    }
+
     if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
       alert("❌ ERROR: Passwords do not match!");
       return;
