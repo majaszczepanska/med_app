@@ -3,21 +3,71 @@
   @if (userRole === 'PATIENT') {
     <p class="subtitle">Add your medical details below</p>
 
-    <form (ngSubmit)="update()">
+    <form #updateForm="ngForm" (ngSubmit)="update()" (input)="clearMessages()" (change)="clearMessages()">
 
       <label>First name<span class="required-star">*</span></label>
-      <input [(ngModel)]="updateData.firstName" name="firstName" type="text" placeholder="">
+      <input [(ngModel)]="updateData.firstName" name="firstName" type="text" placeholder="" #fname="ngModel" 
+              minlength="3" 
+              pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+              required>
+      @if (fname.invalid && (fname.dirty || fname.touched)) {
+          <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
+            @if (fname.errors?.['required']) {
+              <span style="display: block;">❌ First name is required.</span>
+            }
+            @if (fname.errors?.['minlength']) {
+              <span style="display: block;">❌ Min. 3 characters.</span>
+            }
+            @if (fname.errors?.['pattern']) {
+              <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
+            }
+          </div>
+      }
 
       <label>Last name<span class="required-star">*</span></label>
-      <input [(ngModel)]="updateData.lastName" name="lastName" type="text" placeholder="">
-
+      <input [(ngModel)]="updateData.lastName" name="lastName" type="text" placeholder="" #lname="ngModel"
+              minlength="3" 
+              pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+              required>
+      @if (lname.invalid && (lname.dirty || lname.touched)) {
+          <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
+            @if (lname.errors?.['required']) {
+              <span style="display: block;">❌ Last name is required.</span>
+            }
+            @if (lname.errors?.['minlength']) {
+              <span style="display: block;">❌ Min. 3 characters.</span>
+            }
+            @if (lname.errors?.['pattern']) {
+              <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
+            }
+          </div>
+      }
 
       <label>Pesel<span class="required-star">*</span></label>
-      <input [(ngModel)]="updateData.pesel" name="pesel" type="text" placeholder="">
+      <input [(ngModel)]="updateData.pesel" name="pesel" type="text" placeholder="" #pesel="ngModel" 
+            pattern="^\d{2}(?:0[1-9]|1[0-2]|2[1-9]|3[0-2]|4[1-9]|5[0-2]|6[1-9]|7[0-2]|8[1-9]|9[0-2])(?:0[1-9]|[12]\d|3[01])\d{5}$"
+            required>
+      @if (pesel.invalid && (pesel.dirty || pesel.touched)) {
+          <div style="color: #dc3545; font-size: 0.85em;  margin-bottom: 20px; font-weight: 500;">
+            @if (pesel.errors?.['required']) {
+              <span>❌ PESEL is required.</span>
+            }
+            @if (pesel.errors?.['pattern']) {
+              <span>❌ Invalid PESEL format (check the date).</span>
+            }
+          </div>
+        }
 
 
       <label>Phone number</label>
-      <input [(ngModel)]="updateData.phoneNumber" name="phoneNumber" type="tel" placeholder="e.g. 123456789" required>
+      <input [(ngModel)]="updateData.phoneNumber" name="phoneNumber" type="tel" placeholder="e.g. 123456789" pattern="^[0-9]{9}$" #phone="ngModel" required>
+      @if (phone.invalid && (phone.dirty || phone.touched)) {
+        <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
+          <span>❌ Phone number must contain exactly 9 digits (no spaces or letters).</span>
+        </div>
+      }
+
+
 
       <label>Home address</label>
       <input [(ngModel)]="updateData.address" name="address" type="text" placeholder="City, Street, Apt" required>
@@ -33,7 +83,22 @@
         }
       </select>  
 
-      <button type="submit">Save Changes</button>
+      @if (profileSuccess) {
+        <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #c3e6cb; font-weight: 500;">
+          {{ profileSuccess }}
+        </div>
+      }
+      @if (profileError) {
+        <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #f5c6cb; font-weight: 500;">
+          {{ profileError }}
+        </div>
+      }
+
+      <button type="submit" 
+        [disabled]="updateForm.invalid"
+        [style.opacity]="updateForm.invalid ? '0.5' : '1'"
+        [style.cursor]="updateForm.invalid ? 'not-allowed' : 'pointer'">
+        Save Changes</button>
     </form>
     <hr>
   }
@@ -105,6 +170,19 @@
         </div>
       </div>
     
+
+      @if (passSuccess) {
+        <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #c3e6cb; font-weight: 500;">
+          {{ passSuccess }}
+        </div>
+      }
+      @if (passError) {
+        <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #f5c6cb; font-weight: 500;">
+          {{ passError }}
+        </div>
+      }
+
+
       <button type="submit" class="btn btn-warning">Update Password</button>
     </form>
   </div>

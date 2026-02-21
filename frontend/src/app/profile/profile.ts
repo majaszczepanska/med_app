@@ -35,6 +35,11 @@ export class Profile implements OnInit {
     confirmPassword: ''
   };
 
+  profileSuccess = '';
+  profileError = '';
+  passSuccess = '';
+  passError = '';
+
   showOldPass: boolean = false;
   showNewPass: boolean = false;
   showConfPass: boolean = false;
@@ -81,29 +86,40 @@ export class Profile implements OnInit {
   }
 
   update() {
+    this.profileSuccess = '';
+    this.profileError = '';
     this.authService.updateProfile(this.updateData).subscribe({
       next: () => {
-        alert("Account successfuly updated ✅");
+        //alert("Account successfuly updated ✅");
+        this.profileSuccess = "Account successfully updated! ✅";
+        this.cdr.detectChanges();
       },
       error: (err) => {
+        this.profileError = "Failed to update profile. Check your data";
         this.onError.emit(err);
+        this.cdr.detectChanges();
       }
     })
   }
 
   changePassword() {
+    this.passSuccess = '';
+    this.passError = '';
     if (this.passwordData.newPassword.length < 6) {
-      alert("❌ ERROR: New password must be at least 6 characters long!");
+      //alert("❌ ERROR: New password must be at least 6 characters long!");
+      this.passError = "❌ New password must be at least 6 characters long!";
       return;
     }
-    
+
     if (this.passwordData.newPassword === this.passwordData.oldPassword) {
-      alert("❌ ERROR: New password must be different from the current password!");
+      //alert("❌ ERROR: New password must be different from the current password!");
+      this.passError = "❌ New password must be different from the current password!";
       return;
     }
 
     if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
-      alert("❌ ERROR: Passwords do not match!");
+      //alert("❌ ERROR: Passwords do not match!");
+      this.passError = "❌ Passwords do not match!";
       return;
     }
 
@@ -114,14 +130,37 @@ export class Profile implements OnInit {
 
     this.authService.changePassword(payload).subscribe({
       next: () => {
-        alert("Password changed successfully! ✅ \nPlease log in again.");
-        sessionStorage.clear();
-        window.location.href = '/login'; 
+        //alert("Password changed successfully! ✅ \nPlease log in again.");
+        this.passSuccess = "Password changed successfully! ✅ Please log in again";
+        setTimeout(() => {
+          sessionStorage.clear();
+          window.location.href = '/login'; 
+        }, 2000); 
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.errorService.handleErrors(err);
+        if (err.status === 400 || err.status === 401 || err.status === 403) {
+          this.passError = "❌ Incorrect current password!";
+        } else {
+          this.passError = "❌ Failed to change password. Please try again.";
+        }
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  clearMessages() {
+    if (this.profileSuccess || this.profileError) {
+      this.profileSuccess = '';
+      this.profileError = '';
+    }
+  }
+
+  clearPasswordMessages() {
+    if (this.passSuccess || this.passError) {
+      this.passSuccess = '';
+      this.passError = '';
+    }
   }
 }
 
