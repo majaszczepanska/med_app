@@ -58,7 +58,9 @@ export class AppComponent implements OnInit {
     lastName: '',
     pesel: '',
     disease: '',
-    mainDoctor: ''
+    mainDoctor: '',
+    email: '',   
+    password: ''
   };
 
   newDoctor: any = {
@@ -457,9 +459,11 @@ export class AppComponent implements OnInit {
         patientData.mainDoctor = {
           "id": doctorId
         }
+        patientData.mainDoctorId = doctorId;
       }
     } else {
       patientData.mainDoctor = null;
+      patientData.mainDoctorId = null;
     }
     return patientData;
   }
@@ -853,7 +857,7 @@ export class AppComponent implements OnInit {
 
   //RESET FORM
   resetForm() {
-    this.newPatient = {firstName: '', lastName: '', pesel: '', disease: '', mainDoctor: ''};
+    this.newPatient = {firstName: '', lastName: '', pesel: '', disease: '', mainDoctor: '', email: '', password: ''};
     this.newDoctor = {firstName: '', lastName: '', specialization: '', email: '', password: ''};
     this.newAppointment = {visitTime: '', patientId: null, doctorId: null, description: ''};
     this.isEditing = false;

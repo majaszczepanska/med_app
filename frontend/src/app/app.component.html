@@ -116,7 +116,7 @@
               <p style="margin-top: 0; font-weight: bold; font-size: 0.9em; color: #555;">Patient's Account Data:</p>
               
               <label>Email (Login) <span style="color: red;">*</span></label>
-              <input type="email" [(ngModel)]="newDoctor.email" name="patientEmail" placeholder="patient@example.com" style="margin-bottom: 10px;"
+              <input type="email" [(ngModel)]="newPatient.email" name="patientEmail" placeholder="patient@example.com" style="margin-bottom: 10px;"
                     #patientEmailCtrl="ngModel"
                     required email>
               @if (patientEmailCtrl.invalid && (patientEmailCtrl.dirty || patientEmailCtrl.touched) && !dashboardSuccess) {
