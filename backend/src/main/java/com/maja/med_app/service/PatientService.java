@@ -46,11 +46,11 @@ public class PatientService {
             errors.put("id", "No patient with this id");
             throw new AppValidationException(errors);
         }
-
-        if (updatedPatient.getMainDoctor() != null){
+        validateDoctor(updatedPatient);
+        /*if (updatedPatient.getMainDoctor() != null){
             validateDoctor(updatedPatient);
             existingPatient.setMainDoctor(updatedPatient.getMainDoctor());
-        }
+        }*/
   
         existingPatient.setFirstName(updatedPatient.getFirstName());
         existingPatient.setLastName(updatedPatient.getLastName());
@@ -76,12 +76,18 @@ public class PatientService {
     private void validateDoctor(Patient patient) {
         if (patient.getMainDoctor() != null){
             Long doctorId = patient.getMainDoctor().getId();
+            /*
             if (patient.getMainDoctor().getId() == null || patient.getMainDoctor().getId() == 0){ 
                 Map<String, String> errors = new HashMap<>();
                 errors.put("mainDoctor", "ID required (minimum 1)"); 
                 throw new AppValidationException(errors);
             }
-            @SuppressWarnings("null")
+            @SuppressWarnings("null")*/
+            if (doctorId == null || doctorId == 0) { 
+                patient.setMainDoctor(null);
+                return;
+            }
+
             Optional<Doctor> fullDoctor = doctorRepository.findById(doctorId);
             if (fullDoctor.isEmpty()){
                 Map<String, String> errors = new HashMap<>();
@@ -90,11 +96,11 @@ public class PatientService {
             } else {
                 patient.setMainDoctor(fullDoctor.get());
             }
-        }else {
+        }/*else {
             Map<String, String> errors = new HashMap<>();
             errors.put("mainDoctor", "Required");
             throw new AppValidationException(errors);
-        }
+        }*/
     }
 
     @SuppressWarnings("null")
