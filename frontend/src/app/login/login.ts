@@ -3,12 +3,13 @@ import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -17,6 +18,8 @@ export class LoginComponent {
   email = '';
   password = '';
   errorMessage = '';
+
+  showPass: boolean = false;
 
   constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef) {}
 
