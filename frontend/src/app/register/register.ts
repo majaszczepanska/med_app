@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -22,19 +22,37 @@ export class RegisterComponent {
     pesel: ''
   };
 
+  profileSuccess = '';
+  profileError = '';
+
   showPass: boolean = false;
-  constructor(private authService: AuthService, private router: Router, private errorService: ErrorService) {}
+  constructor(private authService: AuthService, private router: Router, private errorService: ErrorService, private cdr: ChangeDetectorRef) {}
 
   register() {
+    this.profileSuccess = '';
+    this.profileError = '';
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
-        alert("Account successfuly created ✅ \nSign in");
-        this.router.navigate(['/login']);
+        //alert("Account successfuly created ✅ \nSign in");
+        this.profileSuccess = "Account successfully created! ✅ Redirecting to login...";
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
       },
       error: (err) => {
+        this.profileError = "❌ Registration failed. Please check your data or try another email.";
+        this.cdr.detectChanges();
         this.errorService.handleErrors(err);
       }
     })
 
+  }
+
+  clearMessages() {
+    if (this.profileSuccess || this.profileError) {
+      this.profileSuccess = '';
+      this.profileError = '';
+    }
   }
 }

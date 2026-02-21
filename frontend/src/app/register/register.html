@@ -1,27 +1,95 @@
 <div class="register-container">
   <h2>Create an account 🏥</h2>
-  <form (ngSubmit)="register()">
+  <form #registerForm="ngForm" (ngSubmit)="register()" (input)="clearMessages()" (change)="clearMessages()">
     
-    <input [(ngModel)]="registerData.email" name="email" type="email" placeholder="email" required>
-          <div class="form-group" style="margin-bottom: 20px;">
-        
-        <div style="position: relative; width: 100%;">
-          <input [type]="showPass ? 'text' : 'password'" [(ngModel)]="registerData.password" name="password" required placeholder="******" style="width: 100%; padding: 12px 40px 12px 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; margin-bottom: 0; height: 45px;">
-          <button type="button" (click)="showPass = !showPass" 
-            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; background: transparent; border: none; cursor: pointer; color: #6c757d; outline: none;">
-            <mat-icon>{{ showPass ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
+    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email <span style="color: red;">*</span></label>
+    <input [(ngModel)]="registerData.email" name="email" type="email" placeholder="email@example.com" 
+          #email="ngModel"
+          required email>
+    @if (email.invalid && (email.dirty || email.touched)) {
+        <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
+          <span>❌ Required valid email.</span>
         </div>
-      </div>
+      }
     
-    <input [(ngModel)]="registerData.firstName" name="firstName" placeholder="First name" required>
-    <input [(ngModel)]="registerData.lastName" name="lastName" placeholder="Last name" required>
+      
+    <div class="form-group" style="margin-bottom: 20px;">
+      <label style="display: block; margin-bottom: 8px; font-weight: 600;">Password <span style="color: red;">*</span></label>
+      <div style="position: relative; width: 100%;">
+        <input [type]="showPass ? 'text' : 'password'" [(ngModel)]="registerData.password" name="password" #password="ngModel" required minlength="6" placeholder="******" style="width: 100%; padding: 12px 40px 12px 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; margin-bottom: 0; height: 45px;">
+        <button type="button" (click)="showPass = !showPass" 
+          style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; background: transparent; border: none; cursor: pointer; color: #6c757d; outline: none;">
+          <mat-icon>{{ showPass ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+         @if (password.invalid && (password.dirty || password.touched)) {
+        <div style="color: #dc3545; font-size: 0.85em; margin-top: 20px; margin-bottom: 20px; font-weight: 500;">
+          <span>❌ Password must be at least 6 characters long!</span>
+        </div>
+      }
+      </div>
+    </div>
+    
 
-    <input [(ngModel)]="registerData.pesel" name="pesel" placeholder="PESEL" required>
+    <label style="display: block; margin-bottom: 8px; font-weight: 600;">First name <span style="color: red;">*</span></label>
+    <input [(ngModel)]="registerData.firstName" name="firstName" placeholder="First name" #fname="ngModel"
+          minlength="3" 
+          pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+          required>
+    @if (fname.invalid && (fname.dirty || fname.touched)) {
+        <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
+          @if (fname.errors?.['required']) { <span style="display: block;">❌ First name is required.</span> }
+          @if (fname.errors?.['minlength']) { <span style="display: block;">❌ Min. 3 characters.</span> }
+          @if (fname.errors?.['pattern']) { <span style="display: block;">❌ Must start with a capital letter.</span> }
+        </div>
+      }
+
+    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Last name <span style="color: red;">*</span></label>
+    <input [(ngModel)]="registerData.lastName" name="lastName" placeholder="Last name" #lname="ngModel"
+          minlength="3" 
+          pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+          required>
+    @if (lname.invalid && (lname.dirty || lname.touched)) {
+        <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
+          @if (lname.errors?.['required']) { <span style="display: block;">❌ Last name is required.</span> }
+          @if (lname.errors?.['minlength']) { <span style="display: block;">❌ Min. 3 characters.</span> }
+          @if (lname.errors?.['pattern']) { <span style="display: block;">❌ Must start with a capital letter.</span> }
+        </div>
+      }
+
+    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Pesel <span style="color: red;">*</span></label>
+    <input [(ngModel)]="registerData.pesel" name="pesel" type="text" placeholder="PESEL" #pesel="ngModel" 
+          pattern="^\d{2}(?:0[1-9]|1[0-2]|2[1-9]|3[0-2]|4[1-9]|5[0-2]|6[1-9]|7[0-2]|8[1-9]|9[0-2])(?:0[1-9]|[12]\d|3[01])\d{5}$"
+          required>
+    @if (pesel.invalid && (pesel.dirty || pesel.touched)) {
+      <div style="color: #dc3545; font-size: 0.85em;  margin-bottom: 20px; font-weight: 500;">
+        @if (pesel.errors?.['required']) {
+          <span>❌ PESEL is required.</span>
+        }
+        @if (pesel.errors?.['pattern']) {
+          <span>❌ Invalid PESEL format (check your data).</span>
+        }
+      </div>
+    }
+
+    @if (profileSuccess) {
+        <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #c3e6cb; font-weight: 500;">
+          {{ profileSuccess }}
+        </div>
+      }
+      @if (profileError) {
+        <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #f5c6cb; font-weight: 500;">
+          {{ profileError }}
+        </div>
+      }
 
 
-
-    <button type="submit">Register</button>
+    <button type="submit" class="btn btn-warning"
+            [disabled]="registerForm.invalid"
+            [style.opacity]="registerForm.invalid ? '0.5' : '1'"
+            [style.cursor]="registerForm.invalid ? 'not-allowed' : 'pointer'"
+            style="width: 100%; padding: 12px; font-weight: bold; margin-top: 10px;">
+      Register
+    </button>
   </form>
 
   <p>You already have an account <br><a routerLink="/login">Sign in</a></p>
