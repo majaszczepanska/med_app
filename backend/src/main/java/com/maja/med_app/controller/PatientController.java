@@ -50,12 +50,12 @@ public class PatientController {
     public record UpdateProfileDto(
         @NotBlank(message = "Required")
         @Size(min = 3, message= "Min. 3 characters")
-        @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
+        @Pattern(regexp = "^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$", message = "Capital letter & letters only")
         String firstName,
 
         @NotBlank(message = "Required")
         @Size(min = 3, message= "Min. 3 characters")
-        @Pattern(regexp = "^[A-Z][a-z]+(-[A-Z][a-z]+)?$", message = "Capital letter & letters only")
+        @Pattern(regexp = "^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$", message = "Capital letter & letters only")
         String lastName, 
 
         @Column(unique = true)
