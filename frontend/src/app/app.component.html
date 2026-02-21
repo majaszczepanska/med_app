@@ -13,7 +13,7 @@
 
     <div class="layout">
 
-      <div class="form-panel">
+      <div class="form-panel" >
 
         @if (activeTab === 'dashboard' || activeTab === 'profile' || activeTab === 'history') {
           <div style="text-align: center; padding: 40px 10px;">
@@ -34,115 +34,320 @@
         
         @if (activeTab === 'patients') {
           <h3>@if(isEditing){Edit} @else{Add} Patient</h3>
-          <label>First Name:</label>
-          <input type="text" [(ngModel)]="newPatient.firstName" placeholder="First name">
+          <form (input)="clearDashboardMessages()" (change)="clearDashboardMessages()" #patientForm="ngForm" >
 
-          <label>Last Name:</label>
-          <input type="text" [(ngModel)]="newPatient.lastName" placeholder="Last name">
+            <label>First Name <span style="color: red;">*</span></label>
+            <input type="text" [(ngModel)]="newPatient.firstName" name="patientFirstName" 
+                  minlength="3" 
+                  pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+                  #patientFirstNameCtrl="ngModel" placeholder="First name"
+                  required>
+            @if (patientFirstNameCtrl.invalid && (patientFirstNameCtrl.dirty || patientFirstNameCtrl.touched)  && !dashboardSuccess) {
+              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 20px;">
+                @if (patientFirstNameCtrl.errors?.['required']) {
+                  <span style="display: block;">❌ First name is required.</span>
+                }
+                @if (patientFirstNameCtrl.errors?.['minlength']) {
+                  <span style="display: block;">❌ Min. 3 characters.</span>
+                }
+                @if (patientFirstNameCtrl.errors?.['pattern']) {
+                  <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
+                }
+                  </div>
+              }
 
-          <label>PESEL:</label>
-          <input type="text" [(ngModel)]="newPatient.pesel" placeholder="PESEL">
+            <label>Last Name<span style="color: red;">*</span></label>
+            <input type="text" [(ngModel)]="newPatient.lastName" name="patientLastName"
+                  minlength="3" 
+                  pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+                  #patientLastNameCtrl="ngModel" placeholder="Last name"
+                  required>
+            @if (patientLastNameCtrl.invalid && (patientLastNameCtrl.dirty || patientLastNameCtrl.touched) && !dashboardSuccess) {
+              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 10px;">
+                @if (patientLastNameCtrl.errors?.['required']) {
+                  <span style="display: block;">❌ Last name is required.</span>
+                }
+                @if (patientLastNameCtrl.errors?.['minlength']) {
+                  <span style="display: block;">❌ Min. 3 characters.</span>
+                }
+                @if (patientLastNameCtrl.errors?.['pattern']) {
+                  <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
+                }
+              </div>
+            }
 
-          <label>Chronic Diseases / Allergies:</label>
-          <input type="text" [(ngModel)]="newPatient.disease" placeholder="Disease">
 
-          <label>Main doctor (ID):</label>
-          <input type="number" min="1" [(ngModel)]="newPatient.mainDoctor" placeholder="Doctor ID">
 
-          @if (isEditing) {
-            <button (click)="onSubmit()" class="update-btn">UPDATE PATIENT</button>
-            <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
-          } @else {
-            <button (click)="onSubmit()" class="save-btn">SAVE PATIENT</button>
-          }
+            <label>PESEL<span style="color: red;">*</span></label>
+            <input type="text" [(ngModel)]="newPatient.pesel" name="pesel"  
+                  pattern="^\d{2}(?:0[1-9]|1[0-2]|2[1-9]|3[0-2]|4[1-9]|5[0-2]|6[1-9]|7[0-2]|8[1-9]|9[0-2])(?:0[1-9]|[12]\d|3[01])\d{5}$" 
+                  #peselCtrl="ngModel" placeholder="PESEL"
+                  required>
+            @if (peselCtrl.invalid && (peselCtrl.dirty || peselCtrl.touched) && !dashboardSuccess) {
+              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 10px;">
+    
+              @if (peselCtrl.invalid && (peselCtrl.dirty || peselCtrl.touched)) {
+                <div style="color: #dc3545; font-size: 0.85em;  margin-bottom: 20px; font-weight: 500;">
+                  @if (peselCtrl.errors?.['required']) {
+                    <span>❌ PESEL is required.</span>
+                  }
+                  @if (peselCtrl.errors?.['pattern']) {
+                    <span>❌ Invalid PESEL format (check your data).</span>
+                  }
+                </div>
+              }
+            </div>
+            }
+
+            <label>Chronic Diseases / Allergies:</label>
+            <input type="text" [(ngModel)]="newPatient.disease" name="disease" placeholder="Disease">
+
+            <label>Main doctor (ID):</label>
+            <select [(ngModel)]="newPatient.mainDoctor" name="mainDoctor" 
+              style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
+              <option [ngValue]="''">-- No Primary Doctor --</option>
+              @for (d of doctors; track d.id) {
+                <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
+              }
+            </select>
+
+            @if(!isEditing) {
+            <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #007bff;">
+              <p style="margin-top: 0; font-weight: bold; font-size: 0.9em; color: #555;">Patient's Account Data:</p>
+              
+              <label>Email (Login) <span style="color: red;">*</span></label>
+              <input type="email" [(ngModel)]="newDoctor.email" name="patientEmail" placeholder="patient@example.com" style="margin-bottom: 10px;"
+                    #patientEmailCtrl="ngModel"
+                    required email>
+              @if (patientEmailCtrl.invalid && (patientEmailCtrl.dirty || patientEmailCtrl.touched) && !dashboardSuccess) {
+                <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
+                  <span>❌ Required valid email.</span>
+                </div>
+              }
+
+    
+              <label>Password <span style="color: red;">*</span></label>
+              <input type="password" name="patientPass" #patientPassCtrl="ngModel" [(ngModel)]="newPatient.password" minlength="6" placeholder="Temporary password">
+              @if (patientPassCtrl.invalid && (patientPassCtrl.dirty || patientPassCtrl.touched)) {
+                <div style="color: #dc3545; font-size: 0.85em; margin-top: 5px; font-weight: 500;">
+                  <span>❌ Password is required (min 6 characters).</span>
+                </div>
+              }
+            </div>
+         }
+
+          
+            @if (dashboardSuccess) {
+              <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #c3e6cb;">
+                {{ dashboardSuccess }}
+              </div>
+            }
+            @if (dashboardError) {
+              <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #f5c6cb;">
+                {{ dashboardError }}
+              </div>
+            }
+
+            @if (isEditing) {
+              <button (click)="onSubmit()" type="submit" [disabled]="patientForm.invalid" class="update-btn">UPDATE PATIENT</button>
+              <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
+            } @else {
+              <button (click)="onSubmit()" type="submit" [disabled]="patientForm.invalid" class="save-btn"
+                      [style.opacity]="patientForm.invalid ? '0.5' : '1'"
+                      [style.cursor]="patientForm.invalid ? 'not-allowed' : 'pointer'">SAVE PATIENT</button>
+            }
+          </form>
         }
+
+
 
         @if (activeTab === 'doctors') {
           <h3>@if(isEditing){Edit} @else{Add} Doctor</h3>
-          <label>First Name:</label>
-          <input type="text" [(ngModel)]="newDoctor.firstName" placeholder="First name">
 
-          <label>Last Name:</label>
-          <input type="text" [(ngModel)]="newDoctor.lastName" placeholder="Last name">
+          <form (input)="clearDashboardMessages()" (change)="clearDashboardMessages()" #docForm="ngForm">
+            <label>First Name <span style="color: red;">*</span></label>
+            <input type="text" [(ngModel)]="newDoctor.firstName" name="docFirstName"
+                  minlength="3" 
+                  pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+                  #docFirstNameCtrl="ngModel" placeholder="First name"
+                  required>
+            @if (docFirstNameCtrl.invalid && (docFirstNameCtrl.dirty || docFirstNameCtrl.touched)  && !dashboardSuccess) {
+              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 20px;">
+                @if (docFirstNameCtrl.errors?.['required']) {
+                  <span style="display: block;">❌ First name is required.</span>
+                }
+                @if (docFirstNameCtrl.errors?.['minlength']) {
+                  <span style="display: block;">❌ Min. 3 characters.</span>
+                }
+                @if (docFirstNameCtrl.errors?.['pattern']) {
+                  <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
+                }
+              </div>
+            }
 
-          <label>Specialization:</label>
-          <input type="text" [(ngModel)]="newDoctor.specialization" placeholder="e.g. Cardiologist">
+            <label>Last Name <span style="color: red;">*</span></label>
+            <input type="text" [(ngModel)]="newDoctor.lastName" name="docLastName"
+                  minlength="3" 
+                  pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+                  #docLastNameCtrl="ngModel" placeholder="Last name"
+                  required>
+            @if (docLastNameCtrl.invalid && (docLastNameCtrl.dirty || docLastNameCtrl.touched) && !dashboardSuccess) {
+              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 20px;">
+                @if (docLastNameCtrl.errors?.['required']) {
+                  <span style="display: block;">❌ Last name is required.</span>
+                }
+                @if (docLastNameCtrl.errors?.['minlength']) {
+                  <span style="display: block;">❌ Min. 3 characters.</span>
+                }
+                @if (docLastNameCtrl.errors?.['pattern']) {
+                  <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
+                }
+              </div>
+            }
 
-          @if(!isEditing) {
-            <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #007bff;">
-              <p style="margin-top: 0; font-weight: bold; font-size: 0.9em; color: #555;">Doctor's Account Data:</p>
-              
-              <label>Email (Login):</label>
-              <input type="email" [(ngModel)]="newDoctor.email" placeholder="doctor@med.com" style="margin-bottom: 10px;">
+            <label>Specialization <span style="color: red;">*</span></label>
+            <input type="text" [(ngModel)]="newDoctor.specialization" name="docSpecialization" 
+                  minlength="3" #docSpecCtrl="ngModel" placeholder="e.g. Cardiologist" required>
+            @if (docSpecCtrl.invalid && (docSpecCtrl.dirty || docSpecCtrl.touched) && !dashboardSuccess) {
+              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 20px;">
+                <span style="display: block;">❌ Specialization is required (min 3 characters).</span>
+              </div>
+            }
 
-              <label>Password:</label>
-              <input type="password" [(ngModel)]="newDoctor.password" placeholder="Temporary password">
-            </div>
-          }
+            @if(!isEditing) {
+              <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #007bff;">
+                <p style="margin-top: 0; font-weight: bold; font-size: 0.9em; color: #555;">Doctor's Account Data:</p>
 
-          @if(isEditing) {
-            <button (click)="onSubmit()" class="update-btn">UPDATE DOCTOR</button>
-            <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
-          } @else {
-          <button (click)="onSubmit()" class="save-btn" style="background-color: #007bff;">SAVE DOCTOR</button>
-          }
+                <label>Email (Login) <span style="color: red;">*</span></label>
+                <input type="email" [(ngModel)]="newDoctor.email" name="docEmail" #docEmailCtrl="ngModel" placeholder="doctor@med.com" style="margin-bottom: 10px;" required email>
+                @if (docEmailCtrl.invalid && (docEmailCtrl.dirty || docEmailCtrl.touched) && !dashboardSuccess) {
+                  <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
+                    <span>❌ Required valid email.</span>
+                  </div>
+                }
+
+                <label>Password <span style="color: red;">*</span></label>
+                <input type="password" [(ngModel)]="newDoctor.password" name="docPass" #docPassCtrl="ngModel" minlength="6" placeholder="Temporary password" required>
+                @if (docPassCtrl.invalid && (docPassCtrl.dirty || docPassCtrl.touched) && !dashboardSuccess) {
+                  <div style="color: #dc3545; font-size: 0.85em; margin-top: 5px; font-weight: 500;">
+                    <span>❌ Password is required (min 6 characters).</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (dashboardSuccess) {
+              <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #c3e6cb;">
+                {{ dashboardSuccess }}
+              </div>
+            }
+            @if (dashboardError) {
+              <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #f5c6cb;">
+                {{ dashboardError }}
+              </div>
+            }
+
+            @if(isEditing) {
+              <button (click)="onSubmit()" type="submit" [disabled]="docForm.invalid" class="update-btn">UPDATE DOCTOR</button>
+              <button (click)="cancelEdit()" type="button" class="cancel-btn">CANCEL</button>
+            } @else {
+              <button (click)="onSubmit()" type="submit" [disabled]="docForm.invalid" class="save-btn" 
+                      style="background-color: #007bff;"
+                      [style.opacity]="docForm.invalid ? '0.5' : '1'"
+                      [style.cursor]="docForm.invalid ? 'not-allowed' : 'pointer'">SAVE DOCTOR</button>
+            }
+          </form>
         }
 
         @if (activeTab === 'appointments') {
-           <h3>@if(isEditing){Edit} @else{Book} Appointment</h3>
-          <label>Date & Time:</label>
-          <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" [min]="minDate" (click)="updateMinDate()">
+          <h3>@if(isEditing){Edit} @else{Book} Appointment</h3>
+          <form (input)="clearDashboardMessages()" (change)="clearDashboardMessages()" #apptForm="ngForm">
+            
+            <label>Date & Time <span style="color: red;">*</span></label>
+            <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" name="visitTime" #visitTimeCtrl="ngModel" [min]="minDate" (click)="updateMinDate()" required>
+            @if (visitTimeCtrl.invalid && (visitTimeCtrl.dirty || visitTimeCtrl.touched) && !dashboardSuccess) {
+              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px;">❌ Date and Time are required.</div>
+            }
 
-          @if (userRole === 'ADMIN') {
-            <label>Choose Patient:</label>
-            <select [(ngModel)]="newAppointment.patientId" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
-              <option [ngValue]="null">-- Select Patient --</option>
-              @for (p of patients; track p.id) {
-                <option [ngValue]="p.id">{{ p.lastName }} {{ p.firstName }} (PESEL: {{ p.pesel }})</option>
+            @if (userRole === 'ADMIN') {
+              <label>Choose Patient <span style="color: red;">*</span></label>
+              <select [(ngModel)]="newAppointment.patientId" name="adminPatientId" #adminPatCtrl="ngModel" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;" required>
+                <option [ngValue]="null">-- Select Patient --</option>
+                @for (p of patients; track p.id) {
+                  <option [ngValue]="p.id">{{ p.lastName }} {{ p.firstName }} (PESEL: {{ p.pesel }})</option>
+                }
+              </select>
+              @if (adminPatCtrl.invalid && (adminPatCtrl.dirty || adminPatCtrl.touched) && !dashboardSuccess) {
+                <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px; margin-top: -10px;">❌ Patient is required.</div>
               }
-            </select>
-            <label>Choose Doctor:</label>
-            <select [(ngModel)]="newAppointment.doctorId" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
-              <option [ngValue]="null">-- Select Doctor --</option>
-              @for (d of doctors; track d.id) {
-                <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
-              }
-            </select>
-          }
 
-          @if (userRole === 'DOCTOR') {
-            <label>Choose Patient:</label>
-            <select [(ngModel)]="newAppointment.patientId" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
-              <option [ngValue]="null">-- Select Patient --</option>
-              @for (p of patients; track p.id) {
-                <option [ngValue]="p.id">{{ p.lastName }} {{ p.firstName }} (PESEL: {{ p.pesel }})</option>
+              <label>Choose Doctor <span style="color: red;">*</span></label>
+              <select [(ngModel)]="newAppointment.doctorId" name="adminDoctorId" #adminDocCtrl="ngModel" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;" required>
+                <option [ngValue]="null">-- Select Doctor --</option>
+                @for (d of doctors; track d.id) {
+                  <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
+                }
+              </select>
+              @if (adminDocCtrl.invalid && (adminDocCtrl.dirty || adminDocCtrl.touched) && !dashboardSuccess) {
+                <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px; margin-top: -10px;">❌ Doctor is required.</div>
               }
-            </select>
-          }
+            }
 
-          @if (userRole === 'PATIENT') {
-            <label>Choose Doctor:</label>
-            <select [(ngModel)]="newAppointment.doctorId" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
-              <option [ngValue]="null">-- Select Doctor --</option>
-              @for (d of doctors; track d.id) {
-                <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
+            @if (userRole === 'DOCTOR') {
+              <label>Choose Patient <span style="color: red;">*</span></label>
+              <select [(ngModel)]="newAppointment.patientId" name="docPatientId" #docPatCtrl="ngModel" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;" required>
+                <option [ngValue]="null">-- Select Patient --</option>
+                @for (p of patients; track p.id) {
+                  <option [ngValue]="p.id">{{ p.lastName }} {{ p.firstName }} (PESEL: {{ p.pesel }})</option>
+                }
+              </select>
+              @if (docPatCtrl.invalid && (docPatCtrl.dirty || docPatCtrl.touched) && !dashboardSuccess) {
+                <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px; margin-top: -10px;">❌ Patient is required.</div>
               }
-            </select>
-          }
+            }
 
-          <label>Diagnosis / Notes:</label>
-          <textarea [(ngModel)]="newAppointment.description" 
-                    placeholder="Enter diagnosis, symptoms, or medications..."
-                    rows="3"
-                    maxlength="500"
-                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; resize: vertical; margin-bottom: 15px; min-height: 100px; max-height: 300px;">
-          </textarea>
-          @if (isEditing) {
-            <button (click)="onSubmit()" class="update-btn">UPDATE VISIT</button>
-            <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
-          } @else {
-            <button (click)="onSubmit()" class="save-btn" style="background-color: #6f42c1;">BOOK VISIT</button>
-          }
+            @if (userRole === 'PATIENT') {
+              <label>Choose Doctor <span style="color: red;">*</span></label>
+              <select [(ngModel)]="newAppointment.doctorId" name="patDoctorId" #patDocCtrl="ngModel" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;" required>
+                <option [ngValue]="null">-- Select Doctor --</option>
+                @for (d of doctors; track d.id) {
+                  <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
+                }
+              </select>
+              @if (patDocCtrl.invalid && (patDocCtrl.dirty || patDocCtrl.touched) && !dashboardSuccess) {
+                <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px; margin-top: -10px;">❌ Doctor is required.</div>
+              }
+            }
+
+            <label>Diagnosis / Notes:</label>
+            <textarea [(ngModel)]="newAppointment.description" name="description"
+                      placeholder="Enter diagnosis, symptoms, or medications..."
+                      rows="3"
+                      maxlength="500"
+                      style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; resize: vertical; margin-bottom: 15px; min-height: 100px; max-height: 300px;">
+            </textarea>
+
+            @if (dashboardSuccess) {
+               <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #c3e6cb;">
+                 {{ dashboardSuccess }}
+               </div>
+            }
+            @if (dashboardError) {
+               <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #f5c6cb;">
+                 {{ dashboardError }}
+               </div>
+            }
+
+            @if (isEditing) {
+              <button (click)="onSubmit()" type="submit" [disabled]="apptForm.invalid" class="update-btn">UPDATE VISIT</button>
+              <button (click)="cancelEdit()" type="button" class="cancel-btn">CANCEL</button>
+            } @else {
+              <button (click)="onSubmit()" type="submit" [disabled]="apptForm.invalid" class="save-btn" 
+                      style="background-color: #6f42c1;"
+                      [style.opacity]="apptForm.invalid ? '0.5' : '1'"
+                      [style.cursor]="apptForm.invalid ? 'not-allowed' : 'pointer'">BOOK VISIT</button>
+            }
+          </form>
         }
 
       </div>

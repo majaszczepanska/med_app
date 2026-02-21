@@ -77,6 +77,9 @@ export class AppComponent implements OnInit {
   };
 
   minDate: string = '';
+  
+  dashboardSuccess = '';
+  dashboardError = '';  
 
 
   //CALENDAR
@@ -138,7 +141,7 @@ export class AppComponent implements OnInit {
 
   initData(){
     this.updateMinDate();
-    
+
     if (this.userRole === 'PATIENT') {
       this.showCalendar = true;
     } else {
@@ -173,6 +176,10 @@ export class AppComponent implements OnInit {
     window.location.reload();
   }
 
+  clearDashboardMessages() {
+    this.dashboardSuccess = '';
+    this.dashboardError = '';
+  }   
 
   //CALENDAR - disabled for past dates
   updateMinDate() {
@@ -187,6 +194,8 @@ export class AppComponent implements OnInit {
     this.isEditing = false;
     this.searchText = '';
     this.isMobileMenuOpen = false;
+
+    this.clearDashboardMessages();
 
     if (tabName === 'history' && this.userRole === 'PATIENT') {
       this.loadMyHistory();
@@ -383,33 +392,45 @@ export class AppComponent implements OnInit {
 
   //CREATE
   doCreatePatient() {
+    this.clearDashboardMessages();
+
     const patientToSend = this.preparePatientData();
     if(!patientToSend) return;
     this.patientService.createPatient(patientToSend).subscribe({
       next: () => {
-        alert("Patient added successfully");
+        //alert("Patient added successfully");
+        this.dashboardSuccess = "Patient added successfully! ✅";
         this.refreshPatients();
         this.resetForm();
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
+        this.dashboardError = "❌ Could not add patient. Please check data.";
         this.handleErrors(err);
+        this.cdr.detectChanges();
       }
     });
   }
 
   //UPDATE
   doUpdatePatient() {
+    this.clearDashboardMessages();
+
     if(!this.currentPatientId) return;
     const patientToSend = this.preparePatientData();
     if(!patientToSend) return;
     this.patientService.updatePatient(this.currentPatientId, patientToSend).subscribe({
       next: () => {
-        alert("Patient updated successfully");
+        //alert("Patient updated successfully");
+        this.dashboardSuccess = "Patient updated successfully! ✅";
         this.refreshPatients();
         this.resetForm();
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
+        this.dashboardError = "❌ Could not edit patient. Please check data.";
         this.handleErrors(err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -445,11 +466,18 @@ export class AppComponent implements OnInit {
   
   //DELETE
   removePatient(id: number) {
+    this.clearDashboardMessages();
     if(confirm("Are you sure you want to delete this patient?")) {
       this.patientService.deletePatient(id).subscribe({
-        next: () => this.refreshPatients(),
+        next: () => {
+          this.dashboardSuccess = "Patient deleted successfully ✅";
+          this.refreshPatients();
+          this.cdr.detectChanges();
+        },
         error: (err: any) => {
+          this.dashboardError = "❌ Could not delete patient.";
           this.handleErrors(err);
+          this.cdr.detectChanges();
         }
       });
     }
@@ -516,28 +544,38 @@ export class AppComponent implements OnInit {
 
   //CREATE AND UPDATE
   saveDoctor() {
+    this.clearDashboardMessages();
+
     if (this.isEditing && this.currentDoctorId){
        this.doctorService.updateDoctor(this.currentDoctorId, this.newDoctor).subscribe({
       next: () => {
-        alert("Doctor updated successfully ✅");
+        //alert("Doctor updated successfully ✅");
+        this.dashboardSuccess = "Doctor updated successfully ✅";
         this.refreshDoctors();
         this.resetForm();
+        this.cdr.detectChanges();
       }
       ,
       error: (err: any) => {
+        this.dashboardError ="❌ Could not edit this doctor. Please check data.";
         this.handleErrors(err);
+        this.cdr.detectChanges();
       }
     });
     } else {
       this.doctorService.createDoctor(this.newDoctor).subscribe({
         next: () => {
-          alert("Doctor added successfully ✅");
+          //alert("Doctor added successfully ✅");
+          this.dashboardSuccess = "Doctor added successfully ✅";
           this.refreshDoctors();
           this.resetForm();
+          this.cdr.detectChanges();
         }
         ,
         error: (err: any) => {
+          this.dashboardError = "❌ Could not add doctor. Please check data.";
           this.handleErrors(err);
+          this.cdr.detectChanges();
         }
       });
     }
@@ -556,14 +594,20 @@ export class AppComponent implements OnInit {
   
   //DELETE DOCTOR
   removeDoctor(id: number) {
+    this.clearDashboardMessages();
+
     if(confirm("Are you sure you want to delete this doctor?")) {
       this.doctorService.deleteDoctor(id).subscribe({
         next: () => {
-          alert("Doctor deleted ✅");
+          //alert("Doctor deleted ✅");
+          this.dashboardSuccess = "Doctor deleted ✅";
           this.refreshDoctors();
+          this.cdr.detectChanges();
         },
         error: (err: any) => {
+          this.dashboardError = "❌ Could not delete doctor. Please check data.";
           this.handleErrors(err);
+          this.cdr.detectChanges();
         }
       });
     }
@@ -600,30 +644,40 @@ export class AppComponent implements OnInit {
 
   //CREATE AND UPDATE 
   saveAppointment() {
+    this.clearDashboardMessages();
+
     const appointmentToSend = this.prepareAppointmentData();
     if (!appointmentToSend) return;
 
     if(this.isEditing && this.currentAppointmentId) {
       this.appointmentService.updateAppointment(this.currentAppointmentId, appointmentToSend).subscribe({
         next: () => {
-          alert("Appointment updated successfully ✅");
+          //alert("Appointment updated successfully ✅");
+          this.dashboardSuccess = "Appointment updated successfully ✅";
           this.refreshAppointments();
           this.resetForm();
+          this.cdr.detectChanges();
         },
         error: (err: any) => {
-         this.handleErrors(err);
+          this.dashboardError = "❌ Could not update this appointment. Please check data.";
+          this.handleErrors(err);
+          this.cdr.detectChanges();
         }
       });
       return;
     }
     this.appointmentService.createAppointment(appointmentToSend).subscribe({
       next: () => {
-        alert("Appointment added successfully ✅");
+        //alert("Appointment added successfully ✅");
+        this.dashboardSuccess = "Appointment added successfully ✅";
         this.refreshAppointments();
         this.resetForm();
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
+        this.dashboardError = "❌ Could not add appointment. Please check data.";
         this.handleErrors(err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -746,15 +800,22 @@ export class AppComponent implements OnInit {
   }
   
   //DELETE
+  
   removeAppointment(id: number) {
+    this.clearDashboardMessages();
+
     if(confirm("Are you sure you want to CANCEL this appointment?")) {
       this.appointmentService.deleteAppointment(id).subscribe({
         next: () => {
-          alert("Appointment cancelled successfully ✅");
+          //alert("Appointment cancelled successfully ✅");
+          this.dashboardSuccess = "Appointment cancelled successfully ✅";
           this.refreshAppointments(); 
+          this.cdr.detectChanges();
         },
         error: (err: any) => {
+          this.dashboardError = "❌ Could not delete doctor. Please check data.";
           this.handleErrors(err);
+          this.cdr.detectChanges();
         }
      });
     }
@@ -762,6 +823,7 @@ export class AppComponent implements OnInit {
 
   // COMPLETE BUTTON
   completeAppointment(appointment: any) {
+    this.clearDashboardMessages();
 
     const diagnosis = prompt("Enter diagnosis/notes for this completed visit:", appointment.description || "");
     
@@ -770,11 +832,15 @@ export class AppComponent implements OnInit {
 
     this.appointmentService.completeAppointment(appointment.id, { description: diagnosis }).subscribe({
       next: () => {
-        alert("Appointment marked as COMPLETED! ✅");
+        //alert("Appointment marked as COMPLETED! ✅");
+        this.dashboardSuccess = "Appointment marked as COMPLETED! ✅";
         this.refreshAppointments(); 
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
+        this.dashboardError = "❌ Could complete this appointment.";
         this.handleErrors(err);
+        this.cdr.detectChanges();
       }
     });
   }
