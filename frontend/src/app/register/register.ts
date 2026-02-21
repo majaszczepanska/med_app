@@ -22,26 +22,26 @@ export class RegisterComponent {
     pesel: ''
   };
 
-  profileSuccess = '';
-  profileError = '';
+  registerSuccess = '';
+  registerError = '';
 
   showPass: boolean = false;
   constructor(private authService: AuthService, private router: Router, private errorService: ErrorService, private cdr: ChangeDetectorRef) {}
 
   register() {
-    this.profileSuccess = '';
-    this.profileError = '';
+    this.registerSuccess = '';
+    this.registerError = '';
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         //alert("Account successfuly created ✅ \nSign in");
-        this.profileSuccess = "Account successfully created! ✅ Redirecting to login...";
+        this.registerSuccess = "Account successfully created! ✅ Redirecting to login...";
         this.cdr.detectChanges();
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
       error: (err) => {
-        this.profileError = "❌ Registration failed. Please check your data or try another email.";
+        this.registerError = "❌ Registration failed. Please check your data or try another email.";
         this.cdr.detectChanges();
         this.errorService.handleErrors(err);
       }
@@ -50,9 +50,9 @@ export class RegisterComponent {
   }
 
   clearMessages() {
-    if (this.profileSuccess || this.profileError) {
-      this.profileSuccess = '';
-      this.profileError = '';
+    if (this.registerSuccess || this.registerError) {
+      this.registerSuccess = '';
+      this.registerError = '';
     }
   }
 }
