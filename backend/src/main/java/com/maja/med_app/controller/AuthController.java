@@ -24,6 +24,7 @@ import com.maja.med_app.model.Patient;
 import com.maja.med_app.repository.DoctorRepository;
 import com.maja.med_app.repository.PatientRepository;
 import com.maja.med_app.repository.UserRepository;
+import com.maja.med_app.service.EmailService;
 import com.maja.med_app.util.ValidationErrorUtils;
 
 import jakarta.transaction.Transactional;
@@ -44,6 +45,7 @@ public class AuthController {
     private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
     private final DoctorRepository doctorRepository;
+    private final EmailService emailService;
 
     public record UserDto(Long id, Long patientId, Long doctorId, String email, String role) {}
     public record RegisterDto(
@@ -103,6 +105,7 @@ public class AuthController {
         patient.setPesel(request.pesel());
 
         patientRepository.save(patient);
+        emailService.sendRegistrationEmail(patient.getUser().getEmail(), patient.getFirstName());
         return ResponseEntity.ok("User and Patient registered successfuly");
     }
 
