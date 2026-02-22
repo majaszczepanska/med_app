@@ -27,4 +27,8 @@ export class DoctorService {
     deleteDoctor(id: number): Observable<any> {
       return this.http.delete(`${this.apiUrl}/${id}`);
     }
+    
+    getSpecializations() {
+    return this.http.get<string[]>(`${this.apiUrl}/specializations`);
+  }
 }

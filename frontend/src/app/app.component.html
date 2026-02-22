@@ -154,9 +154,13 @@
             }
 
             <label class="block font-semibold text-gray-700 mb-2 text-sm">Specialization <span class="text-red-500">*</span></label>
-            <input type="text" [(ngModel)]="newDoctor.specialization" name="docSpecialization" 
-                  minlength="3" #docSpecCtrl="ngModel" placeholder="e.g. Cardiologist" 
-                  class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+            <select [(ngModel)]="newDoctor.specialization" name="docSpecialization" #docSpecCtrl="ngModel"
+                    class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white" required>
+              <option value="" disabled selected>-- Select Specialization --</option>
+              @for (spec of specializationsList; track spec) {
+                <option [value]="spec">{{ spec }}</option>
+              }
+            </select>
             @if (docSpecCtrl.invalid && (docSpecCtrl.dirty || docSpecCtrl.touched) && !dashboardSuccess) {
               <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">❌ Specialization is required (min 3 chars).</div>
             }

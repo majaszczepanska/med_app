@@ -53,6 +53,8 @@ export class AppComponent implements OnInit {
 
   isMobileMenuOpen: boolean = false;
 
+  specializationsList: string[] = [];
+
   newPatient: any = {
     firstName: '',
     lastName: '',
@@ -153,6 +155,11 @@ export class AppComponent implements OnInit {
   initData(){
     this.updateMinDate();
 
+    this.doctorService.getSpecializations().subscribe({
+      next: (data) => this.specializationsList = data,
+      error: (err) => console.error("Could not load specializations", err)
+    });
+    
     if (this.userRole === 'PATIENT') {
       this.showCalendar = true;
     } else {
