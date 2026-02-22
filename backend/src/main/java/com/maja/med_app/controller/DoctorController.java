@@ -31,6 +31,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 @RestController //class in internet
@@ -63,7 +64,7 @@ public class DoctorController {
         @Pattern(regexp = "^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$", message = "Capital letter & letters only")
         String lastName,
 
-        @NotBlank(message = "Required")
+        @NotNull(message = "Required")
         Specialization specialization
 
     ) {}
