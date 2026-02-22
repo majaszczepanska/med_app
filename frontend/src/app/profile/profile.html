@@ -1,82 +1,64 @@
-<div class="profile-container">
-  <h2>Update your profile 🏥</h2>
+<div class="max-w-[400px] mx-auto my-12 p-8 bg-white rounded-2xl shadow-lg font-sans">
+  <h2 class="text-center text-gray-800 text-2xl font-bold mb-1">Update your profile 🏥</h2>
+  
   @if (userRole === 'PATIENT') {
-    <p class="subtitle">Add your medical details below</p>
+    <p class="text-center text-gray-500 mb-6 text-sm">Add your medical details below</p>
 
     <form #updateForm="ngForm" (ngSubmit)="update()" (input)="clearMessages()" (change)="clearMessages()">
 
-      <label>First name<span class="required-star">*</span></label>
+      <label class="block font-semibold text-gray-700 mb-2 text-sm">First name <span class="text-red-500 ml-1">*</span></label>
       <input [(ngModel)]="updateData.firstName" name="firstName" type="text" placeholder="" #fname="ngModel" 
               minlength="3" 
               pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
-              required>
+              class="w-full p-3 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition text-sm" required>
       @if (fname.invalid && (fname.dirty || fname.touched)) {
-          <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
-            @if (fname.errors?.['required']) {
-              <span style="display: block;">❌ First name is required.</span>
-            }
-            @if (fname.errors?.['minlength']) {
-              <span style="display: block;">❌ Min. 3 characters.</span>
-            }
-            @if (fname.errors?.['pattern']) {
-              <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
-            }
+          <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+            @if (fname.errors?.['required']) { <span class="block">❌ First name is required.</span> }
+            @if (fname.errors?.['minlength']) { <span class="block">❌ Min. 3 characters.</span> }
+            @if (fname.errors?.['pattern']) { <span class="block">❌ Must start with a capital letter & contain letters only.</span> }
           </div>
       }
 
-      <label>Last name<span class="required-star">*</span></label>
+      <label class="block font-semibold text-gray-700 mb-2 text-sm">Last name <span class="text-red-500 ml-1">*</span></label>
       <input [(ngModel)]="updateData.lastName" name="lastName" type="text" placeholder="" #lname="ngModel"
               minlength="3" 
               pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
-              required>
+              class="w-full p-3 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition text-sm" required>
       @if (lname.invalid && (lname.dirty || lname.touched)) {
-          <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
-            @if (lname.errors?.['required']) {
-              <span style="display: block;">❌ Last name is required.</span>
-            }
-            @if (lname.errors?.['minlength']) {
-              <span style="display: block;">❌ Min. 3 characters.</span>
-            }
-            @if (lname.errors?.['pattern']) {
-              <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
-            }
+          <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+            @if (lname.errors?.['required']) { <span class="block">❌ Last name is required.</span> }
+            @if (lname.errors?.['minlength']) { <span class="block">❌ Min. 3 characters.</span> }
+            @if (lname.errors?.['pattern']) { <span class="block">❌ Must start with a capital letter & contain letters only.</span> }
           </div>
       }
 
-      <label>Pesel<span class="required-star">*</span></label>
+      <label class="block font-semibold text-gray-700 mb-2 text-sm">Pesel <span class="text-red-500 ml-1">*</span></label>
       <input [(ngModel)]="updateData.pesel" name="pesel" type="text" placeholder="" #pesel="ngModel" 
             pattern="^\d{2}(?:0[1-9]|1[0-2]|2[1-9]|3[0-2]|4[1-9]|5[0-2]|6[1-9]|7[0-2]|8[1-9]|9[0-2])(?:0[1-9]|[12]\d|3[01])\d{5}$"
-            required>
+            class="w-full p-3 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition text-sm" required>
       @if (pesel.invalid && (pesel.dirty || pesel.touched)) {
-          <div style="color: #dc3545; font-size: 0.85em;  margin-bottom: 20px; font-weight: 500;">
-            @if (pesel.errors?.['required']) {
-              <span>❌ PESEL is required.</span>
-            }
-            @if (pesel.errors?.['pattern']) {
-              <span>❌ Invalid PESEL format (check your data).</span>
-            }
+          <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+            @if (pesel.errors?.['required']) { <span class="block">❌ PESEL is required.</span> }
+            @if (pesel.errors?.['pattern']) { <span class="block">❌ Invalid PESEL format.</span> }
           </div>
         }
 
-
-      <label>Phone number</label>
-      <input [(ngModel)]="updateData.phoneNumber" name="phoneNumber" type="tel" placeholder="e.g. 123456789" pattern="^[0-9]{9}$" #phone="ngModel" required>
+      <label class="block font-semibold text-gray-700 mb-2 text-sm">Phone number</label>
+      <input [(ngModel)]="updateData.phoneNumber" name="phoneNumber" type="tel" placeholder="e.g. 123456789" pattern="^[0-9]{9}$" #phone="ngModel" class="w-full p-3 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition text-sm" required>
       @if (phone.invalid && (phone.dirty || phone.touched)) {
-        <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
-          <span>❌ Phone number must contain exactly 9 digits (no spaces or letters).</span>
+        <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+          <span>❌ Must contain exactly 9 digits.</span>
         </div>
       }
 
+      <label class="block font-semibold text-gray-700 mb-2 text-sm">Home address</label>
+      <input [(ngModel)]="updateData.address" name="address" type="text" placeholder="City, Street, Apt" class="w-full p-3 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition text-sm" required>
 
+      <label class="block font-semibold text-gray-700 mb-2 text-sm">Medical history / diseases</label>
+      <input [(ngModel)]="updateData.disease" name="disease" type="text" placeholder="Any chronic diseases?" class="w-full p-3 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition text-sm" required>
 
-      <label>Home address</label>
-      <input [(ngModel)]="updateData.address" name="address" type="text" placeholder="City, Street, Apt" required>
-
-      <label>Medical history / diseases</label>
-      <input [(ngModel)]="updateData.disease" name="disease" type="text" placeholder="Any chronic diseases?" required>
-
-      <label>Choose your Main Doctor</label>
-      <select [(ngModel)]="updateData.mainDoctorId" name="mainDoctorId" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px;">
+      <label class="block font-semibold text-gray-700 mb-2 text-sm">Choose your Main Doctor</label>
+      <select [(ngModel)]="updateData.mainDoctorId" name="mainDoctorId" class="w-full p-3 mb-5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500 transition text-sm">
         <option [ngValue]="null">-- Select a Doctor --</option>
         @for (doc of doctorsList; track doc.id) {
           <option [ngValue]="doc.id">Dr. {{ doc.firstName }} {{ doc.lastName }} ({{ doc.specialization }})</option>
@@ -84,48 +66,47 @@
       </select>  
 
       @if (profileSuccess) {
-        <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #c3e6cb; font-weight: 500;">
+        <div class="bg-green-100 text-green-800 p-3 rounded-lg mb-5 border border-green-200 font-medium text-sm">
           {{ profileSuccess }}
         </div>
       }
       @if (profileError) {
-        <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #f5c6cb; font-weight: 500;">
+        <div class="bg-red-100 text-red-800 p-3 rounded-lg mb-5 border border-red-200 font-medium text-sm">
           {{ profileError }}
         </div>
       }
 
       <button type="submit" 
         [disabled]="updateForm.invalid"
-        [style.opacity]="updateForm.invalid ? '0.5' : '1'"
-        [style.cursor]="updateForm.invalid ? 'not-allowed' : 'pointer'">
+        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
         Save Changes</button>
     </form>
-    <hr>
+    <hr class="my-6 border-gray-200">
   }
 
   @if (userRole === 'DOCTOR' || userRole === 'ADMIN') {
-    <div style="background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
-      <p style="margin: 0; font-size: 1.1em;"><strong>Account Details</strong></p>
+    <div class="bg-gray-100 p-4 rounded-lg mb-5 border-l-4 border-blue-500">
+      <p class="m-0 text-lg font-bold text-gray-800">Account Details</p>
       
-      <div style="margin-top: 10px; padding: 15px; background: white; border-radius: 5px; border: 1px solid #ccc;">
-        <p style="margin: 0 0 5px 0;"><strong>System Role: </strong> <span style="color: #007bff; font-weight: bold;">{{ userRole }}</span></p>
-        
-        <p style="margin: 0 0 5px 0;"><strong>Email Address:</strong> {{ myEmail }}</p>
+      <div class="mt-3 p-4 bg-white rounded-md border border-gray-200 text-sm text-gray-700">
+        <p class="m-0 mb-1"><strong>System Role: </strong> <span class="text-blue-600 font-bold">{{ userRole }}</span></p>
+        <p class="m-0 mb-1"><strong>Email Address:</strong> {{ myEmail }}</p>
 
-        @if (userRole === 'DOCTOR' && myDoctorInfo) { <hr style="margin: 10px 0; border-top: 1px solid #eee;">
-          <p style="margin: 0 0 5px 0;"><strong>Full Name:</strong> Dr. {{ myDoctorInfo?.firstName }} {{ myDoctorInfo?.lastName }}</p>
-          <p style="margin: 0;"><strong>Specialization:</strong> {{ myDoctorInfo?.specialization }}</p>
+        @if (userRole === 'DOCTOR' && myDoctorInfo) { 
+          <hr class="my-2 border-gray-100">
+          <p class="m-0 mb-1"><strong>Full Name:</strong> Dr. {{ myDoctorInfo?.firstName }} {{ myDoctorInfo?.lastName }}</p>
+          <p class="m-0"><strong>Specialization:</strong> {{ myDoctorInfo?.specialization }}</p>
           
-          <p style="margin: 10px 0 0 0; font-size: 0.85em; color: #6c757d;">
+          <p class="mt-3 mb-0 text-xs text-gray-500">
             👨‍⚕️ To update your personal details, please contact the Clinic Administrator.
           </p>
         }
       </div>
 
       @if (userRole === 'DOCTOR') {
-        <div style="background: #ffeeba; padding: 10px; border-radius: 5px; margin-top: 15px; border: 1px solid #ffe8a1;">
-          <p style="margin: 0; color: #856404; font-weight: bold;">💡 Security Tip:</p>
-          <p style="margin: 0; color: #856404; font-size: 0.9em;">
+        <div class="bg-yellow-50 p-3 rounded-md mt-4 border border-yellow-200">
+          <p class="m-0 text-yellow-800 font-bold text-sm">💡 Security Tip:</p>
+          <p class="m-0 text-yellow-800 text-xs mt-1">
             Make sure to change your temporary password provided by the Administrator to a private, secure one below.
           </p>
         </div>
@@ -133,57 +114,55 @@
     </div>
   }
 
-  <div class="password-change-section">
-    <h3>Change Password</h3>
+  <div class="mt-6">
+    <h3 class="text-gray-800 text-lg font-bold mb-4">Change Password</h3>
     
     <form (ngSubmit)="changePassword()">
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Current password</label>
-        <div style="position: relative; width: 100%;">
-          <input [type]="showOldPass ? 'text' : 'password'" [(ngModel)]="passwordData.oldPassword" name="oldPassword" required style="width: 100%; padding: 12px 40px 12px 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; margin-bottom: 0; height: 45px;">
+      <div class="mb-5">
+        <label class="block font-semibold text-gray-700 mb-2 text-sm">Current password</label>
+        <div class="relative w-full">
+          <input [type]="showOldPass ? 'text' : 'password'" [(ngModel)]="passwordData.oldPassword" name="oldPassword" required class="w-full py-3 pl-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition text-sm h-[48px]">
           <button type="button" (click)="showOldPass = !showOldPass" 
-            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; background: transparent; border: none; cursor: pointer; color: #6c757d; outline: none;">
+            class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 focus:outline-none transition">
             <mat-icon>{{ showOldPass ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
       </div>
     
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label style="display: block; margin-bottom: 8px; font-weight: 600;">New password</label>
-        <div style="position: relative; width: 100%;">
-          <input [type]="showNewPass ? 'text' : 'password'" [(ngModel)]="passwordData.newPassword" name="newPassword" required style="width: 100%; padding: 12px 40px 12px 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; margin-bottom: 0; height: 45px;">
+      <div class="mb-5">
+        <label class="block font-semibold text-gray-700 mb-2 text-sm">New password</label>
+        <div class="relative w-full">
+          <input [type]="showNewPass ? 'text' : 'password'" [(ngModel)]="passwordData.newPassword" name="newPassword" required class="w-full py-3 pl-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition text-sm h-[48px]">
           <button type="button" (click)="showNewPass = !showNewPass" 
-            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; background: transparent; border: none; cursor: pointer; color: #6c757d; outline: none;">
+            class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 focus:outline-none transition">
             <mat-icon>{{ showNewPass ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
       </div>
     
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Confirm new password</label>
-        <div style="position: relative; width: 100%;">
-          <input [type]="showConfPass ? 'text' : 'password'" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required style="width: 100%; padding: 12px 40px 12px 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; margin-bottom: 0; height: 45px;">
+      <div class="mb-5">
+        <label class="block font-semibold text-gray-700 mb-2 text-sm">Confirm new password</label>
+        <div class="relative w-full">
+          <input [type]="showConfPass ? 'text' : 'password'" [(ngModel)]="passwordData.confirmPassword" name="confirmPassword" required class="w-full py-3 pl-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition text-sm h-[48px]">
           <button type="button" (click)="showConfPass = !showConfPass" 
-            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; background: transparent; border: none; cursor: pointer; color: #6c757d; outline: none;">
+            class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 focus:outline-none transition">
             <mat-icon>{{ showConfPass ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
       </div>
-    
 
       @if (passSuccess) {
-        <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #c3e6cb; font-weight: 500;">
+        <div class="bg-green-100 text-green-800 p-3 rounded-lg mb-5 border border-green-200 font-medium text-sm">
           {{ passSuccess }}
         </div>
       }
       @if (passError) {
-        <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #f5c6cb; font-weight: 500;">
+        <div class="bg-red-100 text-red-800 p-3 rounded-lg mb-5 border border-red-200 font-medium text-sm">
           {{ passError }}
         </div>
       }
 
-
-      <button type="submit" class="btn btn-warning">Update Password</button>
+      <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 rounded-lg transition mt-2">Update Password</button>
     </form>
   </div>
 </div>
