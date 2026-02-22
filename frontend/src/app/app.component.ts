@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal, ɵdevModeEqual } from '@angular/core';
 import { PatientService } from './patient.service';
 import { DoctorService } from './doctor.service';
 import { AppointmentService } from './appointment.service';
@@ -83,6 +83,15 @@ export class AppComponent implements OnInit {
   dashboardSuccess = '';
   dashboardError = '';  
 
+  //MODAL
+  showModal: boolean = false;
+  modalTitle: string = '';
+  modalMessage: string = '';
+  modalType: 'confirm' | 'prompt' = 'confirm';
+  modalInputText: string = '';
+  modalConfirmText: string = 'Confirm';
+  modalConfirmColor: string = 'bg-red-600 hover:bg-red-700';
+  pendingAction: (() => void) | null = null;
 
   //CALENDAR
   calendarOptions: CalendarOptions = {
@@ -471,20 +480,27 @@ export class AppComponent implements OnInit {
   //DELETE
   removePatient(id: number) {
     this.clearDashboardMessages();
-    if(confirm("Are you sure you want to delete this patient?")) {
-      this.patientService.deletePatient(id).subscribe({
-        next: () => {
-          this.dashboardSuccess = "Patient deleted successfully ✅";
-          this.refreshPatients();
-          this.cdr.detectChanges();
-        },
-        error: (err: any) => {
-          this.dashboardError = "❌ Could not delete patient.";
-          this.handleErrors(err);
-          this.cdr.detectChanges();
-        }
-      });
-    }
+    this.openConfirmModal(
+      'Delete Patient', 
+      'Are you sure you want to delete this patient? This action cannot be undone.', 
+      'Delete', 
+      'bg-red-600 hover:bg-red-700', 
+      () => { 
+      //if(confirm("Are you sure you want to delete this patient?")) {
+        this.patientService.deletePatient(id).subscribe({
+          next: () => {
+            this.dashboardSuccess = "Patient deleted successfully ✅";
+            this.refreshPatients();
+            this.cdr.detectChanges();
+          },
+          error: (err: any) => {
+            this.dashboardError = "❌ Could not delete patient.";
+            this.handleErrors(err);
+            this.cdr.detectChanges();
+          }
+        });
+      }
+    );
   }
 
   //HISTORY
@@ -599,22 +615,28 @@ export class AppComponent implements OnInit {
   //DELETE DOCTOR
   removeDoctor(id: number) {
     this.clearDashboardMessages();
-
-    if(confirm("Are you sure you want to delete this doctor?")) {
-      this.doctorService.deleteDoctor(id).subscribe({
-        next: () => {
-          //alert("Doctor deleted ✅");
-          this.dashboardSuccess = "Doctor deleted ✅";
-          this.refreshDoctors();
-          this.cdr.detectChanges();
-        },
-        error: (err: any) => {
-          this.dashboardError = "❌ Could not delete doctor. Please check data.";
-          this.handleErrors(err);
-          this.cdr.detectChanges();
-        }
-      });
-    }
+    this.openConfirmModal(
+      'Delete Doctor',
+      'Are you sure you want to delete this doctor? Their future appointments will need to be reassigned.',
+      'Delete',
+      'bg-red-600 hover:bg-red-700',
+      () => {
+      //if(confirm("Are you sure you want to delete this doctor?")) {
+        this.doctorService.deleteDoctor(id).subscribe({
+          next: () => {
+            //alert("Doctor deleted ✅");
+            this.dashboardSuccess = "Doctor deleted ✅";
+            this.refreshDoctors();
+            this.cdr.detectChanges();
+          },
+          error: (err: any) => {
+            this.dashboardError = "❌ Could not delete doctor. Please check data.";
+            this.handleErrors(err);
+            this.cdr.detectChanges();
+          }
+        });
+      }
+    );
   }
 
 
@@ -807,46 +829,57 @@ export class AppComponent implements OnInit {
   
   removeAppointment(id: number) {
     this.clearDashboardMessages();
-
-    if(confirm("Are you sure you want to CANCEL this appointment?")) {
-      this.appointmentService.deleteAppointment(id).subscribe({
-        next: () => {
-          //alert("Appointment cancelled successfully ✅");
-          this.dashboardSuccess = "Appointment cancelled successfully ✅";
-          this.refreshAppointments(); 
-          this.cdr.detectChanges();
-        },
-        error: (err: any) => {
-          this.dashboardError = "❌ Could not delete doctor. Please check data.";
-          this.handleErrors(err);
-          this.cdr.detectChanges();
-        }
-     });
-    }
+    this.openConfirmModal(
+      'Cancel Appointment',
+      'Are you sure you want to CANCEL this appointment?',
+      'Cancel Visit',
+      'bg-red-600 hover:bg-red-700',
+      () => {
+      //if(confirm("Are you sure you want to CANCEL this appointment?")) {
+        this.appointmentService.deleteAppointment(id).subscribe({
+          next: () => {
+            //alert("Appointment cancelled successfully ✅");
+            this.dashboardSuccess = "Appointment cancelled successfully ✅";
+            this.refreshAppointments(); 
+            this.cdr.detectChanges();
+          },
+          error: (err: any) => {
+            this.dashboardError = "❌ Could not delete doctor. Please check data.";
+            this.handleErrors(err);
+            this.cdr.detectChanges();
+          }
+       });
+      }
+    );
   }
 
   // COMPLETE BUTTON
   completeAppointment(appointment: any) {
     this.clearDashboardMessages();
-
-    const diagnosis = prompt("Enter diagnosis/notes for this completed visit:", appointment.description || "");
-    
-
-    if (diagnosis === null) return;
-
-    this.appointmentService.completeAppointment(appointment.id, { description: diagnosis }).subscribe({
-      next: () => {
-        //alert("Appointment marked as COMPLETED! ✅");
-        this.dashboardSuccess = "Appointment marked as COMPLETED! ✅";
-        this.refreshAppointments(); 
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        this.dashboardError = "❌ Could complete this appointment.";
-        this.handleErrors(err);
-        this.cdr.detectChanges();
+    this.openPromptModal(
+      'Complete Appointment',
+      'Enter diagnosis/notes for this completed visit:',
+      appointment.description || '',
+      'Complete Visit',
+      'bg-green-600 hover:bg-green-700',
+    //const diagnosis = prompt("Enter diagnosis/notes for this completed visit:", appointment.description || "");
+    //if (diagnosis === null) return;
+      (diagnosis: string) => {
+        this.appointmentService.completeAppointment(appointment.id, { description: diagnosis }).subscribe({
+          next: () => {
+            //alert("Appointment marked as COMPLETED! ✅");
+            this.dashboardSuccess = "Appointment marked as COMPLETED! ✅";
+            this.refreshAppointments(); 
+            this.cdr.detectChanges();
+          },
+          error: (err: any) => {
+            this.dashboardError = "❌ Could complete this appointment.";
+            this.handleErrors(err);
+            this.cdr.detectChanges();
+          }
+        });
       }
-    });
+    );
   }
   
 
@@ -866,6 +899,40 @@ export class AppComponent implements OnInit {
     this.currentDoctorId = null;
   }
 
+  //MODAL
+  openConfirmModal(title: string, message: string, confirmText: string, confirmColor: string, action: () => void) {
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.modalType = 'confirm';
+    this.modalConfirmText = confirmText;
+    this.modalConfirmColor = confirmColor;
+    this.pendingAction = action;
+    this.showModal = true;
+  }
+
+  openPromptModal(title: string, message: string, initialText: string, confirmText: string, confirmColor: string, action: (text: string) => void) {
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.modalType = 'prompt';
+    this.modalInputText = initialText || '';
+    this.modalConfirmText = confirmText;
+    this.modalConfirmColor = confirmColor;
+    this.pendingAction = () => action(this.modalInputText);
+    this.showModal = true;
+  }
+
+  confirmModal() {
+    if (this.pendingAction) {
+      this.pendingAction();
+    }
+    this.closeModal();
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.modalInputText = '';
+    this.pendingAction = null;
+  }
 
 
 }

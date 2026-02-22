@@ -629,4 +629,30 @@
 
     </div>
   </div>
+  @if (showModal) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-opacity">
+      
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
+        <div class="p-6">
+          <h3 class="text-xl font-bold text-gray-800 mb-2">{{ modalTitle }}</h3>
+          <p class="text-gray-600 mb-5 text-sm">{{ modalMessage }}</p>
+          
+          @if (modalType === 'prompt') {
+            <textarea [(ngModel)]="modalInputText" rows="4" 
+                      class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition resize-y" 
+                      placeholder="Type diagnosis here..."></textarea>
+          }
+        </div>
+        
+        <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-100">
+          <button (click)="closeModal()" class="px-5 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-100 transition shadow-sm">
+            Cancel
+          </button>
+          <button (click)="confirmModal()" class="px-5 py-2.5 text-white rounded-lg font-semibold transition shadow-sm {{ modalConfirmColor }}">
+            {{ modalConfirmText }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 }
