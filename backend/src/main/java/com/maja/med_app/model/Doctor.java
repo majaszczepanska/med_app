@@ -47,9 +47,14 @@ public class Doctor {
     @Schema(example = "string")
     private String lastName;
 
-    private String specialization;
+    private Specialization specialization;
 
     @Column(columnDefinition = "boolean default false")
     private boolean deleted = false;
+
+    public void setSpecialization(Specialization specialization2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setSpecialization'");
+    }
 
 }

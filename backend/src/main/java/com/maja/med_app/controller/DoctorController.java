@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maja.med_app.model.AppUser;
 import com.maja.med_app.model.Doctor;
+import com.maja.med_app.model.Specialization;
 import com.maja.med_app.repository.UserRepository;
 import com.maja.med_app.service.DoctorService;
 import com.maja.med_app.exception.AppValidationException;
@@ -63,7 +64,7 @@ public class DoctorController {
         String lastName,
 
         @NotBlank(message = "Required")
-        String specialization
+        Specialization specialization
 
     ) {}
 
@@ -117,6 +118,11 @@ public class DoctorController {
     @DeleteMapping("/{id}")
     public void deleteDoctor(@NonNull @PathVariable Long id) {
         doctorService.deleteDoctor(id);
+    }
+
+    @GetMapping("/specializations")
+    public ResponseEntity<Specialization[]> getSpecializations() {
+        return ResponseEntity.ok(Specialization.values());
     }
     
 }
