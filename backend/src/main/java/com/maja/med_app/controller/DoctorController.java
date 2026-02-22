@@ -21,6 +21,7 @@ import com.maja.med_app.model.Doctor;
 import com.maja.med_app.model.Specialization;
 import com.maja.med_app.repository.UserRepository;
 import com.maja.med_app.service.DoctorService;
+import com.maja.med_app.service.EmailService;
 import com.maja.med_app.exception.AppValidationException;
 import com.maja.med_app.util.ValidationErrorUtils;
 
@@ -44,6 +45,7 @@ public class DoctorController {
     private final DoctorService doctorService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public record CreateDoctorDto(
         @NotBlank(message = "Required")
@@ -96,6 +98,7 @@ public class DoctorController {
 
         doctorService.createDoctor(doctor);
         //return doctorService.createDoctor(doctor);
+        emailService.sendDoctorAccountEmail(request.email(), request.firstName(), request.password());
         return ResponseEntity.ok(doctor);
     }
 
