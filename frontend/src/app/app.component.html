@@ -2,109 +2,85 @@
   <router-outlet></router-outlet>
 }
 @else {
-  <div class="container">
+  <div class="max-w-[1400px] mx-auto p-5 font-sans">
    @if (userRole === 'ADMIN') {
-      <h1>Medical Management System (Admin Panel) 👑</h1>
+      <h1 class="text-center text-gray-800 text-3xl font-bold mb-8">Medical Management System (Admin Panel) 👑</h1>
     } @else if (userRole === 'DOCTOR') {
-      <h1>Doctor Dashboard 👨‍⚕️</h1>
+      <h1 class="text-center text-gray-800 text-3xl font-bold mb-8">Doctor Dashboard 👨‍⚕️</h1>
     } @else if (userRole === 'PATIENT') {
-      <h1>Patient Portal 🩺</h1>
+      <h1 class="text-center text-gray-800 text-3xl font-bold mb-8">Patient Portal 🩺</h1>
     }
 
-    <div class="layout">
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
 
-      <div class="form-panel" >
+      <div class="w-full lg:w-[320px] shrink-0 p-6 bg-gray-50 border border-gray-200 rounded-xl shadow-sm lg:sticky lg:top-5 h-fit">
 
         @if (activeTab === 'dashboard' || activeTab === 'profile' || activeTab === 'history') {
-          <div style="text-align: center; padding: 40px 10px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063206.png"  class="clinic-logo" alt="Medical Clinic" style="width: 130px; opacity: 0.9; margin-bottom: 20px;">
+          <div class="text-center py-10 px-2">
+            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063206.png" class="w-[130px] opacity-90 mx-auto mb-5 hidden lg:block" alt="Medical Clinic">
             
-            <h3 style="color: #2c3e50; margin-bottom: 10px;">MedApp Clinic</h3>
-            <p style="color: #6c757d; font-size: 0.95em; line-height: 1.5;">
+            <h3 class="text-gray-800 text-xl font-bold mb-2">MedApp Clinic</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">
               Advanced Healthcare<br>Right At Your Fingertips.
             </p>
             
-            <div style="margin-top: 40px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
-              <p style="margin: 0; font-size: 0.85em; color: #555;">📞 Reception & Helpdesk:</p>
-              <p style="margin: 5px 0 0 0; font-weight: bold; font-size: 1.1em; color: #17a2b8;">+48 123 456 789</p>
-              <p style="margin: 5px 0 0 0; font-size: 0.8em; color: #777;">Mon - Fri: 8:00 - 16:00</p>
+            <div class="mt-10 p-4 bg-gray-100 rounded-lg border border-gray-200">
+              <p class="m-0 text-xs text-gray-600">📞 Reception & Helpdesk:</p>
+              <p class="mt-1 font-bold text-lg text-cyan-600">+48 123 456 789</p>
+              <p class="mt-1 text-xs text-gray-500">Mon - Fri: 8:00 - 16:00</p>
             </div>
           </div>
         }
         
         @if (activeTab === 'patients') {
-          <h3>@if(isEditing){Edit} @else{Add} Patient</h3>
-          <form (input)="clearDashboardMessages()" (change)="clearDashboardMessages()" #patientForm="ngForm" >
+          <h3 class="text-gray-700 text-xl font-bold border-b-4 border-green-500 pb-2 mb-5 inline-block">@if(isEditing){Edit} @else{Add} Patient</h3>
+          <form (input)="clearDashboardMessages()" (change)="clearDashboardMessages()" #patientForm="ngForm">
 
-            <label>First Name <span style="color: red;">*</span></label>
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">First Name <span class="text-red-500">*</span></label>
             <input type="text" [(ngModel)]="newPatient.firstName" name="patientFirstName" 
                   minlength="3" 
                   pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
                   #patientFirstNameCtrl="ngModel" placeholder="First name"
-                  required>
+                  class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition" required>
             @if (patientFirstNameCtrl.invalid && (patientFirstNameCtrl.dirty || patientFirstNameCtrl.touched)  && !dashboardSuccess) {
-              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 20px;">
-                @if (patientFirstNameCtrl.errors?.['required']) {
-                  <span style="display: block;">❌ First name is required.</span>
-                }
-                @if (patientFirstNameCtrl.errors?.['minlength']) {
-                  <span style="display: block;">❌ Min. 3 characters.</span>
-                }
-                @if (patientFirstNameCtrl.errors?.['pattern']) {
-                  <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
-                }
-                  </div>
-              }
+              <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+                @if (patientFirstNameCtrl.errors?.['required']) { <span class="block">❌ First name is required.</span> }
+                @if (patientFirstNameCtrl.errors?.['minlength']) { <span class="block">❌ Min. 3 characters.</span> }
+                @if (patientFirstNameCtrl.errors?.['pattern']) { <span class="block">❌ Must start with a capital letter & contain letters only.</span> }
+              </div>
+            }
 
-            <label>Last Name<span style="color: red;">*</span></label>
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">Last Name <span class="text-red-500">*</span></label>
             <input type="text" [(ngModel)]="newPatient.lastName" name="patientLastName"
                   minlength="3" 
                   pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
                   #patientLastNameCtrl="ngModel" placeholder="Last name"
-                  required>
+                  class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition" required>
             @if (patientLastNameCtrl.invalid && (patientLastNameCtrl.dirty || patientLastNameCtrl.touched) && !dashboardSuccess) {
-              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 10px;">
-                @if (patientLastNameCtrl.errors?.['required']) {
-                  <span style="display: block;">❌ Last name is required.</span>
-                }
-                @if (patientLastNameCtrl.errors?.['minlength']) {
-                  <span style="display: block;">❌ Min. 3 characters.</span>
-                }
-                @if (patientLastNameCtrl.errors?.['pattern']) {
-                  <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
-                }
+              <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+                @if (patientLastNameCtrl.errors?.['required']) { <span class="block">❌ Last name is required.</span> }
+                @if (patientLastNameCtrl.errors?.['minlength']) { <span class="block">❌ Min. 3 characters.</span> }
+                @if (patientLastNameCtrl.errors?.['pattern']) { <span class="block">❌ Must start with a capital letter & contain letters only.</span> }
               </div>
             }
 
-
-
-            <label>PESEL<span style="color: red;">*</span></label>
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">PESEL <span class="text-red-500">*</span></label>
             <input type="text" [(ngModel)]="newPatient.pesel" name="pesel"  
                   pattern="^\d{2}(?:0[1-9]|1[0-2]|2[1-9]|3[0-2]|4[1-9]|5[0-2]|6[1-9]|7[0-2]|8[1-9]|9[0-2])(?:0[1-9]|[12]\d|3[01])\d{5}$" 
                   #peselCtrl="ngModel" placeholder="PESEL"
-                  required>
+                  class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition" required>
             @if (peselCtrl.invalid && (peselCtrl.dirty || peselCtrl.touched) && !dashboardSuccess) {
-              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 10px;">
-    
-              @if (peselCtrl.invalid && (peselCtrl.dirty || peselCtrl.touched)) {
-                <div style="color: #dc3545; font-size: 0.85em;  margin-bottom: 20px; font-weight: 500;">
-                  @if (peselCtrl.errors?.['required']) {
-                    <span>❌ PESEL is required.</span>
-                  }
-                  @if (peselCtrl.errors?.['pattern']) {
-                    <span>❌ Invalid PESEL format (check your data).</span>
-                  }
-                </div>
-              }
-            </div>
+              <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+                @if (peselCtrl.errors?.['required']) { <span class="block">❌ PESEL is required.</span> }
+                @if (peselCtrl.errors?.['pattern']) { <span class="block">❌ Invalid PESEL format (check your data).</span> }
+              </div>
             }
 
-            <label>Chronic Diseases / Allergies:</label>
-            <input type="text" [(ngModel)]="newPatient.disease" name="disease" placeholder="Disease">
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">Chronic Diseases / Allergies:</label>
+            <input type="text" [(ngModel)]="newPatient.disease" name="disease" placeholder="Disease" class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition">
 
-            <label>Main doctor (ID):</label>
-            <select [(ngModel)]="newPatient.mainDoctor" name="mainDoctor" 
-              style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;">
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">Main doctor (ID):</label>
+            <select [(ngModel)]="newPatient.mainDoctor" name="mainDoctor" class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition bg-white">
               <option [ngValue]="''">-- No Primary Doctor --</option>
               @for (d of doctors; track d.id) {
                 <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
@@ -112,418 +88,383 @@
             </select>
 
             @if(!isEditing) {
-            <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #007bff;">
-              <p style="margin-top: 0; font-weight: bold; font-size: 0.9em; color: #555;">Patient's Account Data:</p>
-              
-              <label>Email (Login) <span style="color: red;">*</span></label>
-              <input type="email" [(ngModel)]="newPatient.email" name="patientEmail" placeholder="patient@example.com" style="margin-bottom: 10px;"
-                    #patientEmailCtrl="ngModel"
-                    required email>
-              @if (patientEmailCtrl.invalid && (patientEmailCtrl.dirty || patientEmailCtrl.touched) && !dashboardSuccess) {
-                <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
-                  <span>❌ Required valid email.</span>
-                </div>
-              }
+              <div class="bg-blue-50 p-4 rounded-lg mb-5 border-l-4 border-blue-500">
+                <p class="mt-0 font-bold text-sm text-gray-700 mb-3">Patient's Account Data:</p>
+                
+                <label class="block font-semibold text-gray-700 mb-2 text-xs">Email (Login) <span class="text-red-500">*</span></label>
+                <input type="email" [(ngModel)]="newPatient.email" name="patientEmail" placeholder="patient@example.com" class="w-full p-3 mb-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" #patientEmailCtrl="ngModel" required email>
+                @if (patientEmailCtrl.invalid && (patientEmailCtrl.dirty || patientEmailCtrl.touched) && !dashboardSuccess) {
+                  <div class="text-red-600 text-sm -mt-1 mb-3 font-medium">❌ Required valid email.</div>
+                }
 
-    
-              <label>Password <span style="color: red;">*</span></label>
-              <input type="password" name="patientPass" #patientPassCtrl="ngModel" [(ngModel)]="newPatient.password" minlength="6" placeholder="Temporary password">
-              @if (patientPassCtrl.invalid && (patientPassCtrl.dirty || patientPassCtrl.touched)) {
-                <div style="color: #dc3545; font-size: 0.85em; margin-top: 5px; font-weight: 500;">
-                  <span>❌ Password is required (min 6 characters).</span>
-                </div>
-              }
-            </div>
-         }
-
-          
-            @if (dashboardSuccess) {
-              <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #c3e6cb;">
-                {{ dashboardSuccess }}
+                <label class="block font-semibold text-gray-700 mb-2 text-xs">Password <span class="text-red-500">*</span></label>
+                <input type="password" name="patientPass" #patientPassCtrl="ngModel" [(ngModel)]="newPatient.password" minlength="6" placeholder="Temporary password" class="w-full p-3 mb-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                @if (patientPassCtrl.invalid && (patientPassCtrl.dirty || patientPassCtrl.touched)) {
+                  <div class="text-red-600 text-sm mt-1 font-medium">❌ Password is required (min 6 characters).</div>
+                }
               </div>
             }
+          
+            @if (dashboardSuccess) {
+              <div class="bg-green-100 text-green-800 p-3 rounded-md mb-4 border border-green-200 font-medium">{{ dashboardSuccess }}</div>
+            }
             @if (dashboardError) {
-              <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #f5c6cb;">
-                {{ dashboardError }}
-              </div>
+              <div class="bg-red-100 text-red-800 p-3 rounded-md mb-4 border border-red-200 font-medium">{{ dashboardError }}</div>
             }
 
             @if (isEditing) {
-              <button (click)="onSubmit()" type="submit" [disabled]="patientForm.invalid" class="update-btn">UPDATE PATIENT</button>
-              <button (click)="cancelEdit()" class="cancel-btn">CANCEL</button>
+              <div class="flex gap-2">
+                <button (click)="onSubmit()" type="submit" [disabled]="patientForm.invalid" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">UPDATE</button>
+                <button (click)="cancelEdit()" type="button" class="w-1/2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg uppercase transition-colors">CANCEL</button>
+              </div>
             } @else {
-              <button (click)="onSubmit()" type="submit" [disabled]="patientForm.invalid" class="save-btn"
-                      [style.opacity]="patientForm.invalid ? '0.5' : '1'"
-                      [style.cursor]="patientForm.invalid ? 'not-allowed' : 'pointer'">SAVE PATIENT</button>
+              <button (click)="onSubmit()" type="submit" [disabled]="patientForm.invalid" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">SAVE PATIENT</button>
             }
           </form>
         }
 
 
-
         @if (activeTab === 'doctors') {
-          <h3>@if(isEditing){Edit} @else{Add} Doctor</h3>
-
+          <h3 class="text-gray-700 text-xl font-bold border-b-4 border-blue-500 pb-2 mb-5 inline-block">@if(isEditing){Edit} @else{Add} Doctor</h3>
           <form (input)="clearDashboardMessages()" (change)="clearDashboardMessages()" #docForm="ngForm">
-            <label>First Name <span style="color: red;">*</span></label>
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">First Name <span class="text-red-500">*</span></label>
             <input type="text" [(ngModel)]="newDoctor.firstName" name="docFirstName"
-                  minlength="3" 
-                  pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+                  minlength="3" pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
                   #docFirstNameCtrl="ngModel" placeholder="First name"
-                  required>
+                  class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
             @if (docFirstNameCtrl.invalid && (docFirstNameCtrl.dirty || docFirstNameCtrl.touched)  && !dashboardSuccess) {
-              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 20px;">
-                @if (docFirstNameCtrl.errors?.['required']) {
-                  <span style="display: block;">❌ First name is required.</span>
-                }
-                @if (docFirstNameCtrl.errors?.['minlength']) {
-                  <span style="display: block;">❌ Min. 3 characters.</span>
-                }
-                @if (docFirstNameCtrl.errors?.['pattern']) {
-                  <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
-                }
+              <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+                @if (docFirstNameCtrl.errors?.['required']) { <span class="block">❌ First name is required.</span> }
+                @if (docFirstNameCtrl.errors?.['minlength']) { <span class="block">❌ Min. 3 characters.</span> }
+                @if (docFirstNameCtrl.errors?.['pattern']) { <span class="block">❌ Must start with a capital letter.</span> }
               </div>
             }
 
-            <label>Last Name <span style="color: red;">*</span></label>
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">Last Name <span class="text-red-500">*</span></label>
             <input type="text" [(ngModel)]="newDoctor.lastName" name="docLastName"
-                  minlength="3" 
-                  pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
+                  minlength="3" pattern="^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(-[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)?$" 
                   #docLastNameCtrl="ngModel" placeholder="Last name"
-                  required>
+                  class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
             @if (docLastNameCtrl.invalid && (docLastNameCtrl.dirty || docLastNameCtrl.touched) && !dashboardSuccess) {
-              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 20px;">
-                @if (docLastNameCtrl.errors?.['required']) {
-                  <span style="display: block;">❌ Last name is required.</span>
-                }
-                @if (docLastNameCtrl.errors?.['minlength']) {
-                  <span style="display: block;">❌ Min. 3 characters.</span>
-                }
-                @if (docLastNameCtrl.errors?.['pattern']) {
-                  <span style="display: block;">❌ Must start with a capital letter & contain letters only.</span>
-                }
+              <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">
+                @if (docLastNameCtrl.errors?.['required']) { <span class="block">❌ Last name is required.</span> }
+                @if (docLastNameCtrl.errors?.['minlength']) { <span class="block">❌ Min. 3 characters.</span> }
+                @if (docLastNameCtrl.errors?.['pattern']) { <span class="block">❌ Must start with a capital letter.</span> }
               </div>
             }
 
-            <label>Specialization <span style="color: red;">*</span></label>
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">Specialization <span class="text-red-500">*</span></label>
             <input type="text" [(ngModel)]="newDoctor.specialization" name="docSpecialization" 
-                  minlength="3" #docSpecCtrl="ngModel" placeholder="e.g. Cardiologist" required>
+                  minlength="3" #docSpecCtrl="ngModel" placeholder="e.g. Cardiologist" 
+                  class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
             @if (docSpecCtrl.invalid && (docSpecCtrl.dirty || docSpecCtrl.touched) && !dashboardSuccess) {
-              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 20px;">
-                <span style="display: block;">❌ Specialization is required (min 3 characters).</span>
-              </div>
+              <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">❌ Specialization is required (min 3 chars).</div>
             }
 
             @if(!isEditing) {
-              <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #007bff;">
-                <p style="margin-top: 0; font-weight: bold; font-size: 0.9em; color: #555;">Doctor's Account Data:</p>
-
-                <label>Email (Login) <span style="color: red;">*</span></label>
-                <input type="email" [(ngModel)]="newDoctor.email" name="docEmail" #docEmailCtrl="ngModel" placeholder="doctor@med.com" style="margin-bottom: 10px;" required email>
+              <div class="bg-blue-50 p-4 rounded-lg mb-5 border-l-4 border-blue-500">
+                <p class="mt-0 font-bold text-sm text-gray-700 mb-3">Doctor's Account Data:</p>
+                
+                <label class="block font-semibold text-gray-700 mb-2 text-xs">Email (Login) <span class="text-red-500">*</span></label>
+                <input type="email" [(ngModel)]="newDoctor.email" name="docEmail" #docEmailCtrl="ngModel" placeholder="doctor@med.com" class="w-full p-3 mb-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required email>
                 @if (docEmailCtrl.invalid && (docEmailCtrl.dirty || docEmailCtrl.touched) && !dashboardSuccess) {
-                  <div style="color: #dc3545; font-size: 0.85em; margin-bottom: 20px; font-weight: 500;">
-                    <span>❌ Required valid email.</span>
-                  </div>
+                  <div class="text-red-600 text-sm -mt-1 mb-3 font-medium">❌ Required valid email.</div>
                 }
 
-                <label>Password <span style="color: red;">*</span></label>
-                <input type="password" [(ngModel)]="newDoctor.password" name="docPass" #docPassCtrl="ngModel" minlength="6" placeholder="Temporary password" required>
+                <label class="block font-semibold text-gray-700 mb-2 text-xs">Password <span class="text-red-500">*</span></label>
+                <input type="password" [(ngModel)]="newDoctor.password" name="docPass" #docPassCtrl="ngModel" minlength="6" placeholder="Temporary password" class="w-full p-3 mb-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
                 @if (docPassCtrl.invalid && (docPassCtrl.dirty || docPassCtrl.touched) && !dashboardSuccess) {
-                  <div style="color: #dc3545; font-size: 0.85em; margin-top: 5px; font-weight: 500;">
-                    <span>❌ Password is required (min 6 characters).</span>
-                  </div>
+                  <div class="text-red-600 text-sm mt-1 font-medium">❌ Password is required (min 6 characters).</div>
                 }
               </div>
             }
 
             @if (dashboardSuccess) {
-              <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #c3e6cb;">
-                {{ dashboardSuccess }}
-              </div>
+              <div class="bg-green-100 text-green-800 p-3 rounded-md mb-4 border border-green-200 font-medium">{{ dashboardSuccess }}</div>
             }
             @if (dashboardError) {
-              <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #f5c6cb;">
-                {{ dashboardError }}
-              </div>
+              <div class="bg-red-100 text-red-800 p-3 rounded-md mb-4 border border-red-200 font-medium">{{ dashboardError }}</div>
             }
 
             @if(isEditing) {
-              <button (click)="onSubmit()" type="submit" [disabled]="docForm.invalid" class="update-btn">UPDATE DOCTOR</button>
-              <button (click)="cancelEdit()" type="button" class="cancel-btn">CANCEL</button>
+              <div class="flex gap-2">
+                <button (click)="onSubmit()" type="submit" [disabled]="docForm.invalid" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">UPDATE</button>
+                <button (click)="cancelEdit()" type="button" class="w-1/2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg uppercase transition-colors">CANCEL</button>
+              </div>
             } @else {
-              <button (click)="onSubmit()" type="submit" [disabled]="docForm.invalid" class="save-btn" 
-                      style="background-color: #007bff;"
-                      [style.opacity]="docForm.invalid ? '0.5' : '1'"
-                      [style.cursor]="docForm.invalid ? 'not-allowed' : 'pointer'">SAVE DOCTOR</button>
+              <button (click)="onSubmit()" type="submit" [disabled]="docForm.invalid" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">SAVE DOCTOR</button>
             }
           </form>
         }
 
         @if (activeTab === 'appointments') {
-          <h3>@if(isEditing){Edit} @else{Book} Appointment</h3>
+          <h3 class="text-gray-700 text-xl font-bold border-b-4 border-purple-600 pb-2 mb-5 inline-block">@if(isEditing){Edit} @else{Book} Appointment</h3>
           <form (input)="clearDashboardMessages()" (change)="clearDashboardMessages()" #apptForm="ngForm">
             
-            <label>Date & Time <span style="color: red;">*</span></label>
-            <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" name="visitTime" #visitTimeCtrl="ngModel" [min]="minDate" (click)="updateMinDate()" required>
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">Date & Time <span class="text-red-500">*</span></label>
+            <input type="datetime-local" [(ngModel)]="newAppointment.visitTime" name="visitTime" #visitTimeCtrl="ngModel" [min]="minDate" (click)="updateMinDate()" class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 transition" required>
             @if (visitTimeCtrl.invalid && (visitTimeCtrl.dirty || visitTimeCtrl.touched) && !dashboardSuccess) {
-              <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px;">❌ Date and Time are required.</div>
+              <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">❌ Date and Time are required.</div>
             }
 
             @if (userRole === 'ADMIN') {
-              <label>Choose Patient <span style="color: red;">*</span></label>
-              <select [(ngModel)]="newAppointment.patientId" name="adminPatientId" #adminPatCtrl="ngModel" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;" required>
+              <label class="block font-semibold text-gray-700 mb-2 text-sm">Choose Patient <span class="text-red-500">*</span></label>
+              <select [(ngModel)]="newAppointment.patientId" name="adminPatientId" #adminPatCtrl="ngModel" class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 transition bg-white" required>
                 <option [ngValue]="null">-- Select Patient --</option>
                 @for (p of patients; track p.id) {
                   <option [ngValue]="p.id">{{ p.lastName }} {{ p.firstName }} (PESEL: {{ p.pesel }})</option>
                 }
               </select>
               @if (adminPatCtrl.invalid && (adminPatCtrl.dirty || adminPatCtrl.touched) && !dashboardSuccess) {
-                <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px; margin-top: -10px;">❌ Patient is required.</div>
+                <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">❌ Patient is required.</div>
               }
 
-              <label>Choose Doctor <span style="color: red;">*</span></label>
-              <select [(ngModel)]="newAppointment.doctorId" name="adminDoctorId" #adminDocCtrl="ngModel" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;" required>
+              <label class="block font-semibold text-gray-700 mb-2 text-sm">Choose Doctor <span class="text-red-500">*</span></label>
+              <select [(ngModel)]="newAppointment.doctorId" name="adminDoctorId" #adminDocCtrl="ngModel" class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 transition bg-white" required>
                 <option [ngValue]="null">-- Select Doctor --</option>
                 @for (d of doctors; track d.id) {
                   <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
                 }
               </select>
               @if (adminDocCtrl.invalid && (adminDocCtrl.dirty || adminDocCtrl.touched) && !dashboardSuccess) {
-                <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px; margin-top: -10px;">❌ Doctor is required.</div>
+                <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">❌ Doctor is required.</div>
               }
             }
 
             @if (userRole === 'DOCTOR') {
-              <label>Choose Patient <span style="color: red;">*</span></label>
-              <select [(ngModel)]="newAppointment.patientId" name="docPatientId" #docPatCtrl="ngModel" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;" required>
+              <label class="block font-semibold text-gray-700 mb-2 text-sm">Choose Patient <span class="text-red-500">*</span></label>
+              <select [(ngModel)]="newAppointment.patientId" name="docPatientId" #docPatCtrl="ngModel" class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 transition bg-white" required>
                 <option [ngValue]="null">-- Select Patient --</option>
                 @for (p of patients; track p.id) {
                   <option [ngValue]="p.id">{{ p.lastName }} {{ p.firstName }} (PESEL: {{ p.pesel }})</option>
                 }
               </select>
               @if (docPatCtrl.invalid && (docPatCtrl.dirty || docPatCtrl.touched) && !dashboardSuccess) {
-                <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px; margin-top: -10px;">❌ Patient is required.</div>
+                <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">❌ Patient is required.</div>
               }
             }
 
             @if (userRole === 'PATIENT') {
-              <label>Choose Doctor <span style="color: red;">*</span></label>
-              <select [(ngModel)]="newAppointment.doctorId" name="patDoctorId" #patDocCtrl="ngModel" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; margin-bottom: 15px;" required>
+              <label class="block font-semibold text-gray-700 mb-2 text-sm">Choose Doctor <span class="text-red-500">*</span></label>
+              <select [(ngModel)]="newAppointment.doctorId" name="patDoctorId" #patDocCtrl="ngModel" class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 transition bg-white" required>
                 <option [ngValue]="null">-- Select Doctor --</option>
                 @for (d of doctors; track d.id) {
                   <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
                 }
               </select>
               @if (patDocCtrl.invalid && (patDocCtrl.dirty || patDocCtrl.touched) && !dashboardSuccess) {
-                <div style="color: #dc3545; font-size: 0.8em; margin-bottom: 15px; margin-top: -10px;">❌ Doctor is required.</div>
+                <div class="text-red-600 text-sm -mt-3 mb-4 font-medium">❌ Doctor is required.</div>
               }
             }
 
-            <label>Diagnosis / Notes:</label>
+            <label class="block font-semibold text-gray-700 mb-2 text-sm">Diagnosis / Notes:</label>
             <textarea [(ngModel)]="newAppointment.description" name="description"
                       placeholder="Enter diagnosis, symptoms, or medications..."
                       rows="3"
                       maxlength="500"
-                      style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; resize: vertical; margin-bottom: 15px; min-height: 100px; max-height: 300px;">
+                      class="w-full p-3 mb-5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 transition resize-y min-h-[100px] max-h-[300px]">
             </textarea>
 
             @if (dashboardSuccess) {
-               <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #c3e6cb;">
-                 {{ dashboardSuccess }}
-               </div>
+              <div class="bg-green-100 text-green-800 p-3 rounded-md mb-4 border border-green-200 font-medium">{{ dashboardSuccess }}</div>
             }
             @if (dashboardError) {
-               <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #f5c6cb;">
-                 {{ dashboardError }}
-               </div>
+              <div class="bg-red-100 text-red-800 p-3 rounded-md mb-4 border border-red-200 font-medium">{{ dashboardError }}</div>
             }
 
             @if (isEditing) {
-              <button (click)="onSubmit()" type="submit" [disabled]="apptForm.invalid" class="update-btn">UPDATE VISIT</button>
-              <button (click)="cancelEdit()" type="button" class="cancel-btn">CANCEL</button>
+              <div class="flex gap-2">
+                <button (click)="onSubmit()" type="submit" [disabled]="apptForm.invalid" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">UPDATE</button>
+                <button (click)="cancelEdit()" type="button" class="w-1/2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg uppercase transition-colors">CANCEL</button>
+              </div>
             } @else {
-              <button (click)="onSubmit()" type="submit" [disabled]="apptForm.invalid" class="save-btn" 
-                      style="background-color: #6f42c1;"
-                      [style.opacity]="apptForm.invalid ? '0.5' : '1'"
-                      [style.cursor]="apptForm.invalid ? 'not-allowed' : 'pointer'">BOOK VISIT</button>
+              <button (click)="onSubmit()" type="submit" [disabled]="apptForm.invalid" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">BOOK VISIT</button>
             }
           </form>
         }
 
       </div>
 
-      <div class="table-panel">
+      <div class="flex-1 bg-white p-5 rounded-xl shadow-sm border border-gray-200 w-full overflow-hidden relative">
 
-        <div class="mobile-header">
-          <h3 style="margin: 0; color: #6f42c1;">MedApp Menu</h3>
-          <button class="hamburger-btn" (click)="toggleMenu()">☰</button>
+        <div class="lg:hidden flex justify-between items-center pb-3 mb-5 border-b-2 border-gray-200">
+          <h3 class="m-0 text-purple-700 text-xl font-bold">MedApp Menu</h3>
+          <button class="bg-gray-100 border border-gray-300 rounded-md text-2xl text-gray-700 px-3 py-1 cursor-pointer active:bg-gray-200 transition" (click)="toggleMenu()">☰</button>
         </div>
 
-        <div class="tabs" [class.mobile-open]="isMobileMenuOpen">
-          <button [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">📊 Dashboard</button>
+        <div class="hidden lg:flex mb-6 border-b-2 border-gray-200 gap-2 overflow-x-auto" 
+             [class.!flex]="isMobileMenuOpen" [class.flex-col]="isMobileMenuOpen" [class.absolute]="isMobileMenuOpen" 
+             [class.top-[70px]]="isMobileMenuOpen" [class.right-4]="isMobileMenuOpen" [class.bg-white]="isMobileMenuOpen" 
+             [class.shadow-xl]="isMobileMenuOpen" [class.p-2]="isMobileMenuOpen" [class.rounded-xl]="isMobileMenuOpen" 
+             [class.z-50]="isMobileMenuOpen" [class.w-[260px]]="isMobileMenuOpen" [class.border]="isMobileMenuOpen" [class.border-gray-200]="isMobileMenuOpen">
+          
+          <button [class.text-gray-900]="activeTab === 'dashboard'" [class.border-green-500]="activeTab === 'dashboard'" [class.bg-green-50]="activeTab === 'dashboard' && isMobileMenuOpen" class="whitespace-nowrap bg-transparent px-5 py-3 text-base font-semibold text-gray-500 border-b-4 border-transparent transition-all hover:text-blue-700 hover:bg-gray-50 lg:rounded-t-md text-left" (click)="setActiveTab('dashboard')">📊 Dashboard</button>
+          
           @if (userRole === 'ADMIN' || userRole === 'DOCTOR'){
-            <button [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Patients</button>
+            <button [class.text-gray-900]="activeTab === 'patients'" [class.border-green-500]="activeTab === 'patients'" [class.bg-green-50]="activeTab === 'patients' && isMobileMenuOpen" class="whitespace-nowrap bg-transparent px-5 py-3 text-base font-semibold text-gray-500 border-b-4 border-transparent transition-all hover:text-blue-700 hover:bg-gray-50 lg:rounded-t-md text-left" (click)="setActiveTab('patients')">Patients</button>
           }
           @if (userRole === 'ADMIN'){
-            <button [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctors</button>
+            <button [class.text-gray-900]="activeTab === 'doctors'" [class.border-green-500]="activeTab === 'doctors'" [class.bg-green-50]="activeTab === 'doctors' && isMobileMenuOpen" class="whitespace-nowrap bg-transparent px-5 py-3 text-base font-semibold text-gray-500 border-b-4 border-transparent transition-all hover:text-blue-700 hover:bg-gray-50 lg:rounded-t-md text-left" (click)="setActiveTab('doctors')">Doctors</button>
           }
-          <button [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">Appointments</button>
-          @if (userRole === 'PATIENT') {
-            <button (click)="setActiveTab('history')" [class.active]="activeTab === 'history'">📜 My History</button>
-          }
-          <button (click)="setActiveTab('profile')" [class.active]="activeTab === 'profile'">My Profile ⚙️</button>
-          <button class="logout-btn" (click)="logout()">🚪 Logout</button>
+          <button [class.text-gray-900]="activeTab === 'appointments'" [class.border-green-500]="activeTab === 'appointments'" [class.bg-green-50]="activeTab === 'appointments' && isMobileMenuOpen" class="whitespace-nowrap bg-transparent px-5 py-3 text-base font-semibold text-gray-500 border-b-4 border-transparent transition-all hover:text-blue-700 hover:bg-gray-50 lg:rounded-t-md text-left" (click)="setActiveTab('appointments')">Appointments</button>
           
+          @if (userRole === 'PATIENT') {
+            <button [class.text-gray-900]="activeTab === 'history'" [class.border-green-500]="activeTab === 'history'" [class.bg-green-50]="activeTab === 'history' && isMobileMenuOpen" class="whitespace-nowrap bg-transparent px-5 py-3 text-base font-semibold text-gray-500 border-b-4 border-transparent transition-all hover:text-blue-700 hover:bg-gray-50 lg:rounded-t-md text-left" (click)="setActiveTab('history')">📜 My History</button>
+          }
+          <button [class.text-gray-900]="activeTab === 'profile'" [class.border-green-500]="activeTab === 'profile'" [class.bg-green-50]="activeTab === 'profile' && isMobileMenuOpen" class="whitespace-nowrap bg-transparent px-5 py-3 text-base font-semibold text-gray-500 border-b-4 border-transparent transition-all hover:text-blue-700 hover:bg-gray-50 lg:rounded-t-md text-left" (click)="setActiveTab('profile')">My Profile ⚙️</button>
+          
+          <button class="whitespace-nowrap bg-transparent font-semibold text-red-500 hover:bg-red-50 py-3 px-5 lg:ml-auto transition-colors lg:rounded-lg text-left" [class.mt-2]="isMobileMenuOpen" [class.border-t]="isMobileMenuOpen" [class.border-gray-100]="isMobileMenuOpen" (click)="logout()">🚪 Logout</button>
         </div>
 
 
         @if (activeTab === 'dashboard') {
-          <div class="dashboard-container">
+          <div>
             @if (userRole === 'ADMIN' || userRole === 'DOCTOR') {
-              <div class="stats-grid">
-                <div class="stat-card card-blue">
-                  <div class="stat-number">{{ patients.length }}</div>
-                  <div class="stat-label">Patients Registered</div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                <div class="p-6 rounded-xl text-white text-center shadow-md hover:-translate-y-1 transition-transform bg-gradient-to-br from-blue-500 to-blue-700">
+                  <div class="text-[3.5em] font-bold mb-2 leading-none">{{ patients.length }}</div>
+                  <div class="text-[1.1em] opacity-90 uppercase tracking-[1px] font-medium">Patients Registered</div>
                 </div>
               
-                <div class="stat-card card-green">
-                  <div class="stat-number">{{ doctors.length }}</div>
-                  <div class="stat-label">Active Doctors</div>
+                <div class="p-6 rounded-xl text-white text-center shadow-md hover:-translate-y-1 transition-transform bg-gradient-to-br from-green-500 to-green-700">
+                  <div class="text-[3.5em] font-bold mb-2 leading-none">{{ doctors.length }}</div>
+                  <div class="text-[1.1em] opacity-90 uppercase tracking-[1px] font-medium">Active Doctors</div>
                 </div>
               
-                <div class="stat-card card-purple">
-                  <div class="stat-number">{{ appointments.length }}</div>
-                  <div class="stat-label">Total Appointments</div>
+                <div class="p-6 rounded-xl text-white text-center shadow-md hover:-translate-y-1 transition-transform bg-gradient-to-br from-purple-600 to-purple-800">
+                  <div class="text-[3.5em] font-bold mb-2 leading-none">{{ appointments.length }}</div>
+                  <div class="text-[1.1em] opacity-90 uppercase tracking-[1px] font-medium">Total Appointments</div>
                 </div>
               </div>
             }
 
             @if (userRole === 'PATIENT') {
-              <div style="background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #17a2b8;">
-                <h2 style="margin-top: 0; color: #333;">Welcome to your Patient Portal 🩺</h2>
-                <p style="color: #555; margin-bottom: 0;">Here you can book new appointments, view your medical history, and update your details.</p>
+              <div class="bg-gray-100 p-5 rounded-lg mb-5 border-l-4 border-cyan-500">
+                <h2 class="mt-0 text-gray-800 text-2xl font-bold mb-2">Welcome to your Patient Portal 🩺</h2>
+                <p class="text-gray-600 m-0">Here you can book new appointments, view your medical history, and update your details.</p>
               </div>
             }
           
-            <h3 style="margin-top: 30px; border-bottom: 2px solid #ddd; padding-bottom: 10px;">
+            <h3 class="mt-8 border-b-2 border-gray-200 pb-2 text-lg font-bold text-gray-700">
               📅 Upcoming Appointments (Next 5)
             </h3>
           
             @if (upcomingAppointments.length === 0) {
-              <p class="empty-state">No upcoming appointments scheduled.</p>
+              <p class="text-center text-gray-500 text-lg p-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 mt-4">No upcoming appointments scheduled.</p>
             } @else {
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="background-color: #6c757d;">Time</th>
-                    <th style="background-color: #6c757d;">Patient</th>
-                    <th style="background-color: #6c757d;">Doctor</th>
-                    <th style="background-color: #6c757d;">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (a of upcomingAppointments; track a.id) {
+              <div class="overflow-x-auto mt-4 pb-2">
+                <table class="w-full text-left bg-white border border-gray-200 rounded-lg overflow-hidden whitespace-nowrap">
+                  <thead class="bg-gray-600 text-white">
                     <tr>
-                      <td style="font-weight: bold;">{{ formatDateDisplay(a.visitTime) }}</td>
-                      <td>{{ a.patient?.lastName }} {{ a.patient?.firstName }}</td>
-                      <td>Dr. {{ a.doctor?.lastName }}</td>
-                      <td>
-                        <span style="background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 10px; font-size: 12px;">
-                          SCHEDULED
-                        </span>
-                      </td>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Time</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Patient</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Doctor</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide text-center">Status</th>
                     </tr>
-                  }
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    @for (a of upcomingAppointments; track a.id) {
+                      <tr class="hover:bg-gray-50 transition-colors h-[45px]">
+                        <td class="px-3 py-2 font-bold text-gray-800 align-middle">{{ formatDateDisplay(a.visitTime) }}</td>
+                        <td class="px-3 py-2 text-gray-700 align-middle">{{ a.patient?.lastName }} {{ a.patient?.firstName }}</td>
+                        <td class="px-3 py-2 text-gray-700 align-middle">Dr. {{ a.doctor?.lastName }}</td>
+                        <td class="px-3 py-2 text-center align-middle">
+                          <span class="bg-green-100 text-green-800 px-2 py-1 rounded-[10px] text-xs font-bold inline-block">SCHEDULED</span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
             }       
           </div>
         }
         
         @if (activeTab === 'patients') {
-          <h3>Patient Registry</h3>
-          <div style="margin-bottom: 15px;">
-            <input type="text" 
-                   [(ngModel)]="searchText" 
-                   placeholder="🔍 Search Last name or PESEL..." 
-                   style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+          <h3 class="text-[1.5em] text-gray-700 font-bold mb-6">Patient Registry</h3>
+          <div class="mb-4">
+            <input type="text" [(ngModel)]="searchText" placeholder="🔍 Search Last name or PESEL..." class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
           </div>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Full Name</th>
-                <th>Pesel</th>
-                <th>Chronic Disease</th>
-                <th>Main Doctor</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (p of filteredPatients; track p.id){
+          
+          <div class="overflow-x-auto pb-2">
+            <table class="w-full text-left bg-white border border-gray-200 rounded-lg overflow-hidden whitespace-nowrap">
+              <thead class="bg-purple-700 text-white">
                 <tr>
-                  <td style="font-weight: 600;">{{ p.firstName }} {{ p.lastName }}</td>
-                  <td>{{ p.pesel }}</td>
-                  <td>{{ p.disease }}</td>
-                  <td>{{ p.mainDoctor?.lastName || '-' }}</td> <td>
-                    <div class="action-buttons-wrapper">
-                      <button (click)="showPatientHistory(p)" class="history-btn">📜 History</button>
-                      <button (click)="editPatient(p)" class="edit-btn">Edit</button>
-                      <button (click)="removePatient(p.id)" class="delete-btn">Delete</button>
-                    </div>
-                  </td>
+                  <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Full Name</th>
+                  <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Pesel</th>
+                  <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Chronic Disease</th>
+                  <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Main Doctor</th>
+                  <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide text-center">Actions</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                @for (p of filteredPatients; track p.id){
+                  <tr class="hover:bg-gray-50 transition-colors h-[45px]">
+                    <td class="px-3 py-2 font-semibold text-gray-800 align-middle">{{ p.firstName }} {{ p.lastName }}</td>
+                    <td class="px-3 py-2 text-gray-600 align-middle">{{ p.pesel }}</td>
+                    <td class="px-3 py-2 text-gray-600 align-middle">{{ p.disease }}</td>
+                    <td class="px-3 py-2 text-gray-600 align-middle">{{ p.mainDoctor?.lastName || '-' }}</td> 
+                    <td class="px-3 py-2 text-center align-middle">
+                      <div class="flex items-center justify-center gap-2">
+                        <button (click)="showPatientHistory(p)" class="bg-cyan-500 hover:bg-cyan-600 text-white px-2.5 py-1 rounded-md text-[1em] font-semibold transition-transform active:translate-y-px shadow-sm">📜 History</button>
+                        <button (click)="editPatient(p)" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded-md text-[1em] font-semibold transition-transform active:translate-y-px shadow-sm">Edit</button>
+                        <button (click)="removePatient(p.id)" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-md text-[1em] font-semibold transition-transform active:translate-y-px shadow-sm">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         }
 
         @if (activeTab === 'doctors') {
-          <h3 style="color: #007bff">Doctors List</h3>
-          <div style="margin-bottom: 15px;">
-            <input type="text" 
-                   [(ngModel)]="searchText" 
-                   placeholder="🔍 Search Last name or specialization" 
-                   style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+          <h3 class="text-[1.5em] text-blue-600 font-bold mb-6">Doctors List</h3>
+          <div class="mb-4">
+            <input type="text" [(ngModel)]="searchText" placeholder="🔍 Search Last name or specialization" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
-          <table class="data-table">
-            <thead>
-              <tr style="background-color: #007bff;">
-                <th>Full Name</th>
-                <th>Specialization</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (d of filteredDoctors; track d.id){
+          
+          <div class="overflow-x-auto pb-2">
+            <table class="w-full text-left bg-white border border-gray-200 rounded-lg overflow-hidden whitespace-nowrap">
+              <thead class="bg-blue-600 text-white">
                 <tr>
-                  <td style="font-weight: 600;">Dr. {{ d.firstName }} {{ d.lastName }}</td>
-                  <td>{{ d.specialization }}</td>
-                  <td>
-                    <div class="action-buttons-wrapper">
-                      <button (click)="editDoctor(d)" class="edit-btn">Edit</button>
-                      <button (click)="removeDoctor(d.id)" class="delete-btn">Delete</button>
-                    </div>
-                  </td>
+                  <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Full Name</th>
+                  <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Specialization</th>
+                  <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide text-center">Actions</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                @for (d of filteredDoctors; track d.id){
+                  <tr class="hover:bg-gray-50 transition-colors h-[45px]">
+                    <td class="px-3 py-2 font-semibold text-gray-800 align-middle">Dr. {{ d.firstName }} {{ d.lastName }}</td>
+                    <td class="px-3 py-2 text-gray-600 align-middle">{{ d.specialization }}</td>
+                    <td class="px-3 py-2 text-center align-middle">
+                      <div class="flex items-center justify-center gap-2">
+                        <button (click)="editDoctor(d)" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded-md text-[1em] font-semibold transition-transform active:translate-y-px shadow-sm">Edit</button>
+                        <button (click)="removeDoctor(d.id)" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-md text-[1em] font-semibold transition-transform active:translate-y-px shadow-sm">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         }
 
         @if (activeTab === 'appointments') {
           
-          <h3 style="color: #6f42c1">Appointments Schedule</h3>
+          <h3 class="text-[1.5em] text-purple-600 font-bold mb-6">Appointments Schedule</h3>
           
-          <div class="controls-container">
-            <div class="view-switcher">
-              <button (click)="showCalendar = false" [class.active-view]="!showCalendar">List View</button>
-              <button (click)="showCalendar = true" [class.active-view]="showCalendar">Calendar View</button>
+          <div class="flex flex-col md:flex-row justify-between md:items-center mb-5 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div class="flex gap-1 bg-gray-200 p-1 rounded-md">
+              <button (click)="showCalendar = false" [class.bg-white]="!showCalendar" [class.text-purple-700]="!showCalendar" [class.shadow-sm]="!showCalendar" class="px-4 py-2 bg-transparent rounded font-semibold text-gray-600 transition-all border-none cursor-pointer">List View</button>
+              <button (click)="showCalendar = true" [class.bg-white]="showCalendar" [class.text-purple-700]="showCalendar" [class.shadow-sm]="showCalendar" class="px-4 py-2 bg-transparent rounded font-semibold text-gray-600 transition-all border-none cursor-pointer">Calendar View</button>
             </div>
 
             @if (userRole === 'ADMIN' || userRole === 'PATIENT') {
-              <div class="doctor-filter">
-                <label>Filter by Doctor:</label>
-                <select [(ngModel)]="selectedDoctorId" (change)="onDoctorFilterChange()">
+              <div class="flex items-center gap-2 w-full md:w-auto">
+                <label class="font-semibold text-gray-700 whitespace-nowrap text-sm">Filter by Doctor:</label>
+                <select [(ngModel)]="selectedDoctorId" (change)="onDoctorFilterChange()" class="p-2.5 border border-gray-300 rounded-md w-full md:min-w-[250px] bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                   <option [ngValue]="null">-- ALL DOCTORS --</option>
                   @for (d of doctors; track d.id) {
                     <option [ngValue]="d.id">Dr. {{ d.lastName }} ({{ d.specialization }})</option>
@@ -534,156 +475,158 @@
           </div>
 
           @if (showCalendar) {
-            <div class="calendar-container">
+            <div class="w-full overflow-x-auto">
               <full-calendar [options]="calendarOptions"></full-calendar>
             </div>
           }
 
           @if (!showCalendar) {
-            <div style="margin-bottom: 15px;">
-              <input type="text" 
-                  [(ngModel)]="searchText" 
-                  placeholder="🔍 Search patient or doctor Last name" 
-                  style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            <div class="mb-4">
+              <input type="text" [(ngModel)]="searchText" placeholder="🔍 Search patient or doctor Last name" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
             </div>
+
             @if (userRole === 'PATIENT' && !(filteredAppointments.length === 0)) {
-              <div style="background-color: #e3f2fd; color: #0c5460; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 5px solid #17a2b8; font-size: 0.9em;">
+              <div class="bg-blue-50 text-cyan-800 p-3 rounded-md mb-4 border-l-4 border-cyan-500 text-sm">
                 ℹ️ <strong>Upcoming Appointments:</strong> This list shows only your future visits. 
                 For past visits and diagnosis, please check the <strong>"My History"</strong> tab.
               </div>
             }
 
             @if (userRole === 'DOCTOR' || userRole === 'ADMIN') {
-              <div style="background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 5px solid #ffc107; font-size: 0.9em;">
+              <div class="bg-yellow-50 text-yellow-800 p-3 rounded-md mb-4 border-l-4 border-yellow-500 text-sm">
                 📅 <strong>Active Schedule:</strong> Displaying all appointments for <strong>Today</strong> (including completed) and <strong>Future</strong> dates.
               </div>
             }
+
             @if (filteredAppointments.length === 0) {
-              <div class="empty-state" style="margin-top: 20px;">
-                <p style="margin: 0; font-size: 1.1em; color: #6c757d;">
+              <div class="text-center p-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 mt-5">
+                <p class="m-0 text-lg text-gray-500">
                   📭 No appointments to display right now.
                 </p>
               </div>
             } @else {
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="background-color: #6f42c1;">Date & Time</th>
-                    <th style="background-color: #6f42c1;">Patient</th>
-                    <th style="background-color: #6f42c1;">Doctor</th>
-                    <th style="background-color: #6f42c1;">Notes</th>
-                    <th style="background-color: #6f42c1;">Status</th>
-                    <th style="background-color: #6f42c1;">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (a of filteredAppointments; track a.id) {
-                    <tr [style.opacity]="isPastDate(a.visitTime) ? 0.5 : 1" 
-                        [style.background-color]="isOngoing(a.visitTime) ? '#e8f5e9' : 'transparent'">                     
-
-                      <td style="font-weight: bold;">{{ formatDateDisplay(a.visitTime) }}</td>
-                      <td>{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
-                      <td>Dr. {{ a.doctor?.lastName }}</td>
-                      <td class="truncate-cell" [title]="a.description">{{ a.description || '-'}}</td>
-
-                      <td>
-                        @if (a.status === 'COMPLETED') {
-                          <span style="background: #155724; color: white;">✅ COMPLETED</span>
-                        } 
-                        @else if (isOngoing(a.visitTime)) {
-                          <span style="background: #28a745; color: white; box-shadow: 0 0 8px #28a745;">🔄 IN PROGRESS</span>
-                        } 
-                        @else if (a.status === 'SCHEDULED') {
-                          <span style="background: #fff3cd; color: #856404;">⏳ SCHEDULED</span>
-                        }
-                      </td>
-
-                      <td>
-                        <div class="action-buttons-wrapper">
-                          @if (userRole === 'DOCTOR' && a.status === 'SCHEDULED' && !isFutureDate(a.visitTime)) {
-                            <button (click)="completeAppointment(a)" style="background-color: #28a745;">COMPLETE</button>
-                          }
-
-                          @if (a.status === 'SCHEDULED' || (userRole === 'DOCTOR' && a.status === 'COMPLETED')) {
-                            <button (click)="editAppointment(a)" class="edit-btn">EDIT</button>
-                          }
-
-                          @if (a.status === 'SCHEDULED' && !isOngoing(a.visitTime)) {
-                            <button (click)="removeAppointment(a.id)" class="delete-btn">CANCEL</button>
-                          }
-                        </div>
-                      </td>
+              <div class="overflow-x-auto pb-2">
+                <table class="w-full text-left bg-white border border-gray-200 rounded-lg overflow-hidden whitespace-nowrap">
+                  <thead class="bg-purple-700 text-white">
+                    <tr>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Date & Time</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Patient</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Doctor</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Notes</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Status</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide text-center">Actions</th>
                     </tr>
-                  }
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    @for (a of filteredAppointments; track a.id) {
+                      <tr [class.opacity-50]="isPastDate(a.visitTime)" [class.bg-green-50]="isOngoing(a.visitTime)" class="hover:bg-gray-50 transition-colors h-[45px]">                     
+
+                        <td class="px-3 py-2 font-bold text-gray-800 align-middle">{{ formatDateDisplay(a.visitTime) }}</td>
+                        <td class="px-3 py-2 text-gray-700 align-middle">{{ a.patient?.firstName }} {{ a.patient?.lastName}}</td>
+                        <td class="px-3 py-2 text-gray-700 align-middle">Dr. {{ a.doctor?.lastName }}</td>
+                        <td class="px-3 py-2 text-gray-600 align-middle max-w-[250px] overflow-hidden text-ellipsis" [title]="a.description">{{ a.description || '-'}}</td>
+
+                        <td class="px-3 py-2 align-middle">
+                          @if (a.status === 'COMPLETED') {
+                            <span class="bg-green-800 text-white px-2 py-1 rounded-md text-[0.9em] font-semibold inline-block">✅ COMPLETED</span>
+                          } 
+                          @else if (isOngoing(a.visitTime)) {
+                            <span class="bg-green-500 text-white shadow-[0_0_8px_#28a745] px-2 py-1 rounded-md text-[0.9em] font-semibold inline-block">🔄 IN PROGRESS</span>
+                          } 
+                          @else if (a.status === 'SCHEDULED') {
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-md text-[0.9em] font-semibold inline-block">⏳ SCHEDULED</span>
+                          }
+                        </td>
+
+                        <td class="px-3 py-2 text-center align-middle">
+                          <div class="flex items-center justify-center gap-2">
+                            @if (userRole === 'DOCTOR' && a.status === 'SCHEDULED' && !isFutureDate(a.visitTime)) {
+                              <button (click)="completeAppointment(a)" class="bg-green-500 hover:bg-green-600 text-white px-2.5 py-1 rounded-md text-[1em] font-semibold transition-transform active:translate-y-px shadow-sm">COMPLETE</button>
+                            }
+
+                            @if (a.status === 'SCHEDULED' || (userRole === 'DOCTOR' && a.status === 'COMPLETED')) {
+                              <button (click)="editAppointment(a)" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded-md text-[1em] font-semibold transition-transform active:translate-y-px shadow-sm">EDIT</button>
+                            }
+
+                            @if (a.status === 'SCHEDULED' && !isOngoing(a.visitTime)) {
+                              <button (click)="removeAppointment(a.id)" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-md text-[1em] font-semibold transition-transform active:translate-y-px shadow-sm">CANCEL</button>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
             }
           }
           
         }
+
         @if (activeTab === 'history' && selectedPatientForHistory) {
-          <div class="history-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-              <h3>
+          <div>
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-5 gap-3">
+              <h3 class="text-xl font-bold text-gray-800 m-0">
                 Medical History: 
-                <span style="color: #007bff;">
+                <span class="text-blue-600">
                   {{ selectedPatientForHistory.firstName }} {{ selectedPatientForHistory.lastName }}
                 </span>
               </h3>
               @if (userRole === 'PATIENT') {
-                <button (click)="closeHistory()" class="cancel-btn">⬅ BACK TO DASHBOARD</button>
+                <button (click)="closeHistory()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md uppercase text-sm transition-colors">⬅ BACK TO DASHBOARD</button>
               } @else {
-                <button (click)="closeHistory()" class="cancel-btn">⬅ BACK TO LIST</button>
+                <button (click)="closeHistory()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md uppercase text-sm transition-colors">⬅ BACK TO LIST</button>
               }     
             </div>
           
-            <div class="patient-info-card" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #007bff;">
-              <p><strong>PESEL:</strong> {{ selectedPatientForHistory.pesel }}</p>
-              <p><strong>Chronic Disease:</strong> {{ selectedPatientForHistory.disease || ' ----'}}</p>
-              <p><strong>Primary Doctor:</strong> {{ getDoctorName(selectedPatientForHistory.mainDoctor) }}</p>
+            <div class="bg-gray-50 p-4 rounded-lg mb-5 border-l-4 border-blue-600 text-gray-700 text-sm">
+              <p class="mb-1"><strong>PESEL:</strong> {{ selectedPatientForHistory.pesel }}</p>
+              <p class="mb-1"><strong>Chronic Disease:</strong> {{ selectedPatientForHistory.disease || ' ----'}}</p>
+              <p class="m-0"><strong>Primary Doctor:</strong> {{ getDoctorName(selectedPatientForHistory.mainDoctor) }}</p>
             </div>
           
             @if (patientHistory.length === 0) {
-              <p>No medical history found for this patient.</p>
+              <p class="text-gray-500 text-lg">No medical history found for this patient.</p>
             } @else {
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="background-color: #17a2b8;">Date</th>
-                    <th style="background-color: #17a2b8;">Doctor</th>
-                    <th style="background-color: #17a2b8;">Diagnosis / Notes</th>
-                    <th style="background-color: #17a2b8;">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (h of patientHistory; track h.id) {
+              <div class="overflow-x-auto pb-2">
+                <table class="w-full text-left bg-white border border-gray-200 rounded-lg overflow-hidden whitespace-nowrap">
+                  <thead class="bg-cyan-600 text-white">
                     <tr>
-                      <td>{{ formatDateDisplay(h.visitTime) }}</td>
-                      <td>Dr. {{ h.doctor?.lastName }} ({{ h.doctor?.specialization }})</td>
-                      <td style="font-style: italic;">{{ h.description || '-' }}</td>
-                      <td>
-                        @if(h.status === 'COMPLETED') {
-                           <span style="color: green; font-weight: bold;">✅ Done</span>
-                        } @else {
-                           <span style="color: red; font-weight: bold;">❌ Missed</span>
-                        }
-                      </td>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Date</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Doctor</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide">Diagnosis / Notes</th>
+                      <th class="p-3 text-[0.95em] font-semibold uppercase tracking-wide text-center">Status</th>
                     </tr>
-                  }
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    @for (h of patientHistory; track h.id) {
+                      <tr class="hover:bg-gray-50 transition-colors h-[45px]">
+                        <td class="px-3 py-2 text-gray-800 align-middle">{{ formatDateDisplay(h.visitTime) }}</td>
+                        <td class="px-3 py-2 text-gray-700 align-middle">Dr. {{ h.doctor?.lastName }} ({{ h.doctor?.specialization }})</td>
+                        <td class="px-3 py-2 text-gray-600 italic align-middle">{{ h.description || '-' }}</td>
+                        <td class="px-3 py-2 text-center align-middle">
+                          @if(h.status === 'COMPLETED') {
+                             <span class="text-green-600 font-bold">✅ Done</span>
+                          } @else {
+                             <span class="text-red-600 font-bold">❌ Missed</span>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
             }
           </div>
         }
+
         @if (activeTab === 'profile') {
-          <div class="profile-container">
+          <div>
             <app-profile (onError)="handleErrors($event)"></app-profile>
           </div>
-          
         }
       </div>
 
     </div>
   </div>
-} 
-
+}
