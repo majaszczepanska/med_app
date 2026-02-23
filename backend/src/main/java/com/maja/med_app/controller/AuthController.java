@@ -3,8 +3,10 @@ package com.maja.med_app.controller;
 import org.springframework.security.core.Authentication;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.hibernate.validator.constraints.pl.PESEL;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -96,6 +99,10 @@ public class AuthController {
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole("PATIENT");
+
+        String token = UUID.randomUUID().toString();
+        user.setVerificationToken(token);
+        user.setEnabled(false);
         userRepository.save(user);
 
         Patient patient = new Patient();
@@ -105,7 +112,7 @@ public class AuthController {
         patient.setPesel(request.pesel());
 
         patientRepository.save(patient);
-        emailService.sendRegistrationEmail(patient.getUser().getEmail(), patient.getFirstName());
+        emailService.sendRegistrationEmail(patient.getUser().getEmail(), patient.getFirstName(), token);
         return ResponseEntity.ok("User and Patient registered successfuly");
     }
 
@@ -149,6 +156,10 @@ public class AuthController {
         String email = auth.getName();
         AppUser user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if(!user.isEnabled()) {
+            errors.put("account", "Account not activated. Please check your email for verification link.");
+        }
 
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             errors.put("oldPassword", "Incorrect current password");
@@ -163,5 +174,18 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 
+    @GetMapping("/verify")
+    public ResponseEntity<Void> verifyAccount(@RequestParam String token) {
+        AppUser user = userRepository.findByVerificationToken(token)
+            .orElseThrow(() -> new RuntimeException("Invalid verification token"));
+
+        user.setEnabled(true);
+        user.setVerificationToken(null);
+        userRepository.save(user);
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", "http://localhost:4200/login?verified=true")
+                .build(); 
+    }
 
 }
