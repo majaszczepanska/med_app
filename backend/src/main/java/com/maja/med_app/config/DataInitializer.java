@@ -1,7 +1,5 @@
 package com.maja.med_app.config;
 
-import java.nio.file.Path;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +20,7 @@ public class DataInitializer {
     public CommandLineRunner initData(UserRepository userRepository, PasswordEncoder passwordEncoder, PatientRepository patientRepository, DoctorRepository doctorRepository) {
         return args -> {
             if (userRepository.count() == 0) {
-                // Create default admin user
+                //CREATE ADMIN if there are none in db
                 AppUser admin = new AppUser();
                 admin.setEmail("admin@medapp.com");
                 admin.setPassword(passwordEncoder.encode("admin123"));
@@ -30,16 +28,17 @@ public class DataInitializer {
                 admin.setEnabled(true);
                 userRepository.save(admin);
             }
-            if (doctorRepository.count() == 0) {
 
+            //CREATE DOCTORS if there are none in db
+            if (doctorRepository.count() == 0) {
                 createDoctor("Gregory", "House", Specialization.GENERAL_PRACTITIONER, "house@medapp.com", userRepository, doctorRepository, passwordEncoder);
                 createDoctor("Allison", "Cameron", Specialization.CARDIOLOGIST, "cameron@medapp.com", userRepository, doctorRepository, passwordEncoder);
                 createDoctor("Robert", "Chase", Specialization.SURGEON, "chase@medapp.com", userRepository, doctorRepository, passwordEncoder);
                 createDoctor("Lisa", "Cuddy", Specialization.NEUROLOGIST, "cuddy@medapp.com", userRepository, doctorRepository, passwordEncoder);
-        
             }
-            if (patientRepository.count() == 0) {
 
+            //CREATE PATIENTS if there are none in db
+            if (patientRepository.count() == 0) {
                 createPatient("John", "Smith", "90031212347", "Diabetes", null, "john.smith@test.com", userRepository, patientRepository, passwordEncoder);
                 createPatient("Anna", "Johnson", "85051501236", "None", null, "anna.johnson@test.com", userRepository, patientRepository, passwordEncoder);
                 createPatient("Peter", "Williams", "92112204562", "Hypertension", null, "peter.williams@test.com", userRepository, patientRepository, passwordEncoder);
@@ -49,6 +48,7 @@ public class DataInitializer {
         };
     }
     
+    //CREATE DOCTOR and his user account
     private Doctor createDoctor(String firstName, String lastName, Specialization spec, String email, 
                                 UserRepository userRepository, DoctorRepository doctorRepository, PasswordEncoder passwordEncoder) {
         AppUser user = new AppUser();
@@ -66,6 +66,7 @@ public class DataInitializer {
         return doctorRepository.save(doctor);
     }
 
+    //CREATE PATIENT and his user account
     private void createPatient(String firstName, String lastName, String pesel, String disease, Doctor mainDoctor, 
                                String email, UserRepository userRepository, PatientRepository patientRepository, PasswordEncoder passwordEncoder) {
         AppUser user = new AppUser();
