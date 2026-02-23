@@ -2,9 +2,11 @@ package com.maja.med_app.service;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -13,13 +15,33 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    public void sendRegistrationEmail(String toEmail, String firstName) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("tst45555@gmail.com");
-        message.setTo(toEmail);
-        message.setSubject("Welcome to MedApp!");
-        message.setText("Dear " + firstName + ",\n\nThank you for registering at MedApp. We're excited to have you on board!\n\nBest regards,\nMedApp Team");
-        mailSender.send(message);
+    @Async
+    public void sendRegistrationEmail(String toEmail, String firstName, String token) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            String verificationLink = "http://192.168.131.213:8080/auth/verify?token=" + token;
+            helper.setFrom("tst45555@gmail.com");
+            helper.setTo(toEmail);
+            helper.setSubject("Please verify your MedApp account!");
+            String htmlContent = "<div style='font-family: Arial, sans-serif; color: #333;'>"
+                        + "<h3>Hello " + firstName + ",</h3>"
+                        + "<p>Thank you for registering at MedApp Clinic! To activate your account, please click the button below:</p>"
+                        + "<p style='margin: 25px 0;'>"
+                        + "<a href=\"" + verificationLink + "\" style=\"background-color: #6f42c1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;\">ACTIVATE ACCOUNT</a>"
+                        + "</p>"
+                        + "<p style='font-size: 0.9em; color: #666;'>Or copy this link to your browser:<br>"
+                        + "<a href=\"" + verificationLink + "\">" + verificationLink + "</a></p>"
+                        + "<br><p>Best regards,<br><strong>MedApp Clinic Team</strong></p>"
+                        + "</div>";
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+            System.out.println("✅ Verification HTML email sent to: " + toEmail);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send verification email: " + e.getMessage());
+        }
+        
     }
 
 
