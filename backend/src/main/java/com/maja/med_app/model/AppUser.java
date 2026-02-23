@@ -1,5 +1,6 @@
 package com.maja.med_app.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,4 +20,9 @@ public class AppUser {
     private String email;
     private String password;
     private String role;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean enabled = false;
+
+    private String verificationToken;
 }

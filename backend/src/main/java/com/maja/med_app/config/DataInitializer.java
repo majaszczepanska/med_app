@@ -27,6 +27,7 @@ public class DataInitializer {
                 admin.setEmail("admin@medapp.com");
                 admin.setPassword(passwordEncoder.encode("admin123"));
                 admin.setRole("ADMIN");
+                admin.setEnabled(true);
                 userRepository.save(admin);
             }
             if (doctorRepository.count() == 0) {
@@ -54,6 +55,7 @@ public class DataInitializer {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode("doctor123"));
         user.setRole("DOCTOR");
+        user.setEnabled(true);
         userRepository.save(user);
 
         Doctor doctor = new Doctor();
@@ -70,6 +72,7 @@ public class DataInitializer {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode("patient123"));
         user.setRole("PATIENT");
+        user.setEnabled(true);
         userRepository.save(user);
 
         Patient patient = new Patient();
