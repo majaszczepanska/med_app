@@ -1,6 +1,5 @@
 package com.maja.med_app.service;
 
-import java.net.Authenticator;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +35,7 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     //POST
     public Appointment createAppointment(Appointment appointment){
@@ -68,7 +68,17 @@ public class AppointmentService {
         if(!errors.isEmpty()) {
             throw new AppValidationException(errors);
         }
-        return appointmentRepository.save(appointment);
+
+        Appointment savedAppointment = appointmentRepository.save(appointment);
+        if (savedAppointment.getPatient() != null && savedAppointment.getPatient().getUser() != null) {
+            emailService.sendAppointmentConfirmation(
+                savedAppointment.getPatient().getUser().getEmail(), 
+                savedAppointment.getPatient().getFirstName(), 
+                savedAppointment.getDoctor().getFirstName() + " " + savedAppointment.getDoctor().getLastName(), 
+                savedAppointment.getVisitTime().toString()
+            );
+        }
+        return savedAppointment;
     }
 
     //GET

@@ -64,4 +64,36 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+
+    @Async
+    public void sendAppointmentConfirmation(String toEmail, String patientName, String doctorName, String visitDate) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8"); 
+            
+            helper.setFrom("tst45555@gmail.com");
+            helper.setTo(toEmail);
+            helper.setSubject("Appointment Confirmed!");
+
+            String htmlContent = "<div style='font-family: Arial, sans-serif; color: #333; padding: 20px;'>"
+                    + "<h2 style='color: #6f42c1;'>Appointment Confirmed!</h2>"
+                    + "<p>Hello <strong>" + patientName + "</strong>,</p>"
+                    + "<p>Your appointment at MedApp Clinic has been successfully booked.</p>"
+                    + "<div style='background-color: #f8f9fa; padding: 15px; border-left: 5px solid #6f42c1; margin: 20px 0;'>"
+                    + "  <p style='margin: 5px 0;'>👨‍⚕️ <strong>Doctor:</strong> Dr. " + doctorName + "</p>"
+                    + "  <p style='margin: 5px 0;'>🕒 <strong>Date & Time:</strong> " + visitDate.replace("T", " ") + "</p>"
+                    + "</div>"
+                    + "<p>If you need to cancel or reschedule, please log in to your Patient Portal.</p>"
+                    + "<p>See you soon!<br><strong>MedApp Clinic Team</strong></p>"
+                    + "</div>";
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+            System.out.println("✅ Appointment confirmation email sent to: " + toEmail);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send appointment email: " + e.getMessage());
+        }
+    }
 }
