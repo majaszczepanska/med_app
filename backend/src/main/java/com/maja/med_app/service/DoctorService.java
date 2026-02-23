@@ -21,17 +21,20 @@ public class DoctorService {
     private final AppointmentRepository appointmentRepository;
 
     //POST
-    @SuppressWarnings("null")
+    //method to create new doctor (used by admin when creating doctor accounts)
     public Doctor createDoctor(Doctor doctor){
         return doctorRepository.save(doctor);
     }
+
     //GET
+    //method to get all doctors (used by patient to view list of doctors)
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAllByDeletedFalse();
     }
+
     //PUT
+    //method to update doctor details (used by admin to update doctor profile)
     public Doctor updateDoctor(Long id, Doctor updatedDoctor) {
-        @SuppressWarnings("null")
         Doctor existingDoctor = doctorRepository.findById(id).orElse(null);
         if (existingDoctor == null)  {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor not found");
@@ -42,8 +45,9 @@ public class DoctorService {
         }
         return doctorRepository.save(existingDoctor);
     }
+
     //DELETE
-    @SuppressWarnings("null")
+    //method to delete doctor (used by admin to delete doctor accounts, soft delete by setting flag)
     public void deleteDoctor(Long id) {
         Doctor doctor = doctorRepository.findById(id).orElse(null);
         if (doctor == null)  {

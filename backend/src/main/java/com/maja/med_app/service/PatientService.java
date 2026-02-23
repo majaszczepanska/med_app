@@ -29,15 +29,21 @@ public class PatientService {
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
 
+    //POST
+    //method to create new patient (used by admin when creating patient accounts)
     public Patient createPatient(@NonNull Patient patient) {
         validateDoctor(patient);
         return patientRepository.save(patient);
     }
 
+    //GET
+    //method to get all patients (used by doctor to view list of patients)
     public List<Patient> getAllPatients() {
         return patientRepository.findAllByDeletedFalse();
     }
 
+    //PUT
+    //method to update patient details (used by doctor to update patient profile)
     public Patient updatePatient(@NonNull Long id, @NonNull Patient updatedPatient) {
         Patient existingPatient = patientRepository.findById(id).orElse(null);
 
@@ -60,6 +66,8 @@ public class PatientService {
         return patientRepository.save(existingPatient);
     }
 
+    //DELETE
+    //method tosoft delete patient (set flag deleted to true, to keep the data for medical history)
     public void deletePatient(@NonNull Long id){
         Patient patient = patientRepository.findById(id).orElse(null);
         if(patient == null) {
@@ -73,16 +81,10 @@ public class PatientService {
         patientRepository.save(patient);
     }
 
+    // method to validate main doctor (check if exists)
     private void validateDoctor(Patient patient) {
         if (patient.getMainDoctor() != null){
             Long doctorId = patient.getMainDoctor().getId();
-            /*
-            if (patient.getMainDoctor().getId() == null || patient.getMainDoctor().getId() == 0){ 
-                Map<String, String> errors = new HashMap<>();
-                errors.put("mainDoctor", "ID required (minimum 1)"); 
-                throw new AppValidationException(errors);
-            }
-            @SuppressWarnings("null")*/
             if (doctorId == null || doctorId == 0) { 
                 patient.setMainDoctor(null);
                 return;
@@ -96,14 +98,10 @@ public class PatientService {
             } else {
                 patient.setMainDoctor(fullDoctor.get());
             }
-        }/*else {
-            Map<String, String> errors = new HashMap<>();
-            errors.put("mainDoctor", "Required");
-            throw new AppValidationException(errors);
-        }*/
+        }
     }
 
-    @SuppressWarnings("null")
+    // method to get patient by id (used by doctor to view patient details)
     public Patient getPatientById(Long id) {
     return patientRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient with id " + id + " not found"));

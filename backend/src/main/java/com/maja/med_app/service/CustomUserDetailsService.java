@@ -11,6 +11,7 @@ import com.maja.med_app.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+//SERVICE to load user details for authentication (used by Spring Security)
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
