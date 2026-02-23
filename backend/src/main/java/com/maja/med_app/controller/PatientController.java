@@ -38,10 +38,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
+//CONTROLLER LAYER
+//handles incoming HTTP requests, maps them to service methods, and returns appropriate HTTP responses
 @RestController
 @RequestMapping("/patients")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200") --- IGNORE ---
 @CrossOrigin(origins = "*")
 public class PatientController {
 
@@ -98,6 +100,8 @@ public class PatientController {
         Long mainDoctorId
     ) {}
 
+
+    //CREATE PATIENT - save user and patient
     @PostMapping
     @Transactional
     public ResponseEntity<Patient> addPatient(@Valid @RequestBody CreatePatientDto request, BindingResult result){
@@ -123,7 +127,6 @@ public class PatientController {
         patient.setDisease(request.disease());
 
         if(request.mainDoctorId() != null) {
-            @SuppressWarnings("null")
             Doctor doctor = doctorRepository.findById(request.mainDoctorId()).orElse(null);
             patient.setMainDoctor(doctor);
         }
@@ -132,11 +135,13 @@ public class PatientController {
         return ResponseEntity.ok(patient);
     }
 
+    //GET ALL PATIENTS
     @GetMapping
-    public List<Patient> gatAllPatients(){
+    public List<Patient> getAllPatients(){
         return patientService.getAllPatients();
     }
 
+    //UPDATE PATIENT - for admin and doctor
     @PutMapping("/{id}")
     public Patient updatePatient(@PathVariable Long id, @Valid @RequestBody Patient updatedPatient, BindingResult result){
         Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
@@ -146,16 +151,19 @@ public class PatientController {
         return patientService.updatePatient(id, updatedPatient);
     }
 
+    //DELETE PATIENT - only set deleted = true, do not delete from db
     @DeleteMapping("/{id}")
     public void deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
     }
 
+    //GET PATIENT BY ID - for doctor to view patient details
     @GetMapping("/{id}")
     public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
         return ResponseEntity.ok(patientService.getPatientById(id));
     }
 
+    //GET CURRENT PATIENT DATA - for patient to view and update his profile
     @GetMapping("/me")
     public ResponseEntity<Patient> getCurrentPatientData() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -169,6 +177,7 @@ public class PatientController {
         return ResponseEntity.ok(patient);
     }
 
+    //PUT - update patient profile by himself
     @PutMapping("/me/profile") 
     public ResponseEntity<?> updatePatientProfile(@Valid @RequestBody UpdateProfileDto request, BindingResult result) {
         Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
@@ -195,7 +204,6 @@ public class PatientController {
         patient.setDisease(request.disease());
 
         if(request.mainDoctorId() != null) {
-            @SuppressWarnings("null")
             Doctor doctor = doctorRepository.findById(request.mainDoctorId()).orElse(null);
             patient.setMainDoctor(doctor);
         }

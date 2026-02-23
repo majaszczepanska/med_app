@@ -35,6 +35,8 @@ import lombok.NonNull;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
+
+//CONTROLLER LAYER
 @RestController //class in internet
 @RequestMapping("/doctors") // localhost:8080/doctors
 @RequiredArgsConstructor  //create constructor for finals (line 21)
@@ -71,7 +73,7 @@ public class DoctorController {
 
     ) {}
 
-    //save doctor
+    //CREATE DOCTOR - save user and doctor
     @PostMapping
     @Transactional
     public ResponseEntity<?> addDoctor(@NonNull @Valid @RequestBody CreateDoctorDto request, BindingResult result) {  
@@ -97,18 +99,19 @@ public class DoctorController {
         doctor.setSpecialization(request.specialization());
 
         doctorService.createDoctor(doctor);
-        //return doctorService.createDoctor(doctor);
+
+        //send email with account details to doctor
         emailService.sendDoctorAccountEmail(request.email(), request.firstName(), request.password());
         return ResponseEntity.ok(doctor);
     }
 
-    // get doctors
+    //GET ALL DOCTORS
     @GetMapping
     public List<Doctor> getAllDoctors() {
         return doctorService.getAllDoctors();
     }
 
-    // update doctor 
+    //UPDATE DOCTOR - for admin
     @PutMapping("/{id}")
     public Doctor updateDoctor(@PathVariable Long id, @Valid @RequestBody Doctor doctor, BindingResult result){
         Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
@@ -118,12 +121,13 @@ public class DoctorController {
         return doctorService.updateDoctor(id, doctor);
     }
 
-
+    //DELETE DOCTOR - only set deleted = true, do not delete from db
     @DeleteMapping("/{id}")
     public void deleteDoctor(@NonNull @PathVariable Long id) {
         doctorService.deleteDoctor(id);
     }
 
+    //GET SPECIALIZATIONS
     @GetMapping("/specializations")
     public ResponseEntity<Specialization[]> getSpecializations() {
         return ResponseEntity.ok(Specialization.values());

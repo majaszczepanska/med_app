@@ -38,6 +38,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
+
+//CONTROLLER LAYER
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -84,6 +86,8 @@ public class AuthController {
         String newPassword
     ) {}
 
+
+    //REGISTER NEW USER AND PATIENT
     @PostMapping("/register")
     @Transactional
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterDto request, BindingResult result){
@@ -100,6 +104,7 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole("PATIENT");
 
+        //generate verification token and set enabled to false until user clicks the link in email
         String token = UUID.randomUUID().toString();
         user.setVerificationToken(token);
         user.setEnabled(false);
@@ -112,11 +117,13 @@ public class AuthController {
         patient.setPesel(request.pesel());
 
         patientRepository.save(patient);
+
+        //send verification email with token
         emailService.sendRegistrationEmail(patient.getUser().getEmail(), patient.getFirstName(), token);
         return ResponseEntity.ok("User and Patient registered successfuly");
     }
 
-
+    //GET CURRENT USER DATA - for patient and doctor to view their profile data 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -125,7 +132,6 @@ public class AuthController {
         AppUser user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("User not found"));
             
-        //user.setPassword(null);
         Long patientId = null;
         Long doctorId = null;
         if ("PATIENT".equals(user.getRole())) {
@@ -137,6 +143,7 @@ public class AuthController {
                     .map(Doctor::getId)
                     .orElse(null);
         }
+        //return user data along with patientId or doctorId to frontend to determine which profile data to fetch
         UserDto response = new UserDto(
             user.getId(),
             patientId,
@@ -148,6 +155,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    //PUT - change password by himself
     @PutMapping("/change-password")
     @Transactional
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDto request, BindingResult result) {
@@ -161,6 +169,7 @@ public class AuthController {
             errors.put("account", "Account not activated. Please check your email for verification link.");
         }
 
+        //check if old password matches
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             errors.put("oldPassword", "Incorrect current password");
         }
@@ -174,6 +183,8 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 
+
+    //GET - verify account by token from email link (new added method to activate account after registration)
     @GetMapping("/verify")
     public ResponseEntity<Void> verifyAccount(@RequestParam String token) {
         AppUser user = userRepository.findByVerificationToken(token)
