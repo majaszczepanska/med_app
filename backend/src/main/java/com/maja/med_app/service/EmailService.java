@@ -9,12 +9,16 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
+
+//SERVICE to send emails (registration verification, doctor account details, appointment confirmation)
+//ASYNC to not block the main thread while sending emails
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    //REGISTER - method to send registration email with verification link
     @Async
     public void sendRegistrationEmail(String toEmail, String firstName, String token) {
         try {
@@ -44,7 +48,7 @@ public class EmailService {
         
     }
 
-
+    //DOCTOR - method to send email with doctor account details (used by admin when creating doctor accounts)
     @Async
     public void sendDoctorAccountEmail(String toEmail, String firstName, String tempPassword) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -65,7 +69,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
-
+    //APPOINTMENT - method to send appointment confirmation email to patient after booking an appointment
     @Async
     public void sendAppointmentConfirmation(String toEmail, String patientName, String doctorName, String visitDate) {
         try {
