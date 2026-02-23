@@ -50,7 +50,7 @@ export class LoginComponent {
         this.cdr.detectChanges();
         setTimeout(() => {
           window.location.href = '/';
-        }, 1000);
+        }, 200);
       },
       error: () => {
         this.loginError = "❌ Invalid email or password";
