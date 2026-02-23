@@ -22,6 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    //ACCESS RULES
+    //define the security filter chain (who has access to what endpoints)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -38,6 +40,8 @@ public class SecurityConfig {
         return http.build();  
     }
 
+    //CORS (Cross-Origin Resource Sharing)
+    //CORS configuration to allow requests from Angular frontend (its safe to send requests from localhost:4200 to localhost:8080)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -49,15 +53,20 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 
+
+    //Bean for password encoding (hashing passwords before saving to db)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
         //return NoOpPasswordEncoder.getInstance();
     }
+
+
+
+
 
     //create hash 
     /*
