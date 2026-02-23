@@ -38,27 +38,14 @@ public class AppointmentService {
     private final EmailService emailService;
 
     //POST
+    //method to create new appointment 
     public Appointment createAppointment(Appointment appointment){
         enforceRoleBoundaries(appointment);
-        /* 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null || auth.isAuthenticated() || !"annonymousUser".equals(auth.getPrincipal())) {
-            AppUser user = userRepository.findByEmail(auth.getName()).orElse(null);
-
-            if (user != null && "PATIENT".equals(user.getRole())) {
-                Patient me = patientRepository.findByUser(user).orElse(null);
-                if (me != null) appointment.setPatient(me); 
-            }
-
-            if (user != null && "DOCTOR".equals(user.getRole())) {
-                Doctor me = doctorRepository.findByUser(user).orElse(null);
-                if (me != null) appointment.setDoctor(me);
-            }
-        }*/
 
         validateAppointment(appointment);
+
         Map<String, String> errors = new HashMap<>();
-        //Check if doctor is avaliable at that time
+        //check if doctor is avaliable at that time, patient doesn't have another appointment at that time
         if(appointmentRepository.existsByDoctorIdAndVisitTimeAndStatusNot(appointment.getDoctor().getId(), appointment.getVisitTime(), AppointmentStatus.CANCELLED)){
             errors.put("visitTime", "Doctor is occupied");
         }
@@ -69,6 +56,7 @@ public class AppointmentService {
             throw new AppValidationException(errors);
         }
 
+        //save appointment and send confirmation email to patient
         Appointment savedAppointment = appointmentRepository.save(appointment);
         if (savedAppointment.getPatient() != null && savedAppointment.getPatient().getUser() != null) {
             emailService.sendAppointmentConfirmation(
@@ -82,9 +70,11 @@ public class AppointmentService {
     }
 
     //GET
+    //method to get all appointments (admin all, doctor their own, patient their own with hidden details of other patients)
     public List<Appointment> getAllAppointments() {
         List<Appointment> allAppointments = appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
 
+        //check user role and filter appointments according to RODO
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return allAppointments;
@@ -93,7 +83,7 @@ public class AppointmentService {
         String email = auth.getName();
         AppUser user = userRepository.findByEmail(email).orElse(null);
 
-        //PATIENT displays appointments
+        //PATIENT displays appointments (theirs and other patients' with hidden details)
         if (user != null && "PATIENT".equals(user.getRole())) {
             Patient myPatientProfile = patientRepository.findByUser(user).orElse(null);
             Long myId = (myPatientProfile != null) ? myPatientProfile.getId() : -1;
@@ -123,7 +113,7 @@ public class AppointmentService {
             return rodoList;
         }
 
-        //DOCTOR displays appointments
+        //DOCTOR displays appointments (only their own)
         if (user != null && "DOCTOR".equals(user.getRole())) {
             Doctor myDoctorProfile = doctorRepository.findByUser(user).orElse(null);
             Long myId = (myDoctorProfile != null) ? myDoctorProfile.getId() : -1L;
@@ -137,30 +127,30 @@ public class AppointmentService {
             return doctorList;
         }
         
-        //ADMIN displays appointments
-        //return appointmentRepository.findAllByStatusNot(AppointmentStatus.CANCELLED);
+        //ADMIN displays appointments (all)
         return allAppointments;
     }
 
     //PUT
+    //method to update appointment details
     public Appointment updateAppointment(Long id, Appointment updatedAppointment){
         Appointment existingAppointment = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
 
         verifyOwnership(existingAppointment);
         enforceRoleBoundaries(updatedAppointment);
-        //ADMIN OPTION
-        //checkEditTime(updatedAppointment.getVisitTime());
+
+        //only update fields that are present in the request
         if(updatedAppointment.getVisitTime() != null){
             existingAppointment.setVisitTime(updatedAppointment.getVisitTime());
         }
 
+        //check if doctor/patient with given id exists, if doctor/patient is being updated
         if(updatedAppointment.getDoctor() != null && updatedAppointment.getDoctor().getId() != null) {
             Doctor newDoctor = doctorRepository.findById(updatedAppointment.getDoctor().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor with this ID not found"));
             existingAppointment.setDoctor(newDoctor);
         }
-
         if(updatedAppointment.getPatient() != null && updatedAppointment.getPatient().getId() != null) {
             Patient newPatient = patientRepository.findById(updatedAppointment.getPatient().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient with this ID not found"));
@@ -169,6 +159,7 @@ public class AppointmentService {
         
         existingAppointment.setDescription(updatedAppointment.getDescription());
 
+        //validate updated appointment details
         Map<String, String> errors = new HashMap<>();
         if (appointmentRepository.existsByDoctorIdAndVisitTimeAndStatusNotAndIdNot(existingAppointment.getDoctor().getId(), existingAppointment.getVisitTime(), AppointmentStatus.CANCELLED, id)){
             errors.put("visitTime", "Doctor is occupied at this time");
@@ -181,20 +172,19 @@ public class AppointmentService {
 
 
     //SOFT DELETE
+    //method to cancel appointment (set status to CANCELLED - do not delete to keep medical history)
     public void deleteAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
         
-        //ADMIN OPTION
-        //checkEditTime(appointment.getVisitTime());
-
         verifyOwnership(appointment);
         
         appointment.setStatus(AppointmentStatus.CANCELLED);
         appointmentRepository.save(appointment);
-        //appointmentRepository.deleteById(id);
     }
 
+    //COMPLETE (after visit)
+    //method to mark appointment as completed and add diagnosis (used by doctor after visit)
     public void completeAppointment(Long id, String diagnosis) {
         Appointment appointment = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
@@ -217,6 +207,7 @@ public class AppointmentService {
 
 
     //GET AVAILABLE SLOTS
+    //method to get available appointment slots for a doctor on a given date
     public List<String> getAvailableSlots(Long doctorId,String date) {
         LocalDate searchDate = LocalDate.parse(date);
         List<Appointment> takenAppointments = appointmentRepository.findAllByDoctorIdAndVisitTimeBetweenAndStatusNot(doctorId, searchDate.atStartOfDay(), searchDate.atTime(23, 59,59), AppointmentStatus.CANCELLED);
@@ -236,11 +227,14 @@ public class AppointmentService {
         return availableSlots;
     }  
 
+    //GET
+    //method to get appointments of a patient 
     public List<Appointment> getAppointmentsByPatient(Long patientId){
         return appointmentRepository.findAllByPatientIdAndStatusNot(patientId, AppointmentStatus.CANCELLED);
     }
 
 
+    //unused method to check if appointment is being edited less than 1 hour before visit (can be used to restrict functions for users)
     private void checkEditTime(LocalDateTime visitTime) {
         Map<String, String> errors = new HashMap<>();
         LocalDateTime oneHourFromNow = LocalDateTime.now().plusHours(1);
@@ -250,10 +244,12 @@ public class AppointmentService {
     }
 
 
+    //EXTRA VALIDATION METHODS
+    //method to validate appointment details (visit time, doctor and patient existence)
     private void validateAppointment(Appointment appointment){
         Map<String, String> errors = new HashMap<>();
 
-        //Validate visit time
+        //VALIDATE VISIT TIME
         LocalDateTime visitTime = appointment.getVisitTime();
         if(visitTime != null){
             if(visitTime.isBefore(LocalDateTime.now())){
@@ -278,12 +274,12 @@ public class AppointmentService {
             errors.put("visitTime", "Required (date & time)");
         }
         
-        //Validate doctor
+        //VALIDATE DOCTOR
         Long doctorId = null;
         if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null || appointment.getDoctor().getId() == 0 ){
             errors.put("doctor", "Required");
         } else {
-            //Fetch full entities from db
+            //fetch full entities from db
             doctorId = appointment.getDoctor().getId();
             Optional<Doctor> doctorFromDb = doctorRepository.findById(doctorId);
             if (doctorFromDb.isEmpty()){
@@ -293,12 +289,12 @@ public class AppointmentService {
             }
         }
 
-        //Validate patient
+        //VALIDATE PATIENT
         Long patientId = null;
          if (appointment.getPatient() == null || appointment.getPatient().getId() == null || appointment.getPatient().getId() == 0){
             errors.put("patient", "Required");
         } else {
-            //Fetch full entities from db
+            //fetch full entities from db
             patientId = appointment.getPatient().getId();
             Optional<Patient> patientFromDb = patientRepository.findById(patientId);
             if (patientFromDb.isEmpty()){
@@ -315,7 +311,8 @@ public class AppointmentService {
     }
 
 
-
+    //CHECK OWNERSHIP
+    //method to verify if the user trying to modify the appointment is either the patient or doctor assigned to this appointment (or admin) - RODO protection
     private void verifyOwnership(Appointment appointment) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) return;
@@ -337,6 +334,8 @@ public class AppointmentService {
     }
 
 
+    //ENFORCE ROLE BOUNDARIES
+    //method to set doctor/patient of the appointment based on the logged in user role 
     private void enforceRoleBoundaries(Appointment appointment){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) return;
