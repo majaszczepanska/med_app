@@ -100,4 +100,31 @@ public class EmailService {
             System.err.println("❌ Failed to send appointment email: " + e.getMessage());
         }
     }
+
+    //FORGOT PASSWORD - method to send password reset email with reset link
+    @Async
+    public void sendPasswordResetEmail(String toEmail, String token) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8"); 
+            String resetLink = "http://192.168.131.213:4200/reset-password?token=" + token;
+            helper.setFrom("tst45555@gmail.com");
+            helper.setTo(toEmail);
+            helper.setSubject("Password Reset Request");
+            String htmlContent = "<div style='font-family: Arial, sans-serif; color: #333;'>"
+                        + "<h3>Hello,</h3>"
+                        + "<p>We received a request to reset your password for your MedApp account. To reset your password, please click the button below:</p>"
+                        + "<p style='margin: 25px 0;'>"
+                        + "<a href=\"" + resetLink + "\" style=\"background-color: #6f42c1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;\">RESET PASSWORD</a>"
+                        + "</p>"
+                        + "<p style='font-size: 0.9em; color: #666;'>Or copy this link to your browser:<br>"
+                        + "<a href=\"" + resetLink + "\">" + resetLink + "</a></p>"
+                        + "<br><p>If you did not request a password reset, please ignore this email.<br><strong>MedApp Clinic Team</strong></p>"
+                        + "</div>";
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send password reset email: " + e.getMessage());
+        }
+    }
 }
