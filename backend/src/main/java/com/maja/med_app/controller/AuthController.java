@@ -2,6 +2,7 @@ package com.maja.med_app.controller;
 
 import org.springframework.security.core.Authentication;
 
+import java.util.Optional;
 import java.util.Map;
 import java.util.UUID;
 
@@ -80,6 +81,21 @@ public class AuthController {
     public record ChangePasswordDto(
         @NotBlank(message = "Required")
         String oldPassword,
+
+        @NotBlank(message = "Required")
+        @Size(min = 6, message = "Min. 6 characters")
+        String newPassword
+    ) {}
+
+    public record ForgotPasswordDto(
+        @NotBlank(message = "Required")
+        @Email(message = "Invalid email format")
+        String email
+    ) {}
+
+    public record ResetPasswordDto(
+        @NotBlank(message = "Required")
+        String token,
 
         @NotBlank(message = "Required")
         @Size(min = 6, message = "Min. 6 characters")
@@ -202,4 +218,41 @@ public class AuthController {
                 .build(); 
     }
 
+    //POST - forgot password - send email with reset link
+    @PostMapping("/forgot-password")
+    @Transactional
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordDto request, BindingResult result) {
+        Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
+        if (!errors.isEmpty()) {
+            throw new AppValidationException(errors);
+        }
+        Optional<AppUser> userOptional = userRepository.findByEmail(request.email());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.ok(Map.of("message", "If an account with that email exists, a password reset link has been sent."));
+        }
+
+        AppUser user = userOptional.get();
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        userRepository.save(user);
+        //send email with reset link
+        emailService.sendPasswordResetEmail(user.getEmail(), token);
+        return ResponseEntity.ok(Map.of("message", "If an account with that email exists, a password reset link has been sent."));
+    }
+
+        @PostMapping("/reset-password")
+        @Transactional
+        public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDto request, BindingResult result) {
+            Map<String, String> errors = ValidationErrorUtils.mapErrors(result);
+            if (!errors.isEmpty()) {
+                throw new AppValidationException(errors);
+            }
+            AppUser user = userRepository.findByResetToken(request.token())
+                .orElseThrow(() -> new RuntimeException("Invalid or expired password reset token"));
+            user.setPassword(passwordEncoder.encode(request.newPassword()));
+            user.setResetToken(null);
+            userRepository.save(user);
+            return ResponseEntity.ok(Map.of("message", "Password reset successful"));
+        }
 }
+
