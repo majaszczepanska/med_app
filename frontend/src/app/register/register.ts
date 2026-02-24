@@ -41,9 +41,8 @@ export class RegisterComponent {
         }, 2000);
       },
       error: (err) => {
-        this.registerError = "❌ Registration failed. Please check your data or try another email.";
+        this.registerError = this.errorService.handleErrors(err);
         this.cdr.detectChanges();
-        this.errorService.handleErrors(err);
       }
     })
 
