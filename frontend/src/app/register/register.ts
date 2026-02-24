@@ -26,15 +26,22 @@ export class RegisterComponent {
   registerSuccess = '';
   registerError = '';
 
+  confirmPassword = '';
   showPass: boolean = false;
+  showConfirmPass: boolean = false;
+  isLoading: boolean = false;
+
   constructor(private authService: AuthService, private router: Router, private errorService: ErrorService, private cdr: ChangeDetectorRef) {}
 
   register(form: NgForm) {
     this.registerSuccess = '';
     this.registerError = '';
+    this.isLoading = true;
+
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         //alert("Account successfuly created ✅ \nSign in");
+        this.isLoading = false;
         this.registerSuccess = "Account created successfully! ✉️\nPlease check your inbox and click the verification link to activate your account.";
         form.resetForm();
         this.cdr.detectChanges();
@@ -43,6 +50,7 @@ export class RegisterComponent {
         }, 2000);*/
       },
       error: (err) => {
+        this.isLoading = false;
         this.registerError = this.errorService.handleErrors(err);
         this.cdr.detectChanges();
       }
