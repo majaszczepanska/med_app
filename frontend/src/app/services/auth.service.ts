@@ -55,6 +55,13 @@ export class AuthService {
     return this.http.put(`${this.apiUrl}/auth/change-password`, data, { headers });
   }
 
+  forgotPassword(data: { email: string}) {
+    return this.http.post(`${this.apiUrl}/auth/forgot-password`, data);
+  }
+
+  resetPassword(data: { token: string, newPassword: string }) {
+    return this.http.post(`${this.apiUrl}/auth/reset-password`, data);
+  }
 
   private getAuthHeaders(): HttpHeaders {
     const authData = sessionStorage.getItem('authData'); 
