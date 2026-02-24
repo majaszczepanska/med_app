@@ -25,4 +25,6 @@ public class AppUser {
     private boolean enabled = false;
 
     private String verificationToken;
+
+    private String resetToken;
 }
