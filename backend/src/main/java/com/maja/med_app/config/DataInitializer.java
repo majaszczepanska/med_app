@@ -39,11 +39,11 @@ public class DataInitializer {
 
             //CREATE PATIENTS if there are none in db
             if (patientRepository.count() == 0) {
-                createPatient("John", "Smith", "90031212347", "Diabetes", null, "john.smith@test.com", userRepository, patientRepository, passwordEncoder);
-                createPatient("Anna", "Johnson", "85051501236", "None", null, "anna.johnson@test.com", userRepository, patientRepository, passwordEncoder);
-                createPatient("Peter", "Williams", "92112204562", "Hypertension", null, "peter.williams@test.com", userRepository, patientRepository, passwordEncoder);
+                createPatient("John", "Smith", "80010112340", "Diabetes", null, "john.smith@test.com", userRepository, patientRepository, passwordEncoder);
+                createPatient("Anna", "Johnson", "90020223457", "None", null, "anna.johnson@test.com", userRepository, patientRepository, passwordEncoder);
+                createPatient("Peter", "Williams", "70030334567", "Hypertension", null, "peter.williams@test.com", userRepository, patientRepository, passwordEncoder);
                 createPatient("Catherine", "Brown", "78041107891", "Penicillin allergy", null, "catherine.brown@test.com", userRepository, patientRepository, passwordEncoder);
-                createPatient("Michael", "Davis", "88071412348", "Migraines", null, "michael.davis@test.com", userRepository, patientRepository, passwordEncoder); 
+                createPatient("Michael", "Davis", "60040445676", "Migraines", null, "michael.davis@test.com", userRepository, patientRepository, passwordEncoder); 
             }
         };
     }
