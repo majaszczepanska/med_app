@@ -32,6 +32,11 @@ public class PatientService {
     //POST
     //method to create new patient (used by admin when creating patient accounts)
     public Patient createPatient(@NonNull Patient patient) {
+        if (patientRepository.existsByPesel(patient.getPesel())) {
+            Map<String, String> errors = new HashMap<>();
+            errors.put("pesel", "PESEL already exists");
+            throw new AppValidationException(errors);
+        }
         validateDoctor(patient);
         return patientRepository.save(patient);
     }
@@ -52,6 +57,11 @@ public class PatientService {
             errors.put("id", "No patient with this id");
             throw new AppValidationException(errors);
         }
+        if (patientRepository.existsByPeselAndIdNot(updatedPatient.getPesel(), id)) {
+            Map<String, String> errors = new HashMap<>();
+            errors.put("pesel", "PESEL already exists");
+            throw new AppValidationException(errors);
+        }
         validateDoctor(updatedPatient);
         /*if (updatedPatient.getMainDoctor() != null){
             validateDoctor(updatedPatient);
@@ -67,7 +77,7 @@ public class PatientService {
     }
 
     //DELETE
-    //method tosoft delete patient (set flag deleted to true, to keep the data for medical history)
+    //method to soft delete patient (set flag deleted to true, to keep the data for medical history)
     public void deletePatient(@NonNull Long id){
         Patient patient = patientRepository.findById(id).orElse(null);
         if(patient == null) {

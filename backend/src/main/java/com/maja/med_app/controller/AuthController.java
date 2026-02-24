@@ -95,6 +95,9 @@ public class AuthController {
         if (userRepository.findByEmail(request.email()).isPresent()) {
             errors.put("email", "Email already taken");
         }
+        if (patientRepository.existsByPesel(request.pesel())) {
+            errors.put("pesel", "PESEL already exists");
+        }
         if(!errors.isEmpty()){
             throw new AppValidationException(errors);
         }
