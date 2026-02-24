@@ -32,7 +32,7 @@ public class SecurityConfig {
             //.cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/auth/register", "/auth/login", "/auth/verify").permitAll()
+                .requestMatchers("/auth/register", "/auth/login", "/auth/verify", "/auth/forgot-password", "/auth/reset-password").permitAll()
                 .anyRequest().authenticated()
                 //.anyRequest().permitAll()
             )
