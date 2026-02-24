@@ -31,6 +31,9 @@
             <mat-icon>{{ showPass ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
+        <div class="text-right mt-1 mb-5">
+          <a routerLink="/forgot-password" class="text-xs text-purple-600 font-bold hover:underline">Forgot password?</a>
+        </div>
         
         @if (pass.invalid && (pass.dirty || pass.touched)) {
           <div class="text-red-600 text-sm mt-2 font-medium">
