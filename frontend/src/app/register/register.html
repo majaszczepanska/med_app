@@ -3,7 +3,7 @@
     
     <h2 class="text-gray-800 text-2xl sm:text-3xl font-bold mb-8 tracking-wide">Create an account 🏥</h2>
     
-    <form #registerForm="ngForm" (ngSubmit)="register()" (input)="clearMessages()" (change)="clearMessages()">
+    <form #registerForm="ngForm" (ngSubmit)="register(registerForm)" (input)="clearMessages()" (change)="clearMessages()">
       
       <div class="mb-5 text-left">
         <label class="block mb-2 font-semibold text-gray-700 text-sm">Email <span class="text-red-500 ml-1">*</span></label>

@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ErrorService } from '../services/error.service';
 import { MatIconModule } from '@angular/material/icon';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-register',
@@ -28,17 +29,18 @@ export class RegisterComponent {
   showPass: boolean = false;
   constructor(private authService: AuthService, private router: Router, private errorService: ErrorService, private cdr: ChangeDetectorRef) {}
 
-  register() {
+  register(form: NgForm) {
     this.registerSuccess = '';
     this.registerError = '';
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         //alert("Account successfuly created ✅ \nSign in");
-        this.registerSuccess = "Account successfully created! ✅ Redirecting to login...";
+        this.registerSuccess = "Account created successfully! ✉️\nPlease check your inbox and click the verification link to activate your account.";
+        form.resetForm();
         this.cdr.detectChanges();
-        setTimeout(() => {
+        /*setTimeout(() => {
           this.router.navigate(['/login']);
-        }, 2000);
+        }, 2000);*/
       },
       error: (err) => {
         this.registerError = this.errorService.handleErrors(err);
