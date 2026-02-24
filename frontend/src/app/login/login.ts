@@ -49,7 +49,7 @@ export class LoginComponent {
         this.loginSuccess = "Logged in successfully! ✅ Redirecting...";
         this.cdr.detectChanges();
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = '/dashboard';
         }, 200);
       },
       error: () => {
