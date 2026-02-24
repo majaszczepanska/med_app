@@ -11,9 +11,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { HttpClient } from '@angular/common/http';
 import enGb from '@fullcalendar/core/locales/en-gb';
-import plLocale from '@fullcalendar/core/locales/pl';
-import { RouterOutlet } from '@angular/router';
-import { LoginComponent } from './login/login';
+import { Router, RouterOutlet } from '@angular/router';
 import { Profile } from './profile/profile';
 import { ErrorService } from './services/error.service';
 
@@ -130,7 +128,8 @@ export class AppComponent implements OnInit {
     private appointmentService: AppointmentService,
     private cdr: ChangeDetectorRef,
     private http: HttpClient,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private router: Router
   ){}
 
   toggleMenu() {
@@ -191,7 +190,8 @@ export class AppComponent implements OnInit {
     this.appointments = [];
     this.selectedPatientForHistory = null; 
     this.activeTab = 'dashboard'; 
-    window.location.reload();
+    //window.location.reload();
+    this.router.navigate(['/login']);
   }
 
   clearDashboardMessages() {
