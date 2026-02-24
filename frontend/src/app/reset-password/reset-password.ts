@@ -16,6 +16,7 @@ import { AuthService } from '../services/auth.service';
 export class ResetPassword {  
   token = '';
   newPassword = '';
+  confirmPassword = '';
   showPass = false;
   successMessage = '';
   errorMessage = '';
@@ -34,6 +35,11 @@ export class ResetPassword {
 
   submit() {
     if (!this.token) return;
+    
+    if (this.newPassword !== this.confirmPassword) {
+      this.errorMessage = "❌ Passwords do not match!";
+      return;
+    }
     
     this.isLoading = true;
     this.successMessage = '';
