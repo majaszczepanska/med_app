@@ -112,4 +112,43 @@ public class AppointmentServiceTest {
             eq("patient@test.com"), eq("John"), eq("Gregory House"), anyString());
     }
 
+
+    //TEST FOR WEEKEND APPOINTMENT
+    @Test
+    void shouldThrowExceptionWhenBookingOnWeekend() {
+        LocalDateTime weekendVisitTime = LocalDateTime.now()
+            .with(TemporalAdjusters.next(DayOfWeek.SUNDAY))
+            .withHour(10)
+            .withMinute(15)
+            .withSecond(0)
+            .withNano(0);
+
+        //doctor setup
+        Doctor doctor = new Doctor();
+        doctor.setId(1L);
+
+        //patient setup
+        Patient patient = new Patient();
+        patient.setId(2L);
+
+        //appointment setup
+        Appointment weekendAppointment = new Appointment();
+        weekendAppointment.setVisitTime(weekendVisitTime);
+        weekendAppointment.setDoctor(doctor);
+        weekendAppointment.setPatient(patient);
+
+        when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
+        when(patientRepository.findById(2L)).thenReturn(Optional.of(patient));
+
+
+        AppValidationException exception = assertThrows(AppValidationException.class, () -> {
+            appointmentService.createAppointment(weekendAppointment);
+        });
+
+        assertTrue(exception.getErrors().containsKey("visitTime"));
+        assertTrue(exception.getErrors().get("visitTime").contains("Clinic is closed on weekends"));
+
+        verify(appointmentRepository, never()).save(any());
+    }
+
 }
