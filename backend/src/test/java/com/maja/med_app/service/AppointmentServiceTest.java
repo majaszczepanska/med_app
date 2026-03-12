@@ -151,4 +151,82 @@ public class AppointmentServiceTest {
         verify(appointmentRepository, never()).save(any());
     }
 
+
+    //TEST
+    //RODO - MASKING OTHER PATIENTS' DATA IN APPOINTMENTS FOR PATIENT ROLE
+    @Test
+    void shouldMaskOtherPatientsDataWhenRoleIsPatient() {
+
+        //GIVEN
+        //logged in user setup
+        AppUser loggedUser = new AppUser();
+        loggedUser.setEmail("user@test.com");
+        loggedUser.setRole("PATIENT");
+
+        //logged in patient setup
+        Patient me = new Patient();
+        me.setId(1L);
+        me.setFirstName("John");
+        me.setLastName("Smith");
+        me.setUser(loggedUser);
+
+        //other patient setup
+        Patient otherPatient = new Patient();
+        otherPatient.setId(2L);
+        otherPatient.setFirstName("Tom");
+        otherPatient.setLastName("Cat");
+
+        //logged in patient's appointment setup
+        Appointment myAppointment = new Appointment();
+        myAppointment.setId(100L);
+        myAppointment.setPatient(me);
+        myAppointment.setDescription("headache");
+
+        //other patient's appointment setup
+        Appointment otherAppointment = new Appointment();
+        otherAppointment.setId(101L);
+        otherAppointment.setPatient(otherPatient);
+        otherAppointment.setDescription("flu");
+
+        //mocking repository calls
+        List<Appointment> allAppointments = List.of(myAppointment, otherAppointment);
+
+        //mocking authentication and security context
+        Authentication auth = mock(Authentication.class);
+        when(auth.isAuthenticated()).thenReturn(true);
+        when(auth.getName()).thenReturn("user@test.com");
+        when(auth.getPrincipal()).thenReturn("user");
+
+        
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(loggedUser));
+        when(patientRepository.findByUser(loggedUser)).thenReturn(Optional.of(me));
+        when(appointmentRepository.findAllByStatusNot(any())).thenReturn(allAppointments);
+        
+        //WHEN
+        List<Appointment> result = appointmentService.getAllAppointments();
+
+        //THEN
+        assertEquals(2, result.size(), "Expected 2 appointments in the result");
+    
+        //Verify that the logged-in patient's appointment data is intact
+        Appointment resultMyAppointment = result.stream()
+            .filter(app -> app.getId().equals(100L))
+            .findFirst()
+            .orElse(null);
+        assertEquals("John", resultMyAppointment.getPatient().getFirstName());
+        assertEquals("headache", resultMyAppointment.getDescription());
+
+        //Verify that the other patient's data is masked
+        Appointment resultOtherAppointment = result.stream()
+            .filter(app -> app.getId().equals(101L))
+            .findFirst()
+            .orElse(null);
+        assertEquals("Reserved", resultOtherAppointment.getPatient().getFirstName(), "Expected other patient's first name to be masked");
+        assertEquals("", resultOtherAppointment.getPatient().getLastName(), "Expected other patient's last name to be masked");
+        assertEquals("Private Appointment", resultOtherAppointment.getDescription(), "Expected other appointment's description to be masked");
+    }
 }
