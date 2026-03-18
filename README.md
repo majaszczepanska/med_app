@@ -30,7 +30,6 @@ MedApp is a comprehensive, full-stack web application designed to manage a medic
 
 - **Angular Material Icons** (UI iconography)
 
-
 ## 👥 User Roles & Permissions
 
 The application implements a strict Role-Based Access Control (RBAC) system:
@@ -65,7 +64,6 @@ The application implements a strict Role-Based Access Control (RBAC) system:
 
 - Views their personal medical history and updates their profile.
 
-
 ## 🔐 Security & Core Flows
 
 ### 1. Registration & Email Verification
@@ -86,7 +84,6 @@ The system uses Basic Authentication over HTTPS. The frontend encrypts credentia
 
 4. The frontend performs cross-field validation (Confirm Password) before sending the new password to the server, where it is hashed using `BCryptPasswordEncoder`.
 
-
 ## 🧠 Interesting Technical Highlights (Backend Architecture)
 
 - **`@Transactional` Annotation:** Used heavily in controllers (e.g., `registerUser`, `addDoctor`). It ensures database integrity. If saving the `AppUser` succeeds but saving the `Patient` entity fails, the entire transaction rolls back, preventing "orphan" accounts.
@@ -95,10 +92,9 @@ The system uses Basic Authentication over HTTPS. The frontend encrypts credentia
 
 - **Advanced Appointment Validation:** The `AppointmentService` prevents booking collisions. It mathematically checks if the slot is between working hours (08:00 - 16:00), falls on a weekday, and is exactly in 15-minute intervals.
 
-- **Global Error Handling:** The `@RestControllerAdvice` captures validation exceptions (like invalid PESEL or short passwords) and maps them into a structured JSON `Map\<String, String\>`. The Angular `ErrorService` parses this map and displays specific error messages exactly under the problematic form fields.
+- **Global Error Handling:** The `@RestControllerAdvice` captures validation exceptions (like invalid PESEL or short passwords) and maps them into a structured JSON `Map\\\<String, String\\\>`. The Angular `ErrorService` parses this map and displays specific error messages exactly under the problematic form fields.
 
 - **Soft Deleting:** Doctors and Patients are never physically removed from the DB (`deleted = true`). This ensures that historical medical records and past appointments remain intact.
-
 
 ## 💻 Setup Instructions
 
@@ -114,7 +110,7 @@ The system uses Basic Authentication over HTTPS. The frontend encrypts credentia
 
 3. **Frontend:** `cd frontend && npm install && ng serve` **URL:** [http://localhost:4200](https://www.google.com/search?q=http://localhost:4200)
 
-## **Option 2: Run Package (`run\_package`)**
+## **Option 2: Run Package (`run\\\_package`)**
 
 *Quick demo without compiling source code.*
 
@@ -125,18 +121,37 @@ The system uses Basic Authentication over HTTPS. The frontend encrypts credentia
 Bash
 
 ```
-`docker-compose up -d`
-
-`java -jar med\_app-0.0.1-SNAPSHOT.jar`
+\`docker-compose up -d\`  
+  
+\`java -jar med\\\_app-0.0.1-SNAPSHOT.jar\`
 ```
 
-2. **Interface (Terminal 2):** Navigate to `med-app-frontend/browser` and run:
+1. **Interface (Terminal 2):** Navigate to `med-app-frontend/browser` and run:
 
 Bash
 
 ```
-`npx http-server -p 4200 --proxy http://localhost:4200?`
+\`npx http-server -p 4200 --proxy http://localhost:4200?\`
 ```
+
+**URL:** [http://localhost:4200](http://localhost:4200/)
+
+
+## **Option 3: Full Dockerization (`fast\_run`)**
+
+*The "Zero-Install" method. Everything runs inside isolated containers.*
+
+**Prerequisites:** Only Docker & Docker Compose.
+
+1. **Launch everything (Terminal 1):** Navigate to the `fast\_run` folder and run:
+
+Bash
+
+```
+`docker-compose up --build -d`
+```
+
+2. **Automated Startup:** Docker will automatically pull PostgreSQL, build the Spring Boot image, and serve the Angular app via Nginx.
 
 **URL:** [http://localhost:4200](https://www.google.com/search?q=http://localhost:4200)
 
@@ -146,4 +161,3 @@ Bash
 - **Admin:** `admin@medapp.com` / *(see DataInitializer.java)*
 
 - **Doctor:** `house@medapp.com` / *(see DataInitializer.java)*
-
