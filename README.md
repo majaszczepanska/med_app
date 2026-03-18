@@ -6,22 +6,30 @@ MedApp is a comprehensive, full-stack web application designed to manage a medic
 
 ### Backend
 
-* **Java 21** & **Spring Boot 3.3.5** (Core framework)
-* **Spring Security** (Authentication, Authorization, CORS protection)
-* **Spring Data JPA & Hibernate** (ORM, Database interactions)
-* **PostgreSQL** (Relational database, containerized via Docker)
-* **JavaMailSender** (Automated HTML email dispatch)
-* **Lombok** (Boilerplate code reduction)
-* **Jakarta Validation** (Strict data integrity checks e.g., `@PESEL`)
+- **Java 21** & **Spring Boot 3.3.5** (Core framework)
+
+- **Spring Security** (Authentication, Authorization, CORS protection)
+
+- **Spring Data JPA & Hibernate** (ORM, Database interactions)
+
+- **PostgreSQL** (Relational database, containerized via Docker)
+
+- **JavaMailSender** (Automated HTML email dispatch)
+
+- **Lombok** (Boilerplate code reduction)
+
+- **Jakarta Validation** (Strict data integrity checks e.g., `@PESEL`)
 
 ### Frontend
 
-* **Angular 18+** (Standalone components, reactive forms, RxJS)
-* **Tailwind CSS** (Modern, responsive UI styling)
-* **FullCalendar** (Interactive appointment scheduling)
-* **Angular Material Icons** (UI iconography)
+- **Angular 18+** (Standalone components, reactive forms, RxJS)
 
----
+- **Tailwind CSS** (Modern, responsive UI styling)
+
+- **FullCalendar** (Interactive appointment scheduling)
+
+- **Angular Material Icons** (UI iconography)
+
 
 ## 👥 User Roles & Permissions
 
@@ -29,26 +37,34 @@ The application implements a strict Role-Based Access Control (RBAC) system:
 
 ### 1. 👑 Administrator (`ADMIN`)
 
-* Has absolute control over the system.
-* Creates doctor accounts (system automatically generates passwords and sends an email to the doctor).
-* Manages patient records and can book/cancel appointments for anyone.
-* Views comprehensive statistics on the dashboard.
+- Has absolute control over the system.
 
-### 2. 👨‍⚕️ Doctor (`DOCTOR`)
+- Creates doctor accounts (system automatically generates passwords and sends an email to the doctor).
 
-* Manages their own appointment schedule.
-* Views and edits data of patients assigned to them.
-* **Completes Visits:** Adds medical diagnoses and notes after an appointment (`COMPLETED` status).
-* Views the full medical history of their patients.
+- Manages patient records and can book/cancel appointments for anyone.
+
+- Views comprehensive statistics on the dashboard.
+
+### 2. 👨⚕️ Doctor (`DOCTOR`)
+
+- Manages their own appointment schedule.
+
+- Views and edits data of patients assigned to them.
+
+- **Completes Visits:** Adds medical diagnoses and notes after an appointment (`COMPLETED` status).
+
+- Views the full medical history of their patients.
 
 ### 3. 🩺 Patient (`PATIENT`)
 
-* Self-registers via the web interface.
-* **GDPR/RODO Compliant Calendar:** Patients can view the clinic's calendar to find available slots, but other patients' appointments are masked as *"Reserved"* to protect medical privacy.
-* Books and cancels their own appointments.
-* Views their personal medical history and updates their profile.
+- Self-registers via the web interface.
 
----
+- **GDPR/RODO Compliant Calendar:** Patients can view the clinic's calendar to find available slots, but other patients' appointments are masked as *"Reserved"* to protect medical privacy.
+
+- Books and cancels their own appointments.
+
+- Views their personal medical history and updates their profile.
+
 
 ## 🔐 Security & Core Flows
 
@@ -63,24 +79,71 @@ The system uses Basic Authentication over HTTPS. The frontend encrypts credentia
 ### 3. Password Recovery Flow
 
 1. User requests a reset link.
+
 2. Backend generates a `resetToken` and sends an email.
+
 3. User clicks the link, bringing them to an Angular route `/reset-password?token=...`.
+
 4. The frontend performs cross-field validation (Confirm Password) before sending the new password to the server, where it is hashed using `BCryptPasswordEncoder`.
 
----
 
 ## 🧠 Interesting Technical Highlights (Backend Architecture)
 
-* **`@Transactional` Annotation:** Used heavily in controllers (e.g., `registerUser`, `addDoctor`). It ensures database integrity. If saving the `AppUser` succeeds but saving the `Patient` entity fails, the entire transaction rolls back, preventing "orphan" accounts.
-* **`@Async` Email Sending:** The `EmailService` methods are marked with `@Async`. This offloads the slow SMTP communication to a separate background thread. The user gets an immediate response (e.g., "Registration successful"), while the email is being sent in the background.
-* **Advanced Appointment Validation:** The `AppointmentService` prevents booking collisions. It mathematically checks if the slot is between working hours (08:00 - 16:00), falls on a weekday, and is exactly in 15-minute intervals.
-* **Global Error Handling:** The `@RestControllerAdvice` captures validation exceptions (like invalid PESEL or short passwords) and maps them into a structured JSON `Map<String, String>`. The Angular `ErrorService` parses this map and displays specific error messages exactly under the problematic form fields.
-* **Soft Deleting:** Doctors and Patients are never physically removed from the DB (`deleted = true`). This ensures that historical medical records and past appointments remain intact.
+- **`@Transactional` Annotation:** Used heavily in controllers (e.g., `registerUser`, `addDoctor`). It ensures database integrity. If saving the `AppUser` succeeds but saving the `Patient` entity fails, the entire transaction rolls back, preventing "orphan" accounts.
 
----
+- **`@Async` Email Sending:** The `EmailService` methods are marked with `@Async`. This offloads the slow SMTP communication to a separate background thread. The user gets an immediate response (e.g., "Registration successful"), while the email is being sent in the background.
 
-*(I will create an instruction how to run Docker and Maven)*
+- **Advanced Appointment Validation:** The `AppointmentService` prevents booking collisions. It mathematically checks if the slot is between working hours (08:00 - 16:00), falls on a weekday, and is exactly in 15-minute intervals.
+
+- **Global Error Handling:** The `@RestControllerAdvice` captures validation exceptions (like invalid PESEL or short passwords) and maps them into a structured JSON `Map\<String, String\>`. The Angular `ErrorService` parses this map and displays specific error messages exactly under the problematic form fields.
+
+- **Soft Deleting:** Doctors and Patients are never physically removed from the DB (`deleted = true`). This ensures that historical medical records and past appointments remain intact.
 
 
+## 💻 Setup Instructions
 
+## **Option 1: Full Source Code (Developer Mode)**
+
+*Use this if you want to edit the code.*
+
+**Prerequisites:** Docker, Java 21 (JDK), Node.js, Angular CLI.
+
+1. **Database:** `docker-compose up -d`
+
+2. **Backend:** `cd backend && mvn spring-boot:run`
+
+3. **Frontend:** `cd frontend && npm install && ng serve` **URL:** [http://localhost:4200](https://www.google.com/search?q=http://localhost:4200)
+
+## **Option 2: Run Package (`run\_package`)**
+
+*Quick demo without compiling source code.*
+
+**Prerequisites:** Docker, Java 21, Node.js.
+
+1. **Database & Server (Terminal 1):**
+
+Bash
+
+```
+`docker-compose up -d`
+
+`java -jar med\_app-0.0.1-SNAPSHOT.jar`
+```
+
+2. **Interface (Terminal 2):** Navigate to `med-app-frontend/browser` and run:
+
+Bash
+
+```
+`npx http-server -p 4200 --proxy http://localhost:4200?`
+```
+
+**URL:** [http://localhost:4200](https://www.google.com/search?q=http://localhost:4200)
+
+
+## 🔑 Default Credentials
+
+- **Admin:** `admin@medapp.com` / *(see DataInitializer.java)*
+
+- **Doctor:** `house@medapp.com` / *(see DataInitializer.java)*
 
