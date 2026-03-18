@@ -1,0 +1,78 @@
+## 💻 Option 1: Full Source Code (Developer Mode)
+
+*Use this option if you want to browse, edit, or contribute to the code.*
+
+## Prerequisites:
+
+- **Docker** & **Docker Compose**
+
+- **Java 21 (JDK)** & **Maven**
+
+- **Node.js** & **Angular CLI** (`npm install -g @angular/cli`)
+
+## Steps:
+
+1. **Database:** In the root directory, run:
+
+```
+`docker-compose up -d`
+```
+
+2. **Backend:**
+
+```
+`cd backend`
+
+`mvn spring-boot:run`
+```
+
+3. **Frontend:**
+
+```
+`cd frontend`
+
+`npm install`
+
+`ng serve`
+```
+
+**URL:** [http://localhost:4200](https://www.google.com/search?q=http://localhost:4200)
+
+
+## 📦 Option 2: Run Package (`run\_package`)
+
+*Use this option for a quick demo without compiling the source code.*
+
+## Prerequisites:
+
+- **Docker**
+
+- **Java 21 (JRE/JDK)**
+
+- **Node.js**
+
+## Steps (inside the `run\_package` folder):
+
+1. **Start Database & Server (Terminal 1):**
+
+```
+`docker-compose up -d`
+
+`java -jar med\_app-0.0.1-SNAPSHOT.jar`
+```
+
+2. **Start Interface (Terminal 2):** Navigate to `med-app-frontend/browser` and run:
+
+```
+`npx http-server -p 4200 --proxy http://localhost:4200?`
+```
+
+**URL:** [http://localhost:4200](https://www.google.com/search?q=http://localhost:4200)
+
+
+## 🔑 Credentials:
+
+- **Admin:** `admin@medapp.com` / check `DataInitializer.java` for password
+
+- **Doctor:** `house@medapp.com` / check `DataInitializer.java` for password
+
